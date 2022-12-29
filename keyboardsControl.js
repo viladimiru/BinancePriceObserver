@@ -6,9 +6,11 @@ export const START_MSG = {
 			[
 				{
 					text: ADD_OBSERVER,
+					callback_data: ADD_OBSERVER,
 				},
 				{
 					text: REMOVE_OBSERVER,
+					callback_data: REMOVE_OBSERVER
 				},
 			],
 		],
@@ -166,12 +168,7 @@ function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 		reply_markup: {
 			resize_keyboard: true,
 			one_time_keyboard: true,
-			inline_keyboard: [
-				[{
-					text: BACK,
-					callback_data: 'text'
-				},]
-			],
+			inline_keyboard: keyboard,
 			...options,
 		},
 	};
