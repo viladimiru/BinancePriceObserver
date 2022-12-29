@@ -1,1 +1,20 @@
-{"CHRUSDT":{"triggers":[{"chatId":803497355,"values":[["Long",0.1135],["Long",0.12],["Long",0.1245]]}]},"BHCUSDT":{"triggers":[{"chatId":803497355,"values":[["Long",101]]}]},"BCHUSDT":{"triggers":[{"chatId":803497355,"values":[["Long",102.2]]}]}}
+{
+	"CHRUSDT": {
+		"triggers": [
+			{
+				"chatId": 803497355,
+				"values": [
+					["Long", 0.1135],
+					["Long", 0.12],
+					["Long", 0.1245]
+				]
+			}
+		]
+	},
+	"BHCUSDT": {
+		"triggers": [{ "chatId": 803497355, "values": [["Long", 101]] }]
+	},
+	"BCHUSDT": {
+		"triggers": [{ "chatId": 803497355, "values": [["Long", 102.2]] }]
+	}
+}
