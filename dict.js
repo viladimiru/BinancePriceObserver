@@ -1,4 +1,5 @@
 export const ADD_OBSERVER = 'Добавить наблюдателя'
+export const REMOVE_OBSERVER = 'Удалить наблюдателя'
 export const SHORT = 'Short'
 export const LONG = 'Long'
 export const BACK = 'Назад'

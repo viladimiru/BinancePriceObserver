@@ -13,6 +13,7 @@
   "dependencies": {
     "node-binance-api": "^0.13.1",
     "node-telegram-bot-api": "^0.60.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "telegraf": "^4.11.2"
   }
 }

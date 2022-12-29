@@ -1,4 +1,67 @@
-import { ADD_OBSERVER, SHORT, LONG, BACK, SYMBOL, COMPLETED, TO_THE_MAIN, ERROR } from './dict.js';
+import { ADD_OBSERVER, SHORT, LONG, BACK, SYMBOL, COMPLETED, TO_THE_MAIN, REMOVE_OBSERVER } from './dict.js';
+
+export const START_MSG = {
+	state: keyboardWrapper(
+		[
+			[
+				{
+					text: ADD_OBSERVER,
+				},
+				{
+					text: REMOVE_OBSERVER,
+				},
+			],
+		],
+		{},
+		true
+	),
+	text: '<b>Добро пожаловать!</b>\nВыберите нужную опцию',
+}
+
+export const ADD_OBSERVER_MSG = {
+	state: keyboardWrapper(),
+	text: SYMBOL,
+}
+
+export const SYMBOL_MSG = {
+	state: keyboardWrapper([
+		[
+			{
+				text: LONG,
+			},
+			{
+				text: SHORT,
+			},
+		],
+	]),
+	text: 'Выберите тип сделки',
+}
+
+const ADD_OBSERVER_CONTROLS = {
+	state: keyboardWrapper(),
+	text: SYMBOL,
+	[SYMBOL]: {
+		state: keyboardWrapper([
+			[
+				{
+					text: LONG,
+				},
+				{
+					text: SHORT,
+				},
+			],
+		]),
+		text: 'Выберите тип сделки',
+		[LONG]: {
+			state: keyboardWrapper(),
+			text: 'Введите сумму, после которой хотите получить уведомление',
+		},
+		[SHORT]: {
+			state: keyboardWrapper(),
+			text: 'Введите сумму, после которой хотите получить уведомление',
+		},
+	},
+}
 
 let observer
 let chain = [];
@@ -16,36 +79,21 @@ const keyboardTree = {
 					{
 						text: ADD_OBSERVER,
 					},
+					{
+						text: REMOVE_OBSERVER,
+					},
 				],
 			],
 			{},
 			true
 		),
 		text: '<b>Добро пожаловать!</b>\nВыберите нужную опцию',
-		[ADD_OBSERVER]: {
-      state: keyboardWrapper(),
-			text: SYMBOL,
-			[SYMBOL]: {
-				state: keyboardWrapper([
-					[
-						{
-							text: LONG,
-						},
-						{
-							text: SHORT,
-						},
-					],
-				]),
-				text: 'Выберите тип сделки',
-				[LONG]: {
-					state: keyboardWrapper(),
-					text: 'Введите сумму, после которой хотите получить уведомление',
-				},
-				[SHORT]: {
-					state: keyboardWrapper(),
-					text: 'Введите сумму, после которой хотите получить уведомление',
-				},
-			},
+		[ADD_OBSERVER]: ADD_OBSERVER_CONTROLS,
+		[REMOVE_OBSERVER]: {
+			text: 'Выберите пару для удаления',
+			state: keyboardWrapper([
+
+			])
 		},
 		[COMPLETED]: {
 			text: COMPLETED,
@@ -87,7 +135,6 @@ export function setNextState(nextState) {
 	} else if (validateNextState(nextState)) {
 		chain.push(nextState);
 	}
-
   if (getCurrentNode().action) {
     getCurrentNode().action()
   }
@@ -119,14 +166,20 @@ function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 		reply_markup: {
 			resize_keyboard: true,
 			one_time_keyboard: true,
-			keyboard: keyboard,
+			inline_keyboard: [
+				[{
+					text: BACK,
+					callback_data: 'text'
+				},]
+			],
 			...options,
 		},
 	};
 	if (!hideBackBtn) {
-		result.reply_markup.keyboard.push([
+		result.reply_markup.inline_keyboard.push([
 			{
 				text: BACK,
+				callback_data: 'text'
 			},
 		]);
 	}
@@ -146,9 +199,5 @@ function getCurrentNode() {
 
 function getLastState() {
 	return chain[chain.length - 1];
-}
-
-function addLong() {
-  console.log('sukaa')
 }
 
