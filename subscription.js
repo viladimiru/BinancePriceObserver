@@ -1,61 +1,92 @@
 import Binance from 'node-binance-api';
-import { removePair, getPairs } from './pairsControl.js';
+import { removePair, getPairs } from './api.js';
+import { get, set } from './storage/index.js';
+import { SUBSCRIPTIONS } from './storage/const.js';
+import eventBus from './utils/eventBus.js';
 
-let bot = null;
 let subscriptions = {};
 const binance = new Binance();
 
-export function Subscription(coin) {
-	if (subscriptions[coin]) return
-	const endpoint = binance.futuresMarkPriceStream(coin, observe, '@1s');
+export function Subscription(symbol) {
+	const item = getStorageItemBySymbol(symbol);
+	if (subscriptions[item.symbol]) return;
+	const endpoint = binance.futuresMarkPriceStream(item.symbol, observe, '@1s');
 	function observe(data) {
-		data.markPrice = parseFloat(data.markPrice)
-		const triggers = getPairs()[coin].triggers
+		data.markPrice = parseFloat(data.markPrice);
+		const triggers = getStorageItemTriggersBySymbol(symbol);
 		const finishedTriggers = [];
-		triggers.forEach((item) => {
-			item.values.forEach((value) => {
-				value[1] = Number(value[1])
+		triggers.forEach((trigger) => {
+			trigger.prices.forEach((price) => {
 				if (
-					(value[0] === 'Long' && value[1] <= data.markPrice) ||
-					(value[0] === 'Short' && value[1] >= data.markPrice)
+					(price.type === 'ABOVE' && price.price <= data.markPrice) ||
+					(price.type === 'BELOW' && price.price >= data.markPrice)
 				) {
 					finishedTriggers.push({
-						chatId: item.chatId,
-						value: value,
+						chatId: trigger.chatId,
+						price: price.price,
+						type: price.type,
+						message: price.message,
 						currentPrice: parseFloat(data.markPrice),
-						coin: coin,
+						symbol: item.symbol,
 					});
 				}
 			});
 		});
-		finishedTriggers.forEach((item) => {
-			bot.sendMessage(
+		finishedTriggers.forEach(async (item) => {
+			eventBus.emit(
+				'sendMessage',
+				null,
 				item.chatId,
-				`<b>${coin}:</b> ${item.value[0]} ${item.currentPrice}\n\nTrigger value: ${item.value[1]}`,
+				[
+					item.message,
+					`<b>${item.symbol}:</b> ${item.type} ${item.currentPrice}`,
+					`\nTrigger value: ${item.price}`
+				].join('\n'),
 				{
 					parse_mode: 'HTML',
 				}
 			);
-			const pairs = removePair(coin, item.chatId, item.value);
-			if (!pairs[coin]) {
-				removeSubscription(coin)
+			set(
+				SUBSCRIPTIONS,
+				await removePair(item.symbol, item.chatId, item.type, item.price)
+			);
+			if (
+				!get(SUBSCRIPTIONS)
+					.map((item) => item.symbol)
+					.includes(item.symbol)
+			) {
+				removeSubscription(item.symbol);
 			}
 		});
 	}
-	subscriptions[coin] = endpoint
+	subscriptions[item.symbol] = endpoint;
 	return endpoint;
 }
 
-export function InitObserver(_bot) {
-	bot = _bot;
-	Object.keys(getPairs()).forEach((symbol) => {
-		Subscription(symbol);
+export async function InitObserver(_bot) {
+	set(SUBSCRIPTIONS, await getPairs());
+	get(SUBSCRIPTIONS).forEach((item) => {
+		Subscription(item.symbol);
 	});
 }
 
-function removeSubscription(symbol) {
-	binance.futuresTerminate(subscriptions[symbol])
-	delete subscriptions[symbol]
+export async function updateStorage() {
+	set(SUBSCRIPTIONS, await getPairs());
 }
 
+async function removeSubscription(symbol) {
+	binance.futuresTerminate(subscriptions[symbol]);
+	delete subscriptions[symbol];
+}
 
+function getStorageItemBySymbol(symbol) {
+	return get(SUBSCRIPTIONS).find((item) => item.symbol === symbol);
+}
+
+function getStorageItemTriggersBySymbol(symbol) {
+	try {
+		return get(SUBSCRIPTIONS).find((item) => item.symbol === symbol).triggers;
+	} catch {
+		removeSubscription(symbol);
+	}
+}
