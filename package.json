@@ -17,7 +17,9 @@
     "node-binance-api": "^0.13.1",
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
-    "sequelize": "^6.28.0",
+    "sequelize": "^6.28.0"
+  },
+  "devDependencies": {
     "sqlite3": "^5.1.4"
   }
 }
