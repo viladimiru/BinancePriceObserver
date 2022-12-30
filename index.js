@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import TelegramApi from 'node-telegram-bot-api';
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';

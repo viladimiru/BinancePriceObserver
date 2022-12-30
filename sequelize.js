@@ -1,6 +1,7 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-console.log('ALERT', process.env.DB_LINK)
+import dotenv from 'dotenv'
+dotenv.config()
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
