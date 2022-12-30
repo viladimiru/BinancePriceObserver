@@ -1,8 +1,8 @@
 import axios from 'axios';
 import pairApi from '../api/pairApi.js';
-import { ABOVE, BELOW, TO_THE_MAIN } from '../textDictionary.js';
 import { updateStorage, Subscription } from '../subscription.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
+import dict from '../dict/index.js'
 
 export const DICTIONARY = {
 	ADD_OBSERVER: 'ADD_OBSERVER',
@@ -15,13 +15,13 @@ export const DICTIONARY = {
 export default {
 	[DICTIONARY.ADD_OBSERVER]: {
 		id: 'ADD_OBSERVER',
-		text: 'Название пары (к примеру BTCUSDT)',
+		text: dict.symbol,
 		keyboard: keyboardWrapper(),
 		validate: async ({text}) => {
 			try {
 				const res = await axios.get('https://api.binance.com/api/v3/avgPrice', {
 					params: {
-						symbol: text,
+						symbol: text.toUpperCase(),
 					},
 				});
 				return !!res.data;
@@ -33,32 +33,32 @@ export default {
 			await pairApi.setTempPairByChatId(
 				{
 					chatId: msg.chat.id,
-					symbol: msg.text,
+					symbol: msg.text.toUpperCase(),
 				},
 				msg.chat.id
 			);
 		},
-		errorText: 'Такой пары не существует',
+		errorText: dict.pairNotExists,
 		getNext: () => DICTIONARY.CHOOSE_TRADE_TYPE
 	},
 	[DICTIONARY.CHOOSE_TRADE_TYPE]: {
 		id: 'CHOOSE_TRADE_TYPE',
-		text: 'Прислать сообщение когда цена будет выше/ниже',
-		expects: [ABOVE, BELOW],
+		text: dict.sendMessageWhen,
+		expects: [dict.above, dict.below],
 		keyboard: keyboardWrapper([
 			[
 				{
-					text: ABOVE,
+					text: dict.above,
 				},
 				{
-					text: BELOW,
+					text: dict.below,
 				},
 			],
 		]),
 		onAnswer: async (msg) => {
 			await pairApi.updateTempPairByChatId(
 				{
-					type: msg.text === ABOVE ? 'ABOVE' : 'BELOW',
+					type: msg.text === dict.above ? 'ABOVE' : 'BELOW',
 				},
 				msg.chat.id
 			);
@@ -68,11 +68,11 @@ export default {
 	},
 	[DICTIONARY.SET_PRICE]: {
 		id: 'SET_PRICE',
-		text: 'Введите сумму, после которой хотите получить уведомление',
+		text: dict.enterAlertPrice,
 		validate: ({text}) => {
 			return !isNaN(Number(text));
 		},
-		errorText: 'Вводите только цифры (15000.00)',
+		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper(),
 		onAnswer: async (msg) => {
 			await pairApi.updateTempPairByChatId(
@@ -87,16 +87,11 @@ export default {
 	},
 	[DICTIONARY.SET_MESSAGE]: {
 		id: 'SET_MESSAGE',
-		text: 'Напишите сообщение, которое хотите получить',
+		text: dict.messageTemplate,
 		keyboard: keyboardWrapper([
-			[
-				{
-					text: '🚨🚨🚨 STOP LOSS 🚨🚨🚨'
-				},
-				{
-					text: '🤑🤑🤑 TAKE PROFIT 🤑🤑🤑'
-				},
-			]
+			dict.messageTemplates.map(item => ({
+				text: item
+			}))
 		]),
 		onAnswer: async (msg) => {
 			await pairApi.updateTempPairByChatId(
@@ -116,12 +111,12 @@ export default {
 	},
 	[DICTIONARY.FINISH]: {
 		id: 'FINISH',
-		text: 'Пара успешно добавлена',
+		text: dict.pairSuccessfullyCreated,
 		keyboard: keyboardWrapper(
 			[
 				[
 					{
-						text: TO_THE_MAIN,
+						text: dict.toTheMain,
 					},
 				],
 			],

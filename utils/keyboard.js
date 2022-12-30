@@ -1,4 +1,4 @@
-import { BACK } from '../textDictionary.js';
+import dict from '../dict/index.js'
 
 export function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 	const result = {
@@ -12,7 +12,7 @@ export function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 	if (!hideBackBtn) {
 		result.reply_markup.keyboard.push([
 			{
-				text: BACK,
+				text: dict.back,
 			},
 		]);
 	}

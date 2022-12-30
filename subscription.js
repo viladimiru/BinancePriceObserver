@@ -1,5 +1,5 @@
 import Binance from 'node-binance-api';
-import { removePair, getPairs } from './api.js';
+import pairApi from './api/pairApi.js';
 import { get, set } from './storage/index.js';
 import { SUBSCRIPTIONS } from './storage/const.js';
 import eventBus from './utils/eventBus.js';
@@ -39,7 +39,7 @@ export function Subscription(symbol) {
 				item.chatId,
 				[
 					item.message,
-					`<b>${item.symbol}:</b> ${item.type} ${item.currentPrice}`,
+					`<b>${item.symbol}:</b> ${item.type === 'ABOVE' ? '⬆️' : '⬇️' } ${item.currentPrice}`,
 					`\nTrigger value: ${item.price}`
 				].join('\n'),
 				{
@@ -48,7 +48,7 @@ export function Subscription(symbol) {
 			);
 			set(
 				SUBSCRIPTIONS,
-				await removePair(item.symbol, item.chatId, item.type, item.price)
+				await pairApi.removePair(item.symbol, item.chatId, item.type, item.price)
 			);
 			if (
 				!get(SUBSCRIPTIONS)
@@ -64,14 +64,14 @@ export function Subscription(symbol) {
 }
 
 export async function InitObserver(_bot) {
-	set(SUBSCRIPTIONS, await getPairs());
+	set(SUBSCRIPTIONS, await pairApi.getPairs());
 	get(SUBSCRIPTIONS).forEach((item) => {
 		Subscription(item.symbol);
 	});
 }
 
 export async function updateStorage() {
-	set(SUBSCRIPTIONS, await getPairs());
+	set(SUBSCRIPTIONS, await pairApi.getPairs());
 }
 
 async function removeSubscription(symbol) {

@@ -1,8 +1,8 @@
 import pairApi from '../api/pairApi.js';
-import { TO_THE_MAIN } from '../textDictionary.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
 import { set } from '../storage/index.js';
 import { SUBSCRIPTIONS } from '../storage/const.js';
+import dict from '../dict/index.js'
 
 export const DICTIONARY = {
 	PAIRS_LIST: 'PAIRS_LIST',
@@ -12,7 +12,7 @@ export const DICTIONARY = {
 export default {
 	[DICTIONARY.PAIRS_LIST]: {
 		id: 'PAIRS_LIST',
-		text: 'Выберите пару, которую хотите удалить',
+		text: dict.chooseRemovalPair,
 		getPrev: () => 'START',
 		getNext: () => DICTIONARY.REMOVE_PAIR,
 		validate: async (msg) => {
@@ -20,10 +20,10 @@ export default {
 		},
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
-			await removePair(symbol, msg.chat.id, type, price);
+			await pairApi.removePair(symbol, msg.chat.id, type, price);
 			set(SUBSCRIPTIONS, await pairApi.getPairs());
 		},
-		errorText: 'Вы не создавали такой пары',
+		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
 			const pairs = await pairApi.getChatPairs(msg.chat.id);
 			let count = 0;
@@ -36,7 +36,11 @@ export default {
 						}
 						const lastIndex = list.length - 1;
 						list[lastIndex].push({
-							text: [pair.symbol, price.type, price.price].join(' '),
+							text: [
+								pair.symbol,
+								price.type,
+								price.price
+							].join(' '),
 						});
 						count++;
 					});
@@ -47,14 +51,14 @@ export default {
 	},
 	[DICTIONARY.REMOVE_PAIR]: {
 		id: DICTIONARY.REMOVE_PAIR,
-		text: 'Пара успешно удалена',
+		text: dict.pairSuccessfullyRemoved,
 		getPrev: () => 'START',
 		getNext: () => DICTIONARY.REMOVE_PAIR,
 		keyboard: keyboardWrapper(
 			[
 				[
 					{
-						text: TO_THE_MAIN,
+						text: dict.toTheMain,
 					},
 				],
 			],

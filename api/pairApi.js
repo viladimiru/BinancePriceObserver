@@ -1,5 +1,8 @@
 import { PAIR, TEMP_PAIR, TRIGGER, PRICE } from '../sequelize.js';
 import sequelize from 'sequelize';
+import Binance from 'node-binance-api'
+
+const binance = new Binance()
 
 async function updateTempPairByChatId(data, chatId) {
 	return await TEMP_PAIR.update(data, {
@@ -183,6 +186,50 @@ async function isChatPairExists(chatId, symbol, type, price) {
 	}
 }
 
+async function updatePairPrice(symbol, markPrice) {
+	await PAIR.update(
+		{
+			markPrice: markPrice,
+		},
+		{
+			where: {
+				symbol: symbol
+			}
+		}
+	);
+}
+
+async function getChatPairsRaw(chatId) {
+	let result = await PAIR.findAll({
+		include: {
+			model: TRIGGER,
+			as: 'triggers',
+			where: {
+				chatId: chatId
+			},
+			attributes: []
+		},
+		attributes: ['symbol'],
+		raw: true
+	})
+	if (Array.isArray(result) && result.length) {
+		result = result.map(item => 
+			item = item.symbol
+		)
+	}
+	return result
+}
+
+async function getChatPairPrices(chatId) {
+	const pairs = await getChatPairsRaw(chatId)
+	if (pairs.length === 0) {
+		return null
+	}
+	const promises = pairs.map(pair => binance.futuresMarkPrice(pair))
+	const result = await Promise.all(promises)
+	return result
+}
+
 export default {
 	updateTempPairByChatId,
 	setTempPairByChatId,
@@ -193,4 +240,7 @@ export default {
 	getPairs,
 	getChatPairs,
 	isChatPairExists,
+	updatePairPrice,
+	getChatPairsRaw,
+	getChatPairPrices
 };
