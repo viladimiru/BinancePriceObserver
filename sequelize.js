@@ -2,7 +2,7 @@ import { Sequelize, DataTypes } from 'sequelize';
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './db.sqlite',
+  storage: process.env.DB_LINK,
   logging: false,
   define: {
     charset: 'utf8',
