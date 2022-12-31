@@ -106,27 +106,6 @@ export default {
 			);
 		},
 		getPrev: () => DICTIONARY.CHOOSE_TRADE_TYPE,
-		getNext: () => DICTIONARY.SET_TRADE_PRICE,
-	},
-	[DICTIONARY.SET_TRADE_PRICE]: {
-		id: 'SET_TRADE_PRICE',
-		text: dict.enterTradePrice,
-		validate: ({ text }) => {
-			return !isNaN(Number(text)) || text === dict.no;
-		},
-		errorText: dict.alertPriceError,
-		keyboard: keyboardWrapper(),
-		onAnswer: async (msg) => {
-			if (msg.text !== dict.no) {
-				await pairApi.updateTempPairByChatId(
-					{
-						tradePrice: Number(msg.text),
-					},
-					msg.chat.id
-				);
-			}
-		},
-		getPrev: () => DICTIONARY.SET_PRICE,
 		getNext: () => DICTIONARY.SET_MESSAGE,
 	},
 	[DICTIONARY.SET_MESSAGE]: {

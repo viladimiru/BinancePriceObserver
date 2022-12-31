@@ -69,7 +69,6 @@ async function createPair(data) {
 		where: {
 			type: data.type,
 			price: data.price,
-			tradePrice: data.tradePrice,
 			message: data.message,
 			TriggerId: trigger.id,
 		},

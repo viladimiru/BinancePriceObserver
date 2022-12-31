@@ -15,7 +15,7 @@ module.exports = {
 		]);
 	},
 
-	async down(queryInterface) {
+	async down(queryInterface, Sequelize) {
 		return Promise.all([
 			queryInterface.changeColumn('Prices', 'price', {
 				type: Sequelize.NUMBER,
