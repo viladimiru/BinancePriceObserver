@@ -5,11 +5,13 @@ import Binance from 'node-binance-api'
 const binance = new Binance()
 
 async function updateTempPairByChatId(data, chatId) {
-	return await TEMP_PAIR.update(data, {
+	const result = await TEMP_PAIR.update(data, {
 		where: {
 			chatId: chatId,
 		},
 	});
+	console.log(result)
+	return result
 }
 
 async function setTempPairByChatId(data, chatId) {
@@ -67,6 +69,7 @@ async function createPair(data) {
 		where: {
 			type: data.type,
 			price: data.price,
+			tradePrice: data.tradePrice,
 			message: data.message,
 			TriggerId: trigger.id,
 		},
@@ -76,52 +79,56 @@ async function createPair(data) {
 }
 
 async function removePair(symbol, chatId, type, price) {
-	const result = await PAIR.findOne({
-		where: {
-			symbol: symbol,
-		},
-		include: {
-			model: TRIGGER,
-			as: 'triggers',
-			attributes: [],
-			include: {
-				model: PRICE,
-				as: 'prices',
-				attributes: [],
-			},
-		},
-		attributes: [
-			'symbol',
-			[sequelize.fn('COUNT', sequelize.col('triggers.id')), 'totalTriggers'],
-			[
-				sequelize.fn('COUNT', sequelize.col('triggers.prices.id')),
-				'totalPrices',
-			],
-		],
-		group: ['Pair.id'],
-		raw: true,
-	});
-	if (result.totalTriggers === 1 && result.totalPrices === 1) {
-		await PAIR.destroy({
+	try {
+		const result = await PAIR.findOne({
 			where: {
 				symbol: symbol,
 			},
-		});
-	} else if (result.totalPrices === 1) {
-		await TRIGGER.destroy({
-			where: {
-				chatId: chatId,
+			include: {
+				model: TRIGGER,
+				as: 'triggers',
+				attributes: [],
+				include: {
+					model: PRICE,
+					as: 'prices',
+					attributes: [],
+				},
 			},
+			attributes: [
+				'symbol',
+				[sequelize.fn('COUNT', sequelize.col('triggers.id')), 'totalTriggers'],
+				[
+					sequelize.fn('COUNT', sequelize.col('triggers.prices.id')),
+					'totalPrices',
+				],
+			],
+			group: ['Pair.id'],
+			raw: true,
 		});
-	} else {
-		await PRICE.destroy({
-			where: {
-				type: type,
-				price: price,
-			},
-		});
+		if (result.totalTriggers === 1 && result.totalPrices === 1) {
+			await PAIR.destroy({
+				where: {
+					symbol: symbol,
+				},
+			});
+		} else if (result.totalPrices === 1) {
+			await TRIGGER.destroy({
+				where: {
+					chatId: chatId,
+				},
+			});
+		} else {
+			await PRICE.destroy({
+				where: {
+					type: type,
+					price: price || null,
+				},
+			});
+		}
+		return await getPairs();
+	} catch (e) {
+		console.log(e)
 	}
-	return await getPairs();
 }
 
 async function getPairs() {
@@ -174,14 +181,14 @@ async function isChatPairExists(chatId, symbol, type, price) {
 					attribute: [],
 					where: {
 						type: type,
-						price: price,
+						price: price || null,
 					},
 				},
 			},
 			attributes: [],
 		});
 		return !!res;
-	} catch {
+	} catch (e) {
 		return false;
 	}
 }
@@ -230,6 +237,18 @@ async function getChatPairPrices(chatId) {
 	return result
 }
 
+async function getSpikePairs(symbol) {
+	const result = await PRICE.findAll({
+		where: {
+			type: 'SPIKING'
+		},
+		include: {
+			model: TRIGGER,
+		},
+	})
+	return result.map(item => item.get({ plain: true }))
+}
+
 export default {
 	updateTempPairByChatId,
 	setTempPairByChatId,
@@ -242,5 +261,6 @@ export default {
 	isChatPairExists,
 	updatePairPrice,
 	getChatPairsRaw,
-	getChatPairPrices
+	getChatPairPrices,
+	getSpikePairs
 };

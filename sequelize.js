@@ -28,8 +28,12 @@ export const TRIGGER = sequelize.define('Trigger', {
 
 export const PRICE = sequelize.define('Price', {
   type: DataTypes.STRING,
-  price: DataTypes.NUMBER,
-  message: DataTypes.STRING
+  price: {
+    type: DataTypes.NUMBER,
+    allowNull: true
+  },
+  message: DataTypes.STRING,
+  tradePrice: DataTypes.NUMBER
 })
 
 export const USER_SESSION = sequelize.define('UserSession', {
@@ -41,8 +45,12 @@ export const TEMP_PAIR = sequelize.define('TempPair', {
   chatId: DataTypes.NUMBER,
   symbol: DataTypes.STRING,
   type: DataTypes.STRING,
-  price: DataTypes.NUMBER,
-  message: DataTypes.STRING
+  price: {
+    type: DataTypes.NUMBER,
+    allowNull: true
+  },
+  message: DataTypes.STRING,
+  tradePrice: DataTypes.NUMBER
 })
 
 PAIR.hasMany(TRIGGER, {
