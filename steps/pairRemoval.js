@@ -29,21 +29,33 @@ export default {
 			let count = 0;
 			let list = [[]];
 			pairs.forEach((pair) => {
-				pair.triggers.forEach((trigger) => {
-					trigger.prices.forEach((price) => {
-						if (count !== 0 && count % 3 === 0) {
-							list.push([]);
-						}
-						const lastIndex = list.length - 1;
-						list[lastIndex].push({
-							text: [
-								pair.symbol,
-								price.type,
-								price.price
-							].join(' '),
-						});
-						count++;
+				pair.prices.forEach((price) => {
+					if (count !== 0 && count % 3 === 0) {
+						list.push([]);
+					}
+					const lastIndex = list.length - 1;
+					list[lastIndex].push({
+						text: [
+							pair.symbol,
+							price.type,
+							price.price
+						].join(' '),
 					});
+					count++;
+				});
+				pair.spikes.forEach((price) => {
+					if (count !== 0 && count % 3 === 0) {
+						list.push([]);
+					}
+					const lastIndex = list.length - 1;
+					list[lastIndex].push({
+						text: [
+							pair.symbol,
+							price.type,
+							price.price
+						].join(' '),
+					});
+					count++;
 				});
 			});
 			return keyboardWrapper(list);

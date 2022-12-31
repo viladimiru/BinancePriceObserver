@@ -1,8 +1,8 @@
-import { PAIR, TEMP_PAIR, TRIGGER, PRICE } from '../sequelize.js';
+import { PAIR, TEMP_PAIR, PRICE, SPIKE } from '../sequelize.js';
 import sequelize from 'sequelize';
-import Binance from 'node-binance-api'
+import Binance from 'node-binance-api';
 
-const binance = new Binance()
+const binance = new Binance();
 
 async function updateTempPairByChatId(data, chatId) {
 	const result = await TEMP_PAIR.update(data, {
@@ -10,8 +10,7 @@ async function updateTempPairByChatId(data, chatId) {
 			chatId: chatId,
 		},
 	});
-	console.log(result)
-	return result
+	return result;
 }
 
 async function setTempPairByChatId(data, chatId) {
@@ -50,145 +49,132 @@ async function getTempPairByChatId(chatId) {
 }
 
 async function createPair(data) {
-	const [pair, isPairCreated] = await PAIR.findOrCreate({
+	let [pair, isCreated] = await PAIR.findOrCreate({
 		where: {
 			symbol: data.symbol,
 		},
 		raw: true,
 		nest: true,
 	});
-	const [trigger, isTriggerCreated] = await TRIGGER.findOrCreate({
-		where: {
-			chatId: data.chatId,
-			PairId: pair.id,
-		},
-		raw: true,
-		nest: true,
-	});
-	const [_, isPriceCreated] = await PRICE.findOrCreate({
-		where: {
-			type: data.type,
-			price: data.price,
-			message: data.message,
-			TriggerId: trigger.id,
-		},
-		raw: true,
-		nest: true,
-	});
+	if (isCreated) {
+		pair = pair.dataValues
+	}
+	if (data.type === 'SPIKE') {
+		await SPIKE.findOrCreate({
+			where: {
+				chatId: data.chatId,
+				PairId: pair.id
+			},
+			raw: true,
+			nest: true,
+		});
+	} else {
+		const [_, istr] = await PRICE.findOrCreate({
+			where: {
+				type: data.type,
+				price: data.price,
+				message: data.message,
+				chatId: data.chatId,
+				PairId: pair.id,
+			},
+			raw: true,
+			nest: true,
+		});
+	}
 }
 
 async function removePair(symbol, chatId, type, price) {
 	try {
-		const result = await PAIR.findOne({
-			where: {
-				symbol: symbol,
-			},
-			include: {
-				model: TRIGGER,
-				as: 'triggers',
-				attributes: [],
-				include: {
-					model: PRICE,
-					as: 'prices',
-					attributes: [],
-				},
-			},
-			attributes: [
-				'symbol',
-				[sequelize.fn('COUNT', sequelize.col('triggers.id')), 'totalTriggers'],
-				[
-					sequelize.fn('COUNT', sequelize.col('triggers.prices.id')),
-					'totalPrices',
-				],
-			],
-			group: ['Pair.id'],
-			raw: true,
-		});
-		if (result.totalTriggers === 1 && result.totalPrices === 1) {
-			await PAIR.destroy({
-				where: {
-					symbol: symbol,
-				},
-			});
-		} else if (result.totalPrices === 1) {
-			await TRIGGER.destroy({
+		if (!type) {
+			SPIKE.destroy({
 				where: {
 					chatId: chatId,
 				},
 			});
 		} else {
-			await PRICE.destroy({
+			PRICE.destroy({
 				where: {
 					type: type,
-					price: price || null,
+					price: price,
+					chatId: chatId,
 				},
 			});
 		}
 		return await getPairs();
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 	}
 }
 
 async function getPairs() {
 	const res = await PAIR.findAll({
-		include: {
-			model: TRIGGER,
-			as: 'triggers',
-			include: {
+		include: [
+			{
 				model: PRICE,
 				as: 'prices',
 			},
-		},
+			{
+				model: SPIKE,
+				as: 'spikes',
+			},
+		],
 	});
 	return res.map((item) => item.get({ plain: true }));
 }
 
 async function getChatPairs(chatId) {
-	const res = await PAIR.findAll({
-		include: {
-			model: TRIGGER,
-			as: 'triggers',
+	const result = await PAIR.findAll({
+		include: [
+			{
+				required: false,
+				model: PRICE,
+				as: 'prices',
+				where: {
+					chatId: chatId
+				}
+			},
+			{
+				required: false,
+				model: SPIKE,
+				as: 'spikes',
+				where: {
+					chatId: chatId
+				}
+			},
+		]
+	})
+	return result.map(item => item.get({plane: true}))
+}
+
+async function isChatPairExists(chatId, symbol, type, price) {
+	if (!type) {
+		return !!(await PAIR.findOne({
 			where: {
-				chatId: chatId,
+				symbol: symbol
+			},
+			include: {
+				model: SPIKE,
+				as: 'spikes',
+				where: {
+					chatId: chatId
+				}
+			}
+		}))
+	} else {
+		return !!(await PAIR.findOne({
+			where: {
+				symbol: symbol
 			},
 			include: {
 				model: PRICE,
 				as: 'prices',
-			},
-		},
-	});
-	return res.map((item) => item.get({ plain: true }));
-}
-
-async function isChatPairExists(chatId, symbol, type, price) {
-	try {
-		const res = await PAIR.findOne({
-			where: {
-				symbol: symbol,
-			},
-			include: {
-				model: TRIGGER,
-				as: 'triggers',
-				attribute: [],
 				where: {
 					chatId: chatId,
-				},
-				include: {
-					model: PRICE,
-					as: 'prices',
-					attribute: [],
-					where: {
-						type: type,
-						price: price || null,
-					},
-				},
-			},
-			attributes: [],
-		});
-		return !!res;
-	} catch (e) {
-		return false;
+					type: type,
+					price: price
+				}
+			}
+		}))
 	}
 }
 
@@ -199,8 +185,8 @@ async function updatePairPrice(symbol, markPrice) {
 		},
 		{
 			where: {
-				symbol: symbol
-			}
+				symbol: symbol,
+			},
 		}
 	);
 }
@@ -208,44 +194,43 @@ async function updatePairPrice(symbol, markPrice) {
 async function getChatPairsRaw(chatId) {
 	let result = await PAIR.findAll({
 		include: {
-			model: TRIGGER,
-			as: 'triggers',
+			model: PRICE,
+			as: 'prices',
 			where: {
-				chatId: chatId
+				chatId: chatId,
 			},
-			attributes: []
+			attributes: [],
 		},
 		attributes: ['symbol'],
-		raw: true
-	})
+		raw: true,
+	});
 	if (Array.isArray(result) && result.length) {
-		result = result.map(item => 
-			item = item.symbol
-		)
+		result = result.map((item) => (item = item.symbol));
 	}
-	return result
+	return result;
 }
 
 async function getChatPairPrices(chatId) {
-	const pairs = await getChatPairsRaw(chatId)
+	const pairs = await getChatPairsRaw(chatId);
 	if (pairs.length === 0) {
-		return null
+		return null;
 	}
-	const promises = pairs.map(pair => binance.futuresMarkPrice(pair))
-	const result = await Promise.all(promises)
-	return result
+	const promises = pairs.map((pair) => binance.futuresMarkPrice(pair));
+	const result = await Promise.all(promises);
+	return result;
 }
 
 async function getSpikePairs(symbol) {
-	const result = await PRICE.findAll({
-		where: {
-			type: 'SPIKING'
-		},
+	const result = await SPIKE.findAll({
 		include: {
-			model: TRIGGER,
+			model: PAIR,
+			where: {
+				symbol: symbol,
+			},
+			attributes: []
 		},
-	})
-	return result.map(item => item.get({ plain: true }))
+	});
+	return result.map((item) => item.get({ plain: true }));
 }
 
 export default {
@@ -261,5 +246,5 @@ export default {
 	updatePairPrice,
 	getChatPairsRaw,
 	getChatPairPrices,
-	getSpikePairs
+	getSpikePairs,
 };

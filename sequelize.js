@@ -22,14 +22,15 @@ export const PAIR = sequelize.define('Pair', {
   markPrice: DataTypes.NUMBER
 });
 
-export const TRIGGER = sequelize.define('Trigger', {
-	chatId: DataTypes.NUMBER,
-});
-
 export const PRICE = sequelize.define('Price', {
   type: DataTypes.STRING,
   price: DataTypes.NUMBER,
   message: DataTypes.STRING,
+  chatId: DataTypes.NUMBER,
+})
+
+export const SPIKE = sequelize.define('Spike', {
+  chatId: DataTypes.NUMBER
 })
 
 export const USER_SESSION = sequelize.define('UserSession', {
@@ -45,15 +46,15 @@ export const TEMP_PAIR = sequelize.define('TempPair', {
   message: DataTypes.STRING,
 })
 
-PAIR.hasMany(TRIGGER, {
-  as: 'triggers',
+PAIR.hasMany(PRICE, {
+  as: 'prices',
   onDelete: 'cascade',
 });
-TRIGGER.hasMany(PRICE, {
-  as: 'prices',
-  onDelete: 'cascade'
+PAIR.hasMany(SPIKE, {
+  as: 'spikes',
+  onDelete: 'cascade',
 })
-TRIGGER.belongsTo(PAIR);
-PRICE.belongsTo(TRIGGER)
+PRICE.belongsTo(PAIR)
+SPIKE.belongsTo(PAIR)
 
 await sequelize.sync();

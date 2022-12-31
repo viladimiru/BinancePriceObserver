@@ -65,7 +65,7 @@ export default {
 			const type = {
 				[dict.above]: 'ABOVE',
 				[dict.below]: 'BELOW',
-				[dict.spiking]: 'SPIKING',
+				[dict.spiking]: 'SPIKE',
 			}[msg.text];
 			await pairApi.updateTempPairByChatId(
 				{

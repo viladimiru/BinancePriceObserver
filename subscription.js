@@ -15,30 +15,27 @@ export function Subscription(symbol) {
 	const endpoint = binance.futuresMarkPriceStream(item.symbol, observe, '@1s');
 	function observe(data) {
 		data.markPrice = parseFloat(data.markPrice);
-		const triggers = getStorageItemTriggersBySymbol(symbol);
-		// const isSpikingIncluded = triggers.find(
-		// 	trigger => trigger.prices.find(price => price.type === 'SPIKING')
-		// )
-		// if (isSpikingIncluded) {
-		spikeMonitor(symbol, data.markPrice);
-		// }
+		const pair = getStorageItemTriggersBySymbol(symbol);
+
+		if (pair.spikes) {
+			spikeMonitor(symbol, data.markPrice);
+		}
 		const finishedTriggers = [];
-		triggers.forEach((trigger) => {
-			trigger.prices.forEach((price) => {
-				if (
-					(price.type === 'ABOVE' && price.price <= data.markPrice) ||
-					(price.type === 'BELOW' && price.price >= data.markPrice)
-				) {
-					finishedTriggers.push({
-						chatId: trigger.chatId,
-						price: price.price,
-						type: price.type,
-						message: price.message,
-						currentPrice: parseFloat(data.markPrice),
-						symbol: item.symbol,
-					});
-				}
-			});
+
+		pair.prices.forEach((price) => {
+			if (
+				(price.type === 'ABOVE' && price.price <= data.markPrice) ||
+				(price.type === 'BELOW' && price.price >= data.markPrice)
+			) {
+				finishedTriggers.push({
+					chatId: price.chatId,
+					price: price.price,
+					type: price.type,
+					message: price.message,
+					currentPrice: parseFloat(data.markPrice),
+					symbol: item.symbol,
+				});
+			}
 		});
 		finishedTriggers.forEach(async (item) => {
 			eventBus.emit(
@@ -99,8 +96,9 @@ function getStorageItemBySymbol(symbol) {
 }
 
 function getStorageItemTriggersBySymbol(symbol) {
+
 	try {
-		return get(SUBSCRIPTIONS).find((item) => item.symbol === symbol).triggers;
+		return get(SUBSCRIPTIONS).find((item) => item.symbol === symbol);
 	} catch {
 		removeSubscription(symbol);
 	}
@@ -112,6 +110,8 @@ const counter = {
 }
 
 function spikeMonitor(symbol, markPrice) {
+	const minDiffMinute = 0.005
+	const minDiffHour = 0.007
 	counter.second++
 
 	if (!spikeControl[symbol]) {
@@ -142,12 +142,13 @@ function spikeMonitor(symbol, markPrice) {
 			biggestInMinute[0],
 			smallestInMinute[0]
 		);
-		if (Math.abs(diffInMinute) > 0.3) {
+		if (Math.abs(diffInMinute) > minDiffMinute) {
 			sendSpikeAlert(
 				symbol,
 				diffInMinute,
 				Math.abs(biggestInMinute[1] - smallestInMinute[1]),
-				'сек.'
+				'сек.',
+				biggestInMinute[0]
 			)
 			current.minute = current.minute
 				.filter(
@@ -172,12 +173,13 @@ function spikeMonitor(symbol, markPrice) {
 			smallestInHour[0]
 		);
 
-		if (Math.abs(diffInHour) > 0.3) {
+		if (Math.abs(diffInHour) > minDiffHour) {
 			sendSpikeAlert(
 				symbol,
 				diffInHour,
 				Math.abs(biggestInHour[1] - smallestInHour[1]),
-				'мин.'
+				'мин.',
+				biggestInHour[0]
 			)
 			current.hour = current.hour
 				.filter(
@@ -191,14 +193,15 @@ function spikeMonitor(symbol, markPrice) {
 	current.minute.push(markPrice);
 }
 
-async function sendSpikeAlert(symbol, diff, interval, exp) {
-	const list = await pairApi.getSpikePairs(symbol)
-	list.forEach((item) => {
-		eventBus.emit('sendMessage', null, item.Trigger.chatId, [
+async function sendSpikeAlert(symbol, diff, interval, exp, markPrice) {
+	const spikes = await pairApi.getSpikePairs(symbol)
+	spikes.forEach((item) => {
+		eventBus.emit('sendMessage', null, item.chatId, [
 			'<b>Скачки цен 📈</b>\n',
 			symbol,
 			'Разница: ' + Math.abs(diff) + '%' + (diff >= 0 ? '⬆️' : '⬇️'),
-			'Интервал: ' + interval + exp
+			'Интервал: ' + interval + exp,
+			'Цена: ' + markPrice
 		].join('\n'), {
 			parse_mode: 'HTML'
 		})
