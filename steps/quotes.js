@@ -52,18 +52,19 @@ export default {
 };
 
 function wrapTradeText(markPrice, trade) {
-	let text = ['\n', trade.type, ' | '].join('');
-	const diff = diffInPercents(trade.markPrice, markPrice) * trade.shoulder;
-	text += 'Цена входа: ' + trade.markPrice;
-	text += ' | ';
+	let text = '\n'
+	text += [trade.type, ' | '].join('');
 	if (trade.isWin) {
 		text += '⬆️';
 	} else if (trade.isLoss) {
 		text += '🔻';
 	}
+	const diff = diffInPercents(trade.markPrice, markPrice) * trade.shoulder;
 	if (diff) {
 		text += Math.abs(diff).toFixed(2) + '%';
+		text += ' | ';
 	}
+	text += 'Вход: ' + trade.markPrice;
 	return text;
 }
 
