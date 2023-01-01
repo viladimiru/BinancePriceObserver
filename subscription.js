@@ -147,9 +147,7 @@ function spikeMonitor(symbol, markPrice) {
 				smallestInMinute,
 				biggestInMinute
 			);
-			current.minute = current.minute.filter(
-				(item) => item !== biggestInMinute[0] && item !== smallestInMinute[0]
-			);
+			current.minute = []
 		}
 	}
 
@@ -171,9 +169,7 @@ function spikeMonitor(symbol, markPrice) {
 				smallestInHour,
 				biggestInHour
 			);
-			current.hour = current.hour.filter(
-				(item) => item !== biggestInHour[0] && item !== smallestInHour[0]
-			);
+			current.hour = []
 		}
 	}
 
@@ -195,8 +191,8 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 				symbol + ' ' + Math.abs(diff).toFixed(2) + '%' + (isBiggestCurrent ? '⬆️' : '🔻'),
 				'</b>',
 				'<i>Интервал: ' + interval + exp,
-				'Текущая цена: ' + Number(currentPrice).toFixed(2),
-				'Предыдущая цена: ' + Number(prevPrice).toFixed(2) + '</i>',
+				'Текущая цена: ' + Number(currentPrice),
+				'Предыдущая цена: ' + Number(prevPrice) + '</i>',
 			].join('\n'),
 			{
 				parse_mode: 'HTML',
