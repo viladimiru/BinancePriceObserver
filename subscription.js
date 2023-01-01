@@ -13,6 +13,7 @@ export function Subscription(symbol) {
 	const item = getStorageItemBySymbol(symbol);
 	if (subscriptions[item.symbol]) return;
 	const endpoint = binance.futuresMarkPriceStream(item.symbol, observe, '@1s');
+	spikeControl[symbol] = { minute: [], hour: [] };
 	function observe(data) {
 		data.markPrice = parseFloat(data.markPrice);
 		const pair = getStorageItemTriggersBySymbol(symbol);
@@ -96,7 +97,6 @@ function getStorageItemBySymbol(symbol) {
 }
 
 function getStorageItemTriggersBySymbol(symbol) {
-
 	try {
 		return get(SUBSCRIPTIONS).find((item) => item.symbol === symbol);
 	} catch {
@@ -106,31 +106,27 @@ function getStorageItemTriggersBySymbol(symbol) {
 
 const counter = {
 	second: 0,
-	minute: 0
-}
+	minute: 0,
+};
 
 function spikeMonitor(symbol, markPrice) {
-	const minDiffMinute = 0.15
-	const minDiffHour = 0.4
-	counter.second++
+	const minDiffMinute = 0.15;
+	const minDiffHour = 0.4;
+	counter.second++;
 
-	if (!spikeControl[symbol]) {
-		spikeControl[symbol] = { minute: [], hour: [] };
-	}
-	
 	const current = spikeControl[symbol];
 
 	if (counter.second === 60) {
-		counter.second = 0
-		counter.hour++
+		counter.second = 0;
+		counter.hour++;
 		current.hour.push(markPrice);
 	}
 
 	if (counter.hour === 60) {
-		counter.hour = 0
+		counter.hour = 0;
 		current.hour.push(markPrice);
 	}
-	
+
 	if (current.minute.length === 60) {
 		current.minute.pop();
 	}
@@ -148,15 +144,12 @@ function spikeMonitor(symbol, markPrice) {
 				diffInMinute,
 				Math.abs(biggestInMinute[1] - smallestInMinute[1]),
 				'сек.',
-				biggestInMinute[0]
-			)
-			current.minute = current.minute
-				.filter(
-					item =>
-						item !== biggestInMinute[0] &&
-						item !== smallestInMinute[0]
-				)
-			
+				smallestInMinute,
+				biggestInMinute
+			);
+			current.minute = current.minute.filter(
+				(item) => item !== biggestInMinute[0] && item !== smallestInMinute[0]
+			);
 		}
 	}
 
@@ -165,13 +158,9 @@ function spikeMonitor(symbol, markPrice) {
 	}
 
 	if (current.hour.length > 1) {
-
 		const biggestInHour = biggestInArr(current.hour);
 		const smallestInHour = smallestInArr(current.hour);
-		const diffInHour = diffInPercents(
-			biggestInHour[0],
-			smallestInHour[0]
-		);
+		const diffInHour = diffInPercents(biggestInHour[0], smallestInHour[0]);
 
 		if (Math.abs(diffInHour) > minDiffHour) {
 			sendSpikeAlert(
@@ -179,31 +168,39 @@ function spikeMonitor(symbol, markPrice) {
 				diffInHour,
 				Math.abs(biggestInHour[1] - smallestInHour[1]),
 				'мин.',
-				biggestInHour[0]
-			)
-			current.hour = current.hour
-				.filter(
-					item =>
-						item !== biggestInHour[0] &&
-						item !== smallestInHour[0]
-				)
+				smallestInHour,
+				biggestInHour
+			);
+			current.hour = current.hour.filter(
+				(item) => item !== biggestInHour[0] && item !== smallestInHour[0]
+			);
 		}
 	}
 
 	current.minute.push(markPrice);
 }
 
-async function sendSpikeAlert(symbol, diff, interval, exp, markPrice) {
-	const spikes = await pairApi.getSpikePairs(symbol)
+async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
+	const spikes = await pairApi.getSpikePairs(symbol);
+	const isBiggestCurrent = biggest[1] > smallest[1];
+	const currentPrice = isBiggestCurrent ? biggest[0] : smallest[0];
+	const prevPrice = isBiggestCurrent ? smallest[0] : biggest[0];
 	spikes.forEach((item) => {
-		eventBus.emit('sendMessage', null, item.chatId, [
-			'<b>Скачки цен 📈</b>\n',
-			symbol,
-			'Разница: ' + Math.abs(diff) + '%' + (diff >= 0 ? '⬆️' : '⬇️'),
-			'Интервал: ' + interval + exp,
-			'Цена: ' + markPrice
-		].join('\n'), {
-			parse_mode: 'HTML'
-		})
-	})
+		eventBus.emit(
+			'sendMessage',
+			null,
+			item.chatId,
+			[
+				'<b>Скачки цен 📈',
+				symbol + ' ' + Math.abs(diff).toFixed(2) + '%' + (isBiggestCurrent ? '⬆️' : '🔻'),
+				'</b>',
+				'<i>Интервал: ' + interval + exp,
+				'Текущая цена: ' + Number(currentPrice).toFixed(2),
+				'Предыдущая цена: ' + Number(prevPrice).toFixed(2) + '</i>',
+			].join('\n'),
+			{
+				parse_mode: 'HTML',
+			}
+		);
+	});
 }
