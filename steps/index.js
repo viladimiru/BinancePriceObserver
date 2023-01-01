@@ -1,13 +1,15 @@
 import PairCreation, {DICTIONARY as PC_DICT} from './pairCreation.js';
 import PairRemoval, {DICTIONARY as PR_DICT} from './pairRemoval.js'
 import Quotes, {DICTIONARY as Q_DICT} from './quotes.js';
+import TradeCreation, {DICTIONARY as T_DICT} from './tradeCreation.js';
+import TradeRemoval, {DICTIONARY as TR_DICT} from './tradeRemoval.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/index.js';
 
 const START = {
 	id: 'START',
 	text: ['<b>Добро пожаловать</b>', 'Выберите нужную функцию'].join('\n\n'),
-	expects: [dict.addObserver, dict.removeObserver, dict.quotes],
+	expects: [dict.addObserver, dict.removeObserver, dict.quotes, dict.addTrade, dict.removeTrade],
 	getNext: (msg) => {
 		if (msg.text === dict.addObserver) {
 			return PC_DICT.ADD_OBSERVER;
@@ -17,6 +19,12 @@ const START = {
 		}
 		if (msg.text === dict.quotes) {
 			return Q_DICT.QUOTES
+		}
+		if (msg.text === dict.addTrade) {
+			return T_DICT.SYMBOL
+		}
+		if (msg.text === dict.removeTrade) {
+			return TR_DICT.TRADE_LIST
 		}
 	},
 	keyboard: keyboardWrapper(
@@ -31,8 +39,16 @@ const START = {
 			],
 			[
 				{
-					text: dict.quotes
+					text: dict.addTrade
+				},
+				{
+					text: dict.removeTrade
 				}
+			],
+			[
+				{
+					text: dict.quotes
+				},
 			]
 		],
 		null,
@@ -46,5 +62,7 @@ export default {
 	START,
 	...PairCreation,
 	...PairRemoval,
-	...Quotes
+	...Quotes,
+	...TradeCreation,
+	...TradeRemoval
 };

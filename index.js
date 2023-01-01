@@ -53,7 +53,12 @@ async function onMessage(msg) {
 	const session = await sessionApi.getSession(userId);
 
 	if (msg.text === dict.back) {
-		const prevStep = steps[session.step].getPrev(msg);
+		let prevStep
+		try {
+			prevStep = steps[session.step].getPrev(msg);
+		} catch {
+			prevStep = steps.START.id
+		}
 		await sessionApi.updateSession(userId, prevStep);
 		sendMessage(msg.chat.id, steps[prevStep].text, {
 			...steps[prevStep].keyboard,

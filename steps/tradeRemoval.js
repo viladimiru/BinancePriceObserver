@@ -5,42 +5,41 @@ import { SUBSCRIPTIONS } from '../storage/const.js';
 import dict from '../dict/index.js'
 
 export const DICTIONARY = {
-	PAIRS_LIST: 'PAIRS_LIST',
-	REMOVE_PAIR: 'REMOVE_PAIR',
+	TRADE_LIST: 'TRADE_LIST',
+  REMOVE_TRADE: 'REMOVE_TRADE',
 };
 
 const stickerDictionary = {
-	undefined: '📈',
-	ABOVE: '⬆️',
-	BELOW: '⬇️'
+	LONG: '⬆️',
+	SHORT: '⬇️'
 }
 const typeDictionary = {
-	[stickerDictionary.ABOVE]: 'ABOVE',
-	[stickerDictionary.BELOW]: 'BELOW',
+	[stickerDictionary.LONG]: 'LONG',
+	[stickerDictionary.SHORT]: 'SHORT',
 }
 
 export default {
-	[DICTIONARY.PAIRS_LIST]: {
-		id: 'PAIRS_LIST',
+	[DICTIONARY.TRADE_LIST]: {
+		id: DICTIONARY.TRADE_LIST,
 		text: dict.chooseRemovalPair,
 		getPrev: () => 'START',
-		getNext: () => DICTIONARY.REMOVE_PAIR,
+		getNext: () => DICTIONARY.REMOVE_TRADE,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
-			return await pairApi.isChatPairExists(msg.chat.id, symbol, typeDictionary[type], price);
+			return await pairApi.isChatTradeExists(msg.chat.id, symbol, typeDictionary[type], price);
 		},
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
-			await pairApi.removePair(symbol, msg.chat.id, typeDictionary[type], price);
+			await pairApi.removeTrade(symbol, msg.chat.id, typeDictionary[type], price);
 			set(SUBSCRIPTIONS, await pairApi.getPairs());
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
-			const pairs = await pairApi.getChatPairs(msg.chat.id);
+			const pairs = await pairApi.getChatTrades(msg.chat.id);
 			let count = 0;
 			let list = [[]];
 			pairs.forEach((pair) => {
-				pair.prices.forEach((price) => {
+				pair.trades.forEach((trade) => {
 					if (count !== 0 && count % 3 === 0) {
 						list.push([]);
 					}
@@ -48,22 +47,8 @@ export default {
 					list[lastIndex].push({
 						text: [
 							pair.symbol,
-							stickerDictionary[price.type],
-							price.price
-						].join(' '),
-					});
-					count++;
-				});
-				pair.spikes.forEach((price) => {
-					if (count !== 0 && count % 3 === 0) {
-						list.push([]);
-					}
-					const lastIndex = list.length - 1;
-					list[lastIndex].push({
-						text: [
-							pair.symbol,
-							stickerDictionary[price.type],
-							price.price
+							stickerDictionary[trade.type],
+							trade.markPrice
 						].join(' '),
 					});
 					count++;
@@ -72,9 +57,9 @@ export default {
 			return keyboardWrapper(list);
 		},
 	},
-	[DICTIONARY.REMOVE_PAIR]: {
-		id: DICTIONARY.REMOVE_PAIR,
-		text: dict.pairSuccessfullyRemoved,
+	[DICTIONARY.REMOVE_TRADE]: {
+		id: DICTIONARY.REMOVE_TRADE,
+		text: dict.tradeSuccessfullyRemoved,
 		getNext: () => 'START',
 		keyboard: keyboardWrapper(
 			[

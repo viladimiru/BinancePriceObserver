@@ -110,8 +110,8 @@ const counter = {
 }
 
 function spikeMonitor(symbol, markPrice) {
-	const minDiffMinute = 0.3
-	const minDiffHour = 0.6
+	const minDiffMinute = 0.15
+	const minDiffHour = 0.4
 	counter.second++
 
 	if (!spikeControl[symbol]) {

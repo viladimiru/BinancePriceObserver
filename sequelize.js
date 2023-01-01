@@ -46,6 +46,21 @@ export const TEMP_PAIR = sequelize.define('TempPair', {
   message: DataTypes.STRING,
 })
 
+export const TRADE = sequelize.define('Trade', {
+  chatId: DataTypes.NUMBER,
+  type: DataTypes.ENUM('LONG', 'SHORT'),
+  markPrice: DataTypes.NUMBER,
+  shoulder: DataTypes.NUMBER,
+})
+
+export const TEMP_TRADE = sequelize.define('TempTrade', {
+  chatId: DataTypes.NUMBER,
+  symbol: DataTypes.STRING,
+  type: DataTypes.ENUM('LONG', 'SHORT'),
+  markPrice: DataTypes.NUMBER,
+  shoulder: DataTypes.NUMBER,
+})
+
 PAIR.hasMany(PRICE, {
   as: 'prices',
   onDelete: 'cascade',
@@ -54,6 +69,11 @@ PAIR.hasMany(SPIKE, {
   as: 'spikes',
   onDelete: 'cascade',
 })
+PAIR.hasMany(TRADE, {
+  as: 'trades',
+  onDelete: 'cascade',
+})
+TRADE.belongsTo(PAIR)
 PRICE.belongsTo(PAIR)
 SPIKE.belongsTo(PAIR)
 
