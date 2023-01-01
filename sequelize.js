@@ -61,6 +61,10 @@ export const TEMP_TRADE = sequelize.define('TempTrade', {
   shoulder: DataTypes.NUMBER,
 })
 
+export const FEEDBACK = sequelize.define('Feedback', {
+  msg: DataTypes.STRING
+})
+
 PAIR.hasMany(PRICE, {
   as: 'prices',
   onDelete: 'cascade',

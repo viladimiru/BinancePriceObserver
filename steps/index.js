@@ -5,11 +5,12 @@ import TradeCreation, {DICTIONARY as T_DICT} from './tradeCreation.js';
 import TradeRemoval, {DICTIONARY as TR_DICT} from './tradeRemoval.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/index.js';
+import Feedback, {DICTIONARY as FB_DICT} from './feedback.js';
 
 const START = {
 	id: 'START',
 	text: ['<b>Добро пожаловать</b>', 'Выберите нужную функцию'].join('\n\n'),
-	expects: [dict.addObserver, dict.removeObserver, dict.quotes, dict.addTrade, dict.removeTrade],
+	expects: [dict.addObserver, dict.removeObserver, dict.quotes, dict.addTrade, dict.removeTrade, dict.leaveFeedback],
 	getNext: (msg) => {
 		if (msg.text === dict.addObserver) {
 			return PC_DICT.ADD_OBSERVER;
@@ -25,6 +26,9 @@ const START = {
 		}
 		if (msg.text === dict.removeTrade) {
 			return TR_DICT.TRADE_LIST
+		}
+		if (msg.text === dict.leaveFeedback) {
+			return FB_DICT.FEEDBACK_MSG
 		}
 	},
 	keyboard: keyboardWrapper(
@@ -49,6 +53,9 @@ const START = {
 				{
 					text: dict.quotes
 				},
+				{
+					text: dict.leaveFeedback
+				}
 			]
 		],
 		null,
@@ -64,5 +71,6 @@ export default {
 	...PairRemoval,
 	...Quotes,
 	...TradeCreation,
-	...TradeRemoval
+	...TradeRemoval,
+	...Feedback
 };
