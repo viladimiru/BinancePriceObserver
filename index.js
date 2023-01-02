@@ -7,7 +7,7 @@ import dict from './dict/lang/index.js';
 
 const bot = new TelegramApi(process.env.TOKEN, { polling: true });
 register(PAIR_STATS, []);
-register(BOT_MESSANGER, bot);
+register(BOT_MESSANGER, bot.sendMessage.bind(bot));
 
 bot.setMyCommands([
 	{
@@ -75,7 +75,12 @@ async function onMessage(msg) {
 			await steps[session.step].onAnswer(msg);
 		}
 
-		const nextStep = steps[session.step].getNext(msg);
+		let nextStep
+		try {
+			nextStep = steps[session.step].getNext(msg) || 'START';
+		} catch {
+			nextStep = 'START'
+		}
 
 		const nextStepKeyboard =
 			typeof steps[nextStep].keyboard === 'function'

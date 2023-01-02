@@ -4,7 +4,7 @@ import pairApi from '../api/pairApi.js';
 import tradeApi from '../api/tradeApi.js';
 import { diffInPercents, toFixed } from '../utils/number.js';
 import emoji from '../dict/emoji.js';
-import { PAIR_STATS, get } from '../storage/index.js';
+import { PAIR_STATS, get, BOT_MESSANGER } from '../storage/index.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -42,7 +42,7 @@ export default {
 					text += '</i>';
 					text += '\n';
 				});
-				get(PAIR_STATS)(msg.chat.id, text, {
+				await get(BOT_MESSANGER)(msg.chat.id, text, {
 					parse_mode: 'html',
 				})
 			} else {

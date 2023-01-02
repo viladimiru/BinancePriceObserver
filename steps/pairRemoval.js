@@ -1,6 +1,6 @@
 import pairApi from '../api/pairApi.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
-import { set, PAIR_STATS } from '../storage/index.js';
+import { set, get, PAIR_STATS, BOT_MESSANGER } from '../storage/index.js';
 import dict from '../dict/lang/index.js'
 import emoji from '../dict/emoji.js';
 
@@ -24,7 +24,7 @@ export default {
 		id: 'PAIRS_LIST',
 		text: dict.chooseRemovalPair,
 		getPrev: () => 'START',
-		getNext: () => DICTIONARY.REMOVE_PAIR,
+		getNext: () => DICTIONARY.PAIRS_LIST,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
 			return await pairApi.isChatPairExists(msg.chat.id, symbol, typeDictionary[type], price);
@@ -33,6 +33,7 @@ export default {
 			const [symbol, type, price] = msg.text.split(' ');
 			await pairApi.removePair(symbol, msg.chat.id, typeDictionary[type], price);
 			set(PAIR_STATS, await pairApi.getPairs());
+			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved)
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
@@ -71,21 +72,5 @@ export default {
 			});
 			return keyboardWrapper(list);
 		},
-	},
-	[DICTIONARY.REMOVE_PAIR]: {
-		id: DICTIONARY.REMOVE_PAIR,
-		text: dict.pairSuccessfullyRemoved,
-		getNext: () => 'START',
-		keyboard: keyboardWrapper(
-			[
-				[
-					{
-						text: dict.toTheMain,
-					},
-				],
-			],
-			null,
-			true
-		),
 	},
 };

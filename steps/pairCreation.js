@@ -3,6 +3,7 @@ import pairApi from '../api/pairApi.js';
 import { updateStorage, Subscription } from '../subscription.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/lang/index.js';
+import { BOT_MESSANGER, get } from '../storage/index.js';
 
 export const DICTIONARY = {
 	ADD_OBSERVER: 'ADD_OBSERVER',
@@ -79,14 +80,14 @@ export default {
 				await updateStorage();
 				Subscription(pair.symbol);
 				await pairApi.deleteTempPairByChatId(msg.chat.id);
+				await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
 			}
 		},
 		getPrev: () => DICTIONARY.ADD_OBSERVER,
 		getNext: (msg) => {
-			if (msg.text === dict.spiking) {
-				return DICTIONARY.FINISH;
+			if (msg.text !== dict.spiking) {
+				return DICTIONARY.SET_PRICE;
 			}
-			return DICTIONARY.SET_PRICE;
 		},
 	},
 	[DICTIONARY.SET_PRICE]: {
@@ -128,23 +129,8 @@ export default {
 			await updateStorage();
 			Subscription(pair.symbol);
 			await pairApi.deleteTempPairByChatId(msg.chat.id);
+			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
 		},
 		getPrev: () => DICTIONARY.SET_PRICE,
-		getNext: () => DICTIONARY.FINISH,
-	},
-	[DICTIONARY.FINISH]: {
-		id: 'FINISH',
-		text: dict.pairSuccessfullyCreated,
-		keyboard: keyboardWrapper(
-			[
-				[
-					{
-						text: dict.toTheMain,
-					},
-				],
-			],
-			null,
-			true
-		),
 	},
 };

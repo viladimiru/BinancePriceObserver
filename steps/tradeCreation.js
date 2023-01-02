@@ -2,6 +2,7 @@ import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/lang/index.js';
 import axios from 'axios';
 import tradeApi from '../api/tradeApi.js'
+import { BOT_MESSANGER, get } from '../storage/index.js';
 
 export const DICTIONARY = {
   SYMBOL: 'TRADE_SYMBOL',
@@ -88,21 +89,10 @@ export default {
 			const trade = await tradeApi.getTempTradeByChatId(msg.chat.id);
 			await tradeApi.createTrade(trade);
 			await tradeApi.deleteTempTradeByChatId(msg.chat.id);
+			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeCreated, {
+				parse_mode: 'html'
+			})
     },
-		getNext: () => DICTIONARY.FINISH,
-		getPrev: () => DICTIONARY.PRICE,
-	},
-	[DICTIONARY.FINISH]: {
-		id: DICTIONARY.FINISH,
-		text: dict.tradeCreated,
-		keyboard: keyboardWrapper([
-			[
-				{
-					text: dict.toTheMain
-				}
-			]
-		], {}, true),
-		getNext: () => DICTIONARY.START,
 		getPrev: () => DICTIONARY.PRICE,
 	},
 };
