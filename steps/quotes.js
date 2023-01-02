@@ -61,7 +61,7 @@ function wrapTradeText(markPrice, trade) {
 	}
 	const diff = diffInPercents(trade.markPrice, markPrice) * trade.shoulder;
 	if (diff) {
-		text += toFixed(diff) + '%';
+		text += toFixed(Math.abs(diff)) + '%';
 		text += ' | ';
 	}
 	text += 'Вход: ' + trade.markPrice;
