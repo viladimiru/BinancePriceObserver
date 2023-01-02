@@ -1,4 +1,5 @@
 import { TEMP_TRADE, TRADE, PAIR } from '../repository/index.js';
+import pairApi from './pairApi.js';
 
 async function setTempTradeByChatId(data, chatId) {
 	return await TEMP_TRADE.findOne({
@@ -74,19 +75,16 @@ async function getChatTrades(chatId) {
 }
 
 async function removeTrade(symbol, chatId, type, price) {
-	await TRADE.destroy({
-		where: {
-			chatId: chatId,
-			type: type,
-			markPrice: price,
-		},
-		include: {
-			model: PAIR,
+	return await pairApi.findPair(symbol).then(async (pair) => {
+		await TRADE.destroy({
 			where: {
-				symbol: symbol,
+				chatId: chatId,
+				type: type,
+				markPrice: price,
+				PairId: pair.id
 			},
-		},
-	});
+		});
+	})
 }
 
 async function isChatTradeExists(chatId, symbol, type, price) {
