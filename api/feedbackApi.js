@@ -1,4 +1,4 @@
-import { FEEDBACK } from '../sequelize.js';
+import { FEEDBACK } from '../repository/index.js';
 
 async function addFeedback(msg) {
   await FEEDBACK.create({

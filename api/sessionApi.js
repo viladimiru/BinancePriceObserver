@@ -1,4 +1,4 @@
-import { USER_SESSION } from '../sequelize.js';
+import { USER_SESSION } from '../repository/index.js';
 
 async function getSession(userId) {
 	let [result, isCreated] = await USER_SESSION.findOrCreate({

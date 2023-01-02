@@ -1,5 +1,5 @@
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/index.js'
+import dict from '../dict/lang/index.js'
 import feedbackApi from '../api/feedbackApi.js';
 
 export const DICTIONARY = {

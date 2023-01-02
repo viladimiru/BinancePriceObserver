@@ -1,26 +1,19 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import TelegramApi from 'node-telegram-bot-api';
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';
-import { register } from './storage/index.js';
-import { SUBSCRIPTIONS } from './storage/const.js';
-import eventBus from './utils/eventBus.js';
+import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
-import dict from './dict/index.js';
+import dict from './dict/lang/index.js';
 
-register(SUBSCRIPTIONS, []);
-
-const TOKEN = '5840210643:AAFh8evF_ujub-jP3WabpEk09YDXoVDhS94';
-
-const bot = new TelegramApi(TOKEN, { polling: true });
+const bot = new TelegramApi(process.env.TOKEN, { polling: true });
+register(PAIR_STATS, []);
+register(BOT_MESSANGER, bot);
 
 bot.setMyCommands([
 	{
 		description: dict.start,
-		command: '/start'
-	}
+		command: '/start',
+	},
 ]);
 
 bot.on('message', onMessage);
@@ -53,11 +46,11 @@ async function onMessage(msg) {
 	const session = await sessionApi.getSession(userId);
 
 	if (msg.text === dict.back) {
-		let prevStep
+		let prevStep;
 		try {
 			prevStep = steps[session.step].getPrev(msg);
 		} catch {
-			prevStep = steps.START.id
+			prevStep = steps.START.id;
 		}
 		await sessionApi.updateSession(userId, prevStep);
 		sendMessage(msg.chat.id, steps[prevStep].text, {
@@ -105,7 +98,6 @@ async function onMessage(msg) {
 
 bot.on('polling_error', console.log);
 
-eventBus.on('sendMessage', sendMessage);
 
 function sendMessage(chatId, msg, options = {}) {
 	return bot.sendMessage(chatId, msg, options);

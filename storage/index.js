@@ -1,13 +1,17 @@
+import { PAIR_STATS, BOT_MESSANGER } from './const.js';
+
 const state = {};
 
-export function register(key, data) {
+function register(key, data) {
 	state[key] = data;
 }
 
-export function get(key) {
+function get(key) {
 	return state[key];
 }
 
-export function set(key, data) {
+function set(key, data) {
 	state[key] = data;
 }
+
+export { PAIR_STATS, BOT_MESSANGER, register, get, set };

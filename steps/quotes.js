@@ -1,8 +1,10 @@
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/index.js';
-import eventBus from '../utils/eventBus.js';
+import dict from '../dict/lang/index.js';
 import pairApi from '../api/pairApi.js';
+import tradeApi from '../api/tradeApi.js';
 import { diffInPercents, toFixed } from '../utils/number.js';
+import emoji from '../dict/emoji.js';
+import { PAIR_STATS, get } from '../storage/index.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -23,7 +25,7 @@ export default {
 		cbOnSend: async (msg) => {
 			const result = await pairApi.getChatPairPrices(msg.chat.id);
 			if (result) {
-				const trades = await pairApi.getChatTradesByPairs(
+				const trades = await tradeApi.getChatTradesByPairs(
 					result.map((item) => item.symbol)
 				);
 				let text = '';
@@ -40,11 +42,11 @@ export default {
 					text += '</i>';
 					text += '\n';
 				});
-				eventBus.emit('sendMessage', null, msg.chat.id, text, {
+				get(PAIR_STATS)(msg.chat.id, text, {
 					parse_mode: 'html',
-				});
+				})
 			} else {
-				eventBus.emit('sendMessage', null, msg.chat.id, dict.listIsEmpty);
+				get(PAIR_STATS)(msg.chat.id, dict.listIsEmpty)
 			}
 		},
 		getNext: (msg) => (msg.text === dict.update ? DICTIONARY.QUOTES : 'START'),
@@ -55,9 +57,9 @@ function wrapTradeText(markPrice, trade) {
 	let text = '\n'
 	text += [trade.type, ' | '].join('');
 	if (trade.isWin) {
-		text += '⬆️';
+		text += emoji.above;
 	} else if (trade.isLoss) {
-		text += '🔻';
+		text += emoji.belowRed;
 	}
 	const diff = diffInPercents(trade.markPrice, markPrice) * trade.shoulder;
 	if (diff) {

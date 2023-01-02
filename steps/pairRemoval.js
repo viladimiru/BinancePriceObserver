@@ -1,8 +1,8 @@
 import pairApi from '../api/pairApi.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
-import { set } from '../storage/index.js';
-import { SUBSCRIPTIONS } from '../storage/const.js';
-import dict from '../dict/index.js'
+import { set, PAIR_STATS } from '../storage/index.js';
+import dict from '../dict/lang/index.js'
+import emoji from '../dict/emoji.js';
 
 export const DICTIONARY = {
 	PAIRS_LIST: 'PAIRS_LIST',
@@ -10,9 +10,9 @@ export const DICTIONARY = {
 };
 
 const stickerDictionary = {
-	undefined: '📈',
-	ABOVE: '⬆️',
-	BELOW: '⬇️'
+	undefined: emoji.spike,
+	ABOVE: emoji.above,
+	BELOW: emoji.below
 }
 const typeDictionary = {
 	[stickerDictionary.ABOVE]: 'ABOVE',
@@ -32,7 +32,7 @@ export default {
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
 			await pairApi.removePair(symbol, msg.chat.id, typeDictionary[type], price);
-			set(SUBSCRIPTIONS, await pairApi.getPairs());
+			set(PAIR_STATS, await pairApi.getPairs());
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {

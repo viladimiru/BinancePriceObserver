@@ -1,8 +1,9 @@
 import pairApi from '../api/pairApi.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
-import { set } from '../storage/index.js';
-import { SUBSCRIPTIONS } from '../storage/const.js';
-import dict from '../dict/index.js'
+import { set, PAIR_STATS } from '../storage/index.js';
+import dict from '../dict/lang/index.js'
+import tradeApi from '../api/tradeApi.js';
+import emoji from '../dict/emoji.js';
 
 export const DICTIONARY = {
 	TRADE_LIST: 'TRADE_LIST',
@@ -10,8 +11,8 @@ export const DICTIONARY = {
 };
 
 const stickerDictionary = {
-	LONG: '⬆️',
-	SHORT: '⬇️'
+	LONG: emoji.above,
+	SHORT: emoji.below
 }
 const typeDictionary = {
 	[stickerDictionary.LONG]: 'LONG',
@@ -26,16 +27,16 @@ export default {
 		getNext: () => DICTIONARY.REMOVE_TRADE,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
-			return await pairApi.isChatTradeExists(msg.chat.id, symbol, typeDictionary[type], price);
+			return await tradeApi.isChatTradeExists(msg.chat.id, symbol, typeDictionary[type], price);
 		},
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
-			await pairApi.removeTrade(symbol, msg.chat.id, typeDictionary[type], price);
-			set(SUBSCRIPTIONS, await pairApi.getPairs());
+			await tradeApi.removeTrade(symbol, msg.chat.id, typeDictionary[type], price);
+			set(PAIR_STATS, await pairApi.getPairs());
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
-			const pairs = await pairApi.getChatTrades(msg.chat.id);
+			const pairs = await tradeApi.getChatTrades(msg.chat.id);
 			let count = 0;
 			let list = [[]];
 			pairs.forEach((pair) => {

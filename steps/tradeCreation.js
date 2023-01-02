@@ -1,7 +1,7 @@
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/index.js';
+import dict from '../dict/lang/index.js';
 import axios from 'axios';
-import pairApi from '../api/pairApi.js';
+import tradeApi from '../api/tradeApi.js'
 
 export const DICTIONARY = {
   SYMBOL: 'TRADE_SYMBOL',
@@ -29,7 +29,7 @@ export default {
 			}
 		},
 		onAnswer: async (msg) => {
-      await pairApi.setTempTradeByChatId({
+      await tradeApi.setTempTradeByChatId({
         chatId: msg.chat.id,
         symbol: msg.text.toUpperCase()
       }, msg.chat.id)
@@ -52,7 +52,7 @@ export default {
 		]),
 		expect: [dict.long, dict.short],
     onAnswer: async (msg) => {
-      await pairApi.setTempTradeByChatId({
+      await tradeApi.setTempTradeByChatId({
         type: msg.text.toUpperCase()
       }, msg.chat.id)
     },
@@ -67,7 +67,7 @@ export default {
 			return !isNaN(Number(text));
 		},
     onAnswer: async (msg) => {
-      await pairApi.setTempTradeByChatId({
+      await tradeApi.setTempTradeByChatId({
         markPrice: Number(msg.text)
       }, msg.chat.id)
     },
@@ -82,12 +82,12 @@ export default {
 			return !isNaN(Number(text));
 		},
     onAnswer: async (msg) => {
-      await pairApi.setTempTradeByChatId({
+      await tradeApi.setTempTradeByChatId({
         shoulder: Number(msg.text)
       }, msg.chat.id)
-			const trade = await pairApi.getTempTradeByChatId(msg.chat.id);
-			await pairApi.createTrade(trade);
-			await pairApi.deleteTempTradeByChatId(msg.chat.id);
+			const trade = await tradeApi.getTempTradeByChatId(msg.chat.id);
+			await tradeApi.createTrade(trade);
+			await tradeApi.deleteTempTradeByChatId(msg.chat.id);
     },
 		getNext: () => DICTIONARY.FINISH,
 		getPrev: () => DICTIONARY.PRICE,

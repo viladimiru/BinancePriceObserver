@@ -1,4 +1,4 @@
-import dict from '../dict/index.js'
+import dict from '../dict/lang/index.js'
 
 export function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 	const result = {

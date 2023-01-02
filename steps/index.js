@@ -4,7 +4,7 @@ import Quotes, {DICTIONARY as Q_DICT} from './quotes.js';
 import TradeCreation, {DICTIONARY as T_DICT} from './tradeCreation.js';
 import TradeRemoval, {DICTIONARY as TR_DICT} from './tradeRemoval.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/index.js';
+import dict from '../dict/lang/index.js';
 import Feedback, {DICTIONARY as FB_DICT} from './feedback.js';
 
 const START = {

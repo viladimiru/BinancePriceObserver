@@ -2,7 +2,7 @@ import axios from 'axios';
 import pairApi from '../api/pairApi.js';
 import { updateStorage, Subscription } from '../subscription.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/index.js';
+import dict from '../dict/lang/index.js';
 
 export const DICTIONARY = {
 	ADD_OBSERVER: 'ADD_OBSERVER',
