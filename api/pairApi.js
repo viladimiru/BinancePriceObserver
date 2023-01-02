@@ -1,13 +1,19 @@
-import {
-	PAIR,
-	TEMP_PAIR,
-	PRICE,
-	SPIKE,
-	TRADE,
-} from '../repository/index.js';
+import { PAIR, TEMP_PAIR, PRICE, SPIKE, TRADE } from '../repository/index.js';
 import Binance from 'node-binance-api';
+import priceApi from './priceApi.js';
+import spikeApi from './spikeApi.js';
 
 const binance = new Binance();
+
+
+async function findPair(symbol) {
+	return await PAIR.findOne({
+		where: {
+			symbol: symbol
+		},
+		raw: true
+	})
+}
 
 async function updateTempPairByChatId(data, chatId) {
 	const result = await TEMP_PAIR.update(data, {
@@ -65,52 +71,15 @@ async function createPair(data) {
 		pair = pair.dataValues;
 	}
 	if (data.type === 'SPIKE') {
-		await SPIKE.findOrCreate({
-			where: {
-				chatId: data.chatId,
-				PairId: pair.id,
-			},
-			raw: true,
-			nest: true,
-		});
+		await spikeApi.createSpike(data.chatId, pair.id);
 	} else {
-		const [_, istr] = await PRICE.findOrCreate({
-			where: {
-				type: data.type,
-				price: data.price,
-				message: data.message,
-				chatId: data.chatId,
-				PairId: pair.id,
-			},
-			raw: true,
-			nest: true,
-		});
-	}
-}
-
-async function removePair(symbol, chatId, type, price) {
-	try {
-		if (!type) {
-			SPIKE.destroy({
-				where: {
-					chatId: chatId,
-				},
-				include: {
-					model: PAIR,
-				},
-			});
-		} else {
-			PRICE.destroy({
-				where: {
-					type: type,
-					price: price,
-					chatId: chatId,
-				},
-			});
-		}
-		return await getPairs();
-	} catch (e) {
-		console.log(e);
+		await priceApi.createPrice(
+			data.chatId,
+			data.message,
+			data.type,
+			data.price,
+			pair.id
+		);
 	}
 }
 
@@ -154,38 +123,6 @@ async function getChatPairs(chatId) {
 	return result.map((item) => item.get({ plane: true }));
 }
 
-async function isChatPairExists(chatId, symbol, type, price) {
-	if (!type) {
-		return !!(await PAIR.findOne({
-			where: {
-				symbol: symbol,
-			},
-			include: {
-				model: SPIKE,
-				as: 'spikes',
-				where: {
-					chatId: chatId,
-				},
-			},
-		}));
-	} else {
-		return !!(await PAIR.findOne({
-			where: {
-				symbol: symbol,
-			},
-			include: {
-				model: PRICE,
-				as: 'prices',
-				where: {
-					chatId: chatId,
-					type: type,
-					price: price,
-				},
-			},
-		}));
-	}
-}
-
 async function updatePairPrice(symbol, markPrice) {
 	await PAIR.update(
 		{
@@ -209,6 +146,7 @@ async function getChatPairsRaw(chatId) {
 					chatId: chatId,
 				},
 				required: false,
+				attributes: ['id']
 			},
 			{
 				model: TRADE,
@@ -217,7 +155,8 @@ async function getChatPairsRaw(chatId) {
 					chatId: chatId,
 				},
 				required: false,
-			}
+				attributes: ['id']
+			},
 		],
 		group: ['symbol'],
 		attributes: ['symbol'],
@@ -241,19 +180,16 @@ async function getChatPairPrices(chatId) {
 	return result;
 }
 
-
-
 export default {
 	updateTempPairByChatId,
 	setTempPairByChatId,
 	deleteTempPairByChatId,
 	getTempPairByChatId,
 	createPair,
-	removePair,
 	getPairs,
 	getChatPairs,
-	isChatPairExists,
 	updatePairPrice,
 	getChatPairsRaw,
 	getChatPairPrices,
+	findPair
 };

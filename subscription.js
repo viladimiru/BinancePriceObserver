@@ -1,6 +1,7 @@
 import Binance from 'node-binance-api';
 import spikeApi from './api/spikeApi.js';
 import pairApi from './api/pairApi.js';
+import priceApi from './api/priceApi.js'
 import { get, set, PAIR_STATS, BOT_MESSANGER } from './storage/index.js';
 import {
 	biggestInArr,
@@ -59,12 +60,9 @@ export function Subscription(symbol) {
 			);
 			set(
 				PAIR_STATS,
-				await pairApi.removePair(
-					item.symbol,
-					item.chatId,
-					item.type,
-					item.price
-				)
+				item.type
+					? await priceApi.removePrice(item.symbol, item.chatId, item.type, item.price)
+					: await spikeApi.removeSpike(item.symbol, item.chatId)
 			);
 			if (
 				!get(PAIR_STATS)

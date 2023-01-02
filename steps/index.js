@@ -9,7 +9,7 @@ import Feedback, {DICTIONARY as FB_DICT} from './feedback.js';
 
 const START = {
 	id: 'START',
-	text: ['<b>Добро пожаловать</b>', 'Выберите нужную функцию'].join('\n\n'),
+	text: dict.selectDesiredFunction,
 	expects: [dict.addObserver, dict.removeObserver, dict.quotes, dict.addTrade, dict.removeTrade, dict.leaveFeedback],
 	getNext: (msg) => {
 		if (msg.text === dict.addObserver) {

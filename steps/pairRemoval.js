@@ -3,6 +3,8 @@ import { keyboardWrapper } from '../utils/keyboard.js';
 import { set, get, PAIR_STATS, BOT_MESSANGER } from '../storage/index.js';
 import dict from '../dict/lang/index.js'
 import emoji from '../dict/emoji.js';
+import spikeApi from '../api/spikeApi.js';
+import priceApi from '../api/priceApi.js';
 
 export const DICTIONARY = {
 	PAIRS_LIST: 'PAIRS_LIST',
@@ -27,11 +29,18 @@ export default {
 		getNext: () => DICTIONARY.PAIRS_LIST,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
-			return await pairApi.isChatPairExists(msg.chat.id, symbol, typeDictionary[type], price);
+			if (!typeDictionary[type]) {
+				return await spikeApi.isSpikeExist(symbol, msg.chat.id)
+			}
+			return await priceApi.isPriceExist(msg.chat.id, symbol, typeDictionary[type], price);
 		},
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
-			await pairApi.removePair(symbol, msg.chat.id, typeDictionary[type], price);
+			if (typeDictionary[type]) {
+				await priceApi.removePrice(symbol, msg.chat.id, typeDictionary[type], price)
+			} else {
+				await spikeApi.removeSpike(symbol, msg.chat.id)
+			}
 			set(PAIR_STATS, await pairApi.getPairs());
 			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved)
 		},

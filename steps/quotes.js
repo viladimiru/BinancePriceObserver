@@ -4,7 +4,7 @@ import pairApi from '../api/pairApi.js';
 import tradeApi from '../api/tradeApi.js';
 import { diffInPercents, toFixed } from '../utils/number.js';
 import emoji from '../dict/emoji.js';
-import { PAIR_STATS, get, BOT_MESSANGER } from '../storage/index.js';
+import { get, BOT_MESSANGER } from '../storage/index.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -23,30 +23,34 @@ export default {
 		]),
 		expect: [dict.update],
 		cbOnSend: async (msg) => {
-			const result = await pairApi.getChatPairPrices(msg.chat.id);
-			if (result) {
-				const trades = await tradeApi.getChatTradesByPairs(
-					result.map((item) => item.symbol)
-				);
-				let text = '';
-				result.forEach((item) => {
-					text += [
-						`<b>${item.symbol}</b>`,
-						toFixed(Number(item.markPrice)),
-					].join(': ');
-					text += '<i>';
-					const _trades = transformTrades(trades, item);
-					_trades.forEach((trade) => {
-						text += wrapTradeText(item.markPrice, trade);
+			try {
+				const result = await pairApi.getChatPairPrices(msg.chat.id);
+				if (result) {
+					const trades = await tradeApi.getChatTradesByPairs(
+						result.map((item) => item.symbol)
+					);
+					let text = '';
+					result.forEach((item) => {
+						text += [
+							`<b>${item.symbol}</b>`,
+							toFixed(Number(item.markPrice)),
+						].join(': ');
+						text += '<i>';
+						const _trades = transformTrades(trades, item);
+						_trades.forEach((trade) => {
+							text += wrapTradeText(item.markPrice, trade);
+						});
+						text += '</i>';
+						text += '\n';
 					});
-					text += '</i>';
-					text += '\n';
-				});
-				await get(BOT_MESSANGER)(msg.chat.id, text, {
-					parse_mode: 'html',
-				})
-			} else {
-				get(PAIR_STATS)(msg.chat.id, dict.listIsEmpty)
+					await get(BOT_MESSANGER)(msg.chat.id, text, {
+						parse_mode: 'html',
+					});
+				} else {
+					await get(BOT_MESSANGER)(msg.chat.id, dict.listIsEmpty);
+				}
+			} catch {
+				await get(BOT_MESSANGER)(msg.chat.id, dict.quotesFetchError);
 			}
 		},
 		getNext: (msg) => (msg.text === dict.update ? DICTIONARY.QUOTES : 'START'),
@@ -54,7 +58,7 @@ export default {
 };
 
 function wrapTradeText(markPrice, trade) {
-	let text = '\n'
+	let text = '\n';
 	text += [trade.type, ' | '].join('');
 	if (trade.isWin) {
 		text += emoji.above;
