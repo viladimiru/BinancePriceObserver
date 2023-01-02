@@ -25,3 +25,7 @@ export function smallestInArr(arr) {
 export function diffInPercents(a, b) {
 	return ((b - a) / a) * 100;
 }
+
+export function toFixed(number, dp = 8) {
+	return +parseFloat(number).toFixed( dp );
+}

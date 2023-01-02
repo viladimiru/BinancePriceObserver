@@ -2,7 +2,7 @@ import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/index.js';
 import eventBus from '../utils/eventBus.js';
 import pairApi from '../api/pairApi.js';
-import { diffInPercents } from '../utils/number.js';
+import { diffInPercents, toFixed } from '../utils/number.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -30,7 +30,7 @@ export default {
 				result.forEach((item) => {
 					text += [
 						`<b>${item.symbol}</b>`,
-						Number(item.markPrice).toFixed(2),
+						toFixed(Number(item.markPrice)),
 					].join(': ');
 					text += '<i>';
 					const _trades = transformTrades(trades, item);
@@ -61,7 +61,7 @@ function wrapTradeText(markPrice, trade) {
 	}
 	const diff = diffInPercents(trade.markPrice, markPrice) * trade.shoulder;
 	if (diff) {
-		text += Math.abs(diff).toFixed(2) + '%';
+		text += toFixed(diff) + '%';
 		text += ' | ';
 	}
 	text += 'Вход: ' + trade.markPrice;

@@ -3,7 +3,7 @@ import pairApi from './api/pairApi.js';
 import { get, set } from './storage/index.js';
 import { SUBSCRIPTIONS } from './storage/const.js';
 import eventBus from './utils/eventBus.js';
-import { biggestInArr, diffInPercents, smallestInArr } from './utils/number.js';
+import { biggestInArr, diffInPercents, smallestInArr, toFixed } from './utils/number.js';
 
 let subscriptions = {};
 const spikeControl = {};
@@ -188,7 +188,7 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 			item.chatId,
 			[
 				'<b>Скачки цен 📈',
-				symbol + ' ' + Math.abs(diff).toFixed(2) + '%' + (isBiggestCurrent ? '⬆️' : '🔻'),
+				symbol + ' ' + toFixed(Math.abs(diff)) + '%' + (isBiggestCurrent ? '⬆️' : '🔻'),
 				'</b>',
 				'<i>Интервал: ' + interval + exp,
 				'Текущая цена: ' + Number(currentPrice),
