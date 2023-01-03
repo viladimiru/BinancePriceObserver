@@ -21,7 +21,7 @@ export default {
 		keyboard: keyboardWrapper(),
 		validate: async ({ text }) => {
 			try {
-				const res = await axios.get('https://api.binance.com/api/v3/avgPrice', {
+				const res = await axios.get('https://fapi.binance.com/fapi/v1/premiumIndex', {
 					params: {
 						symbol: text.toUpperCase(),
 					},
