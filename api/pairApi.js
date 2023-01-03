@@ -1,18 +1,24 @@
-import { PAIR, TEMP_PAIR, PRICE, SPIKE, TRADE } from '../repository/index.js';
+import {
+	PAIR,
+	TEMP_PAIR,
+	PRICE,
+	SPIKE,
+	TRADE,
+	sequelize,
+} from '../repository/index.js';
 import Binance from 'node-binance-api';
 import priceApi from './priceApi.js';
 import spikeApi from './spikeApi.js';
 
 const binance = new Binance();
 
-
 async function findPair(symbol) {
 	return await PAIR.findOne({
 		where: {
-			symbol: symbol
+			symbol: symbol,
 		},
-		raw: true
-	})
+		raw: true,
+	});
 }
 
 async function updateTempPairByChatId(data, chatId) {
@@ -137,37 +143,35 @@ async function updatePairPrice(symbol, markPrice) {
 }
 
 async function getChatPairsRaw(chatId) {
-	let result = await PAIR.findAll({
-		include: [
-			{
-				model: PRICE,
-				as: 'prices',
-				where: {
-					chatId: chatId,
-				},
-				required: false,
-				attributes: ['id']
-			},
-			{
-				model: TRADE,
-				as: 'trades',
-				where: {
-					chatId: chatId,
-				},
-				required: false,
-				attributes: ['id']
-			},
-		],
-		group: ['symbol'],
-		attributes: ['symbol'],
-	});
-	result = result.map((item) => item.get({ plain: true }));
-	if (Array.isArray(result) && result.length) {
-		result = result
-			.filter((item) => item.prices?.length || item.trades?.length)
-			.map((item) => (item = item.symbol));
-	}
-	return result;
+	const [result] = await sequelize.query(`
+		SELECT pa.symbol FROM Prices p
+				LEFT JOIN Trades t ON 
+					p.PairId=t.PairId
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=p.PairId
+			WHERE p.chatId=${chatId}
+			GROUP BY p.PairId
+			union
+		SELECT pa.symbol FROM Trades t
+				LEFT JOIN Prices p ON
+					p.PairId=t.PairId
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=t.PairId
+			WHERE t.chatId=${chatId}
+			GROUP BY t.PairId
+			union
+		SELECT pa.symbol FROM Spikes t
+				LEFT JOIN Prices p ON 
+					p.PairId=t.PairId
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=t.PairId
+			WHERE t.chatId=${chatId}
+			GROUP BY t.PairId
+	`);
+	return result.map(r => r.symbol);
 }
 
 async function getChatPairPrices(chatId) {
@@ -191,5 +195,5 @@ export default {
 	updatePairPrice,
 	getChatPairsRaw,
 	getChatPairPrices,
-	findPair
+	findPair,
 };
