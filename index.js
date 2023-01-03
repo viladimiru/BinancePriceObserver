@@ -4,17 +4,14 @@ import steps from './steps/index.js';
 import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
+import express from 'express'
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 let bot;
 if (!isDevelopment) {
-	bot = new TelegramApi(token, {
-		webHook: {
-			port: 8080
-		}
-	});
+	bot = new TelegramApi(token);
 	bot.setWebHook(process.env.URL + '/bot' + token);
 } else {
 	bot = new TelegramApi(token, { polling: true });
@@ -119,3 +116,17 @@ bot.on('polling_error', console.log);
 function sendMessage(chatId, msg, options = {}) {
 	return bot.sendMessage(chatId, msg, options);
 }
+
+
+const app = express()
+
+app.use(express.json())
+
+app.post(`/bot${token}`, (req, res) => {
+	bot.processUpdate(req.body)
+	res.sendStatus(200)
+})
+
+app.listen(port, () => {
+  console.log(`Express server is listening on ${port}`);
+});
