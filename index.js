@@ -123,7 +123,7 @@ const app = express()
 app.use(express.json())
 
 app.post(`/tghook/bot${token}`, (req, res) => {
-	bot.processUpdate(req.body)
+	bot.processUpdate(res.body)
 	res.sendStatus(200)
 })
 
