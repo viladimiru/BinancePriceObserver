@@ -127,6 +127,6 @@ app.post(`/bot${token}`, (req, res) => {
 	res.sendStatus(200)
 })
 
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Express server is listening on ${port}`);
 });
