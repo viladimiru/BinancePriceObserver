@@ -4,13 +4,32 @@ import steps from './steps/index.js';
 import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
+import Koa from 'koa';
+import Router from 'koa-router';
 
-const token =
-	process.env.NODE_ENV === 'development'
-		? process.env.TEST_TOKEN
-		: process.env.TOKEN;
+const app = new Koa();
 
-const bot = new TelegramApi(token, { polling: true });
+const router = Router();
+
+router.post('/bot', (ctx) => {
+	ctx.status = 200;
+});
+
+app.use(router.routes());
+app.listen(3000, () => {
+	console.log('Started listening');
+});
+
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
+let bot
+if (isDevelopment) {
+	const bot = new TelegramApi(token);
+	bot.setWebHook(process.env.URL);
+} else {
+	bot = new TelegramApi(token, {polling: true});
+}
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, bot.sendMessage.bind(bot));
 
