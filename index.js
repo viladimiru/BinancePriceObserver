@@ -128,5 +128,5 @@ app.post(`/bot${token}`, (req, res) => {
 })
 
 app.listen(process.env.PORT, () => {
-  console.log(`Express server is listening on ${port}`);
+  console.log(`Express server is listening on ${process.env.PORT}`);
 });
