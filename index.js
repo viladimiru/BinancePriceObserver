@@ -5,7 +5,12 @@ import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
 
-const bot = new TelegramApi(process.env.TOKEN, { polling: true });
+const token =
+	process.env.NODE_ENV === 'development'
+		? process.env.TEST_TOKEN
+		: process.env.TOKEN;
+
+const bot = new TelegramApi(token, { polling: true });
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, bot.sendMessage.bind(bot));
 
@@ -75,11 +80,11 @@ async function onMessage(msg) {
 			await steps[session.step].onAnswer(msg);
 		}
 
-		let nextStep
+		let nextStep;
 		try {
 			nextStep = steps[session.step].getNext(msg) || 'START';
 		} catch {
-			nextStep = 'START'
+			nextStep = 'START';
 		}
 
 		const nextStepKeyboard =
@@ -102,7 +107,6 @@ async function onMessage(msg) {
 }
 
 bot.on('polling_error', console.log);
-
 
 function sendMessage(chatId, msg, options = {}) {
 	return bot.sendMessage(chatId, msg, options);

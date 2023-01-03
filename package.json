@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "export NODE_ENV=development && nodemon index.js",
     "start": "node index.js"
   },
   "author": "",

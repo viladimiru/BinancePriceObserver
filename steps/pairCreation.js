@@ -1,9 +1,9 @@
-import axios from 'axios';
 import pairApi from '../api/pairApi.js';
 import { updateStorage, Subscription } from '../subscription.js';
 import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/lang/index.js';
 import { BOT_MESSANGER, get } from '../storage/index.js';
+import futuresApi from '../api/futuresApi.js';
 
 export const DICTIONARY = {
 	ADD_OBSERVER: 'ADD_OBSERVER',
@@ -21,11 +21,7 @@ export default {
 		keyboard: keyboardWrapper(),
 		validate: async ({ text }) => {
 			try {
-				const res = await axios.get('https://fapi.binance.com/fapi/v1/premiumIndex', {
-					params: {
-						symbol: text.toUpperCase(),
-					},
-				});
+				const res = await futuresApi.getPairIndex(text.toUpperCase());
 				return !!res.data;
 			} catch {
 				return false;

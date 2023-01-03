@@ -1,8 +1,8 @@
 import { keyboardWrapper } from '../utils/keyboard.js';
 import dict from '../dict/lang/index.js';
-import axios from 'axios';
 import tradeApi from '../api/tradeApi.js'
 import { BOT_MESSANGER, get } from '../storage/index.js';
+import futuresApi from '../api/futuresApi.js';
 
 export const DICTIONARY = {
   SYMBOL: 'TRADE_SYMBOL',
@@ -19,11 +19,7 @@ export default {
 		keyboard: keyboardWrapper(),
 		validate: async ({ text }) => {
 			try {
-				const res = await axios.get('https://api.binance.com/api/v3/avgPrice', {
-					params: {
-						symbol: text.toUpperCase(),
-					},
-				});
+				const res = await futuresApi.getPairIndex(text.toUpperCase());
 				return !!res.data;
 			} catch {
 				return false;
