@@ -12,7 +12,7 @@ let bot;
 if (!isDevelopment) {
 	bot = new TelegramApi(token, {
 		webHook: {
-			port: 443
+			port: 8080
 		}
 	});
 	bot.setWebHook(process.env.URL + '/bot' + token);
