@@ -10,7 +10,11 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 let bot;
 if (!isDevelopment) {
-	bot = new TelegramApi(token);
+	bot = new TelegramApi(token, {
+		webHook: {
+			port: 3000
+		}
+	});
 	bot.setWebHook(process.env.URL + '/bot' + token);
 } else {
 	bot = new TelegramApi(token, { polling: true });

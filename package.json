@@ -14,7 +14,6 @@
     "axios": "^1.2.2",
     "dotenv": "^16.0.3",
     "js-event-bus": "^1.1.1",
-    "koa-bodyparser": "^4.3.0",
     "node-binance-api": "^0.13.1",
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
