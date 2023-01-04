@@ -62,9 +62,13 @@ async function onMessage(msg) {
 		} catch {
 			prevStep = steps.START.id;
 		}
+		const prevStepKeyboard =
+			typeof steps[prevStep].keyboard === 'function'
+				? await steps[prevStep].keyboard(msg)
+				: steps[prevStep].keyboard;
 		await sessionApi.updateSession(userId, prevStep);
 		sendMessage(msg.chat.id, steps[prevStep].text, {
-			...steps[prevStep].keyboard,
+			...prevStepKeyboard,
 			parse_mode: 'HTML',
 		});
 	} else if (
@@ -123,7 +127,6 @@ const app = express()
 app.use(express.json())
 
 app.post(`/tghook/bot${token}`, (req, res) => {
-	console.log(req.body)
 	bot.processUpdate(req.body)
 	res.sendStatus(200)
 })

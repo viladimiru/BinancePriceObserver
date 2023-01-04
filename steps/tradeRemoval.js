@@ -22,7 +22,7 @@ const typeDictionary = {
 export default {
 	[DICTIONARY.TRADE_LIST]: {
 		id: DICTIONARY.TRADE_LIST,
-		text: dict.chooseRemovalPair,
+		text: dict.choosePair,
 		getPrev: () => 'START',
 		getNext: () => DICTIONARY.TRADE_LIST,
 		validate: async (msg) => {

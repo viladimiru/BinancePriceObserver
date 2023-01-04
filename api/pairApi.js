@@ -105,8 +105,11 @@ async function getPairs() {
 	return res.map((item) => item.get({ plain: true }));
 }
 
-async function getChatPairs(chatId) {
+async function getChatPairs(chatId, symbol) {
 	const result = await PAIR.findAll({
+		where: {
+			symbol: symbol
+		},
 		include: [
 			{
 				required: false,
@@ -161,7 +164,7 @@ async function getChatPairsRaw(chatId) {
 				LEFT JOIN PAIRS pa ON pa.id=t.PairId
 			WHERE t.chatId=${chatId}
 			GROUP BY t.PairId
-			union
+		UNION
 		SELECT pa.symbol FROM Spikes t
 				LEFT JOIN Prices p ON 
 					p.PairId=t.PairId
@@ -172,6 +175,47 @@ async function getChatPairsRaw(chatId) {
 			GROUP BY t.PairId
 	`);
 	return result.map(r => r.symbol);
+}
+async function getAlertSymbols(chatId) {
+	const [result] = await sequelize.query(`
+		SELECT pa.symbol FROM Prices p
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=p.PairId
+			WHERE p.chatId=${chatId}
+			GROUP BY p.PairId
+		UNION
+		SELECT pa.symbol FROM Spikes t
+				LEFT JOIN Prices p ON 
+					p.PairId=t.PairId
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=t.PairId
+			WHERE t.chatId=${chatId}
+			GROUP BY t.PairId
+	`);
+	return result.map(r => r.symbol);
+}
+
+async function isAlertSymbolExist(symbol, chatId) {
+	const [result] = await sequelize.query(`
+		SELECT pa.symbol FROM Prices p
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=p.PairId
+			WHERE p.chatId=${chatId} AND pa.symbol='${symbol}'
+			GROUP BY p.PairId
+		UNION
+		SELECT pa.symbol FROM Spikes t
+				LEFT JOIN Prices p ON 
+					p.PairId=t.PairId
+				LEFT JOIN Spikes s ON 
+					p.PairId=s.PairId
+				LEFT JOIN PAIRS pa ON pa.id=t.PairId
+			WHERE t.chatId=${chatId} AND pa.symbol='${symbol}'
+			GROUP BY t.PairId
+	`);
+	return !!result.length;
 }
 
 async function getChatPairPrices(chatId) {
@@ -196,4 +240,6 @@ export default {
 	getChatPairsRaw,
 	getChatPairPrices,
 	findPair,
+	getAlertSymbols,
+	isAlertSymbolExist
 };

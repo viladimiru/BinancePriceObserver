@@ -8,7 +8,7 @@ import priceApi from '../api/priceApi.js';
 
 export const DICTIONARY = {
 	PAIRS_LIST: 'PAIRS_LIST',
-	REMOVE_PAIR: 'REMOVE_PAIR',
+	ALERTS_LIST: 'ALERTS_LIST',
 };
 
 const stickerDictionary = {
@@ -20,13 +20,43 @@ const typeDictionary = {
 	[stickerDictionary.ABOVE]: 'ABOVE',
 	[stickerDictionary.BELOW]: 'BELOW',
 }
+const history = {}
 
 export default {
 	[DICTIONARY.PAIRS_LIST]: {
-		id: 'PAIRS_LIST',
-		text: dict.chooseRemovalPair,
+		id: DICTIONARY.PAIRS_LIST,
+		text: dict.choosePair,
 		getPrev: () => 'START',
-		getNext: () => DICTIONARY.PAIRS_LIST,
+		getNext: () => DICTIONARY.ALERTS_LIST,
+		validate: async (msg) => {
+			return await pairApi.isAlertSymbolExist(msg.text, msg.chat.id)
+		},
+		onAnswer: async (msg) => {
+			history[msg.chat.id] = msg.text.toUpperCase()
+		},
+		errorText: dict.youNotCreatedThisPair,
+		keyboard: async (msg) => {
+			const pairs = await pairApi.getAlertSymbols(msg.chat.id);
+			let count = 0;
+			let list = [[]];
+			pairs.forEach((pair) => {
+				if (count !== 0 && count % 3 === 0) {
+					list.push([]);
+				}
+				const lastIndex = list.length - 1;
+				list[lastIndex].push({
+					text: pair,
+				});
+				count++;
+			});
+			return keyboardWrapper(list);
+		},
+	},
+	[DICTIONARY.ALERTS_LIST]: {
+		id: DICTIONARY.ALERTS_LIST,
+		text: dict.chooseRemovalAlert,
+		getPrev: () => DICTIONARY.PAIRS_LIST,
+		getNext: () => DICTIONARY.ALERTS_LIST,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
 			if (!typeDictionary[type]) {
@@ -46,7 +76,7 @@ export default {
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
-			const pairs = await pairApi.getChatPairs(msg.chat.id);
+			const pairs = await pairApi.getChatPairs(msg.chat.id, history[msg.chat.id]);
 			let count = 0;
 			let list = [[]];
 			pairs.forEach((pair) => {
@@ -79,7 +109,15 @@ export default {
 					count++;
 				});
 			});
-			return keyboardWrapper(list);
+			list.push([
+				{
+					text: dict.back
+				},
+				{
+					text: dict.toTheMain
+				},
+			])
+			return keyboardWrapper(list, null, true);
 		},
 	},
 };

@@ -22,7 +22,8 @@ export default {
     [emoji.bigMoney, 'TAKE PROFIT', emoji.bigMoney].join(' ')
   ],
   pairSuccessfullyCreated: 'Пара успешно добавлена',
-  chooseRemovalPair: 'Выберите пару, которую хотите удалить',
+  choosePair: 'Выберите пару',
+  chooseRemovalAlert: 'Выберите уведомление, которое хотите удалить',
   youNotCreatedThisPair: 'Вы не создавали такой пары',
   pairSuccessfullyRemoved: 'Пара успешно удалена',
   tradeSuccessfullyRemoved: 'Сделка успешно удалена из списка',
