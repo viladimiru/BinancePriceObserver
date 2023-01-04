@@ -1,9 +1,7 @@
 import {
 	PAIR,
-	TEMP_PAIR,
 	PRICE,
 	SPIKE,
-	TRADE,
 	sequelize,
 } from '../repository/index.js';
 import Binance from 'node-binance-api';
@@ -18,50 +16,6 @@ async function findPair(symbol) {
 			symbol: symbol,
 		},
 		raw: true,
-	});
-}
-
-async function updateTempPairByChatId(data, chatId) {
-	const result = await TEMP_PAIR.update(data, {
-		where: {
-			chatId: chatId,
-		},
-	});
-	return result;
-}
-
-async function setTempPairByChatId(data, chatId) {
-	return await TEMP_PAIR.findOne({
-		where: {
-			chatId: chatId,
-		},
-	}).then(function (result) {
-		if (result) {
-			return result.update(data, {
-				where: {
-					chatId: chatId,
-				},
-			});
-		}
-		return TEMP_PAIR.create(data);
-	});
-}
-
-async function deleteTempPairByChatId(chatId) {
-	return await TEMP_PAIR.destroy({
-		where: {
-			chatId: chatId,
-		},
-	});
-}
-
-async function getTempPairByChatId(chatId) {
-	return await TEMP_PAIR.findOne({
-		where: {
-			chatId: chatId,
-		},
-		raw: true,
-		nest: true,
 	});
 }
 
@@ -229,10 +183,6 @@ async function getChatPairPrices(chatId) {
 }
 
 export default {
-	updateTempPairByChatId,
-	setTempPairByChatId,
-	deleteTempPairByChatId,
-	getTempPairByChatId,
 	createPair,
 	getPairs,
 	getChatPairs,

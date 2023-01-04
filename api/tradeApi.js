@@ -1,40 +1,5 @@
-import { TEMP_TRADE, TRADE, PAIR } from '../repository/index.js';
+import { TRADE, PAIR } from '../repository/index.js';
 import pairApi from './pairApi.js';
-
-async function setTempTradeByChatId(data, chatId) {
-	return await TEMP_TRADE.findOne({
-		where: {
-			chatId: chatId,
-		},
-	}).then(function (result) {
-		if (result) {
-			return result.update(data, {
-				where: {
-					chatId: chatId,
-				},
-			});
-		}
-		return TEMP_TRADE.create(data);
-	});
-}
-
-async function deleteTempTradeByChatId(chatId) {
-	return await TEMP_TRADE.destroy({
-		where: {
-			chatId: chatId,
-		},
-	});
-}
-
-async function getTempTradeByChatId(chatId) {
-	return await TEMP_TRADE.findOne({
-		where: {
-			chatId: chatId,
-		},
-		raw: true,
-		nest: true,
-	});
-}
 
 async function createTrade(data) {
 	let [pair, isCreated] = await PAIR.findOrCreate({
@@ -119,9 +84,6 @@ async function getChatTradesByPairs(pairs) {
 }
 
 export default {
-	setTempTradeByChatId,
-	deleteTempTradeByChatId,
-	getTempTradeByChatId,
 	createTrade,
 	getChatTrades,
 	removeTrade,

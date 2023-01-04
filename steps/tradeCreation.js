@@ -12,6 +12,8 @@ export const DICTIONARY = {
   SHOULDER: 'TRADE_SHOULDER'
 };
 
+const history = {}
+
 export default {
 	[DICTIONARY.SYMBOL]: {
 		id: DICTIONARY.SYMBOL,
@@ -26,10 +28,10 @@ export default {
 			}
 		},
 		onAnswer: async (msg) => {
-      await tradeApi.setTempTradeByChatId({
+			history[msg.chat.id] = {
         chatId: msg.chat.id,
         symbol: msg.text.toUpperCase()
-      }, msg.chat.id)
+			}
 		},
 		errorText: dict.pairNotExists,
 		getNext: () => DICTIONARY.TYPE,
@@ -49,9 +51,7 @@ export default {
 		]),
 		expect: [dict.long, dict.short],
     onAnswer: async (msg) => {
-      await tradeApi.setTempTradeByChatId({
-        type: msg.text.toUpperCase()
-      }, msg.chat.id)
+			history[msg.chat.id].type = msg.text.toUpperCase()
     },
 		getNext: () => DICTIONARY.PRICE,
 		getPrev: () => DICTIONARY.SYMBOL,
@@ -64,9 +64,7 @@ export default {
 			return !isNaN(Number(text));
 		},
     onAnswer: async (msg) => {
-      await tradeApi.setTempTradeByChatId({
-        markPrice: Number(msg.text)
-      }, msg.chat.id)
+			history[msg.chat.id].markPrice = Number(msg.text)
     },
 		getNext: () => DICTIONARY.SHOULDER,
 		getPrev: () => DICTIONARY.TYPE,
@@ -79,15 +77,12 @@ export default {
 			return !isNaN(Number(text));
 		},
     onAnswer: async (msg) => {
-      await tradeApi.setTempTradeByChatId({
-        shoulder: Number(msg.text)
-      }, msg.chat.id)
-			const trade = await tradeApi.getTempTradeByChatId(msg.chat.id);
-			await tradeApi.createTrade(trade);
-			await tradeApi.deleteTempTradeByChatId(msg.chat.id);
+			history[msg.chat.id].shoulder = Number(msg.text)
+			await tradeApi.createTrade(history[msg.chat.id]);
 			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeCreated, {
 				parse_mode: 'html'
 			})
+			delete history[msg.chat.id]
     },
 		getPrev: () => DICTIONARY.PRICE,
 	},

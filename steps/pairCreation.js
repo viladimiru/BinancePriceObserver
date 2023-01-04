@@ -14,6 +14,8 @@ export const DICTIONARY = {
 	FINISH: 'FINISH',
 };
 
+const history = {}
+
 export default {
 	[DICTIONARY.ADD_OBSERVER]: {
 		id: 'ADD_OBSERVER',
@@ -28,13 +30,10 @@ export default {
 			}
 		},
 		onAnswer: async (msg) => {
-			await pairApi.setTempPairByChatId(
-				{
-					chatId: msg.chat.id,
-					symbol: msg.text.toUpperCase(),
-				},
-				msg.chat.id
-			);
+			history[msg.chat.id] = {
+				chatId: msg.chat.id,
+				symbol: msg.text.toUpperCase()
+			}
 		},
 		errorText: dict.pairNotExists,
 		getNext: () => DICTIONARY.CHOOSE_TRADE_TYPE,
@@ -64,19 +63,13 @@ export default {
 				[dict.below]: 'BELOW',
 				[dict.spiking]: 'SPIKE',
 			}[msg.text];
-			await pairApi.updateTempPairByChatId(
-				{
-					type: type,
-				},
-				msg.chat.id
-			);
+			history[msg.chat.id].type = type
 			if (msg.text === dict.spiking) {
-				const pair = await pairApi.getTempPairByChatId(msg.chat.id);
-				await pairApi.createPair(pair);
+				await pairApi.createPair(history[msg.chat.id]);
 				await updateStorage();
-				Subscription(pair.symbol);
-				await pairApi.deleteTempPairByChatId(msg.chat.id);
+				Subscription(history[msg.chat.id].symbol);
 				await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
+				delete history[msg.chat.id]
 			}
 		},
 		getPrev: () => DICTIONARY.ADD_OBSERVER,
@@ -95,12 +88,7 @@ export default {
 		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper(),
 		onAnswer: async (msg) => {
-			await pairApi.updateTempPairByChatId(
-				{
-					price: Number(msg.text),
-				},
-				msg.chat.id
-			);
+			history[msg.chat.id].price = Number(msg.text)
 		},
 		getPrev: () => DICTIONARY.CHOOSE_TRADE_TYPE,
 		getNext: () => DICTIONARY.SET_MESSAGE,
@@ -114,18 +102,12 @@ export default {
 			})),
 		]),
 		onAnswer: async (msg) => {
-			await pairApi.updateTempPairByChatId(
-				{
-					message: msg.text,
-				},
-				msg.chat.id
-			);
-			const pair = await pairApi.getTempPairByChatId(msg.chat.id);
-			await pairApi.createPair(pair);
+			history[msg.chat.id].message = msg.text
+			await pairApi.createPair(history[msg.chat.id]);
 			await updateStorage();
-			Subscription(pair.symbol);
-			await pairApi.deleteTempPairByChatId(msg.chat.id);
+			Subscription(history[msg.chat.id].symbol);
 			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
+			delete history[msg.chat.id]
 		},
 		getPrev: () => DICTIONARY.SET_PRICE,
 	},
