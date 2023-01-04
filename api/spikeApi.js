@@ -25,6 +25,17 @@ async function createSpike(chatId, pairId) {
 	});
 }
 
+async function createSpikeWithSymbol(chatId, symbol) {
+	const pair = await PAIR.findOne({
+		where: {
+			symbol: symbol,
+		},
+		raw: true,
+		nest: true,
+	});
+	return await createSpike(chatId, pair.id)
+}
+
 async function removeSpike(symbol, chatId) {
 	await pairApi.findPair(symbol).then(async (pair) => {
 		return await SPIKE.destroy({
@@ -55,5 +66,6 @@ export default {
 	removeSpike,
 	isSpikeExist,
 	removeSpike,
-	createSpike
+	createSpike,
+	createSpikeWithSymbol
 }

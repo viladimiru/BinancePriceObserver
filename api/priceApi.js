@@ -42,9 +42,20 @@ async function createPrice(chatId, message, type, price, pairId) {
 		nest: true,
 	});
 }
+async function createPriceWithSymbol(chatId, message, type, price, symbol) {
+	const pair = await PAIR.findOne({
+		where: {
+			symbol: symbol,
+		},
+		raw: true,
+		nest: true,
+	});
+	await createPrice(chatId, message, type, price, pair.id)
+}
 
 export default {
 	removePrice,
 	isPriceExist,
 	createPrice,
+	createPriceWithSymbol
 };

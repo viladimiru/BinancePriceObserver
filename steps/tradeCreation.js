@@ -3,13 +3,19 @@ import dict from '../dict/lang/index.js';
 import tradeApi from '../api/tradeApi.js'
 import { BOT_MESSANGER, get } from '../storage/index.js';
 import futuresApi from '../api/futuresApi.js';
+import priceApi from '../api/priceApi.js';
+import { Subscription, updateStorage } from '../subscription.js';
+import spikeApi from '../api/spikeApi.js';
 
 export const DICTIONARY = {
   SYMBOL: 'TRADE_SYMBOL',
 	TYPE: 'TRADE_TYPE',
   PRICE: 'TRADE_PRICE',
   FINISH: 'TRADE_FINISH',
-  SHOULDER: 'TRADE_SHOULDER'
+  SHOULDER: 'TRADE_SHOULDER',
+  STOP_LOSS: 'TRADE_STOP_LOSS',
+  TAKE_PROFIT: 'TRADE_TAKE_PROFIT',
+	SPIKING: 'TRADE_SPIKING'
 };
 
 const history = {}
@@ -78,12 +84,115 @@ export default {
 		},
     onAnswer: async (msg) => {
 			history[msg.chat.id].shoulder = Number(msg.text)
-			await tradeApi.createTrade(history[msg.chat.id]);
+    },
+		getPrev: () => DICTIONARY.PRICE,
+		getNext: () => DICTIONARY.TAKE_PROFIT
+	},
+	[DICTIONARY.TAKE_PROFIT]: {
+		id: DICTIONARY.TAKE_PROFIT,
+		text: dict.takeProfitIfExist,
+		keyboard: keyboardWrapper([
+			[
+				{
+					text: dict.miss
+				}
+			]
+		]),
+		validate: ({ text }) => {
+			return text === dict.miss || !isNaN(Number(text));
+		},
+    onAnswer: async (msg) => {
+			if (msg.text !== dict.miss) {
+				history[msg.chat.id].takeProfit = Number(msg.text)
+			}
+    },
+		getPrev: () => DICTIONARY.SHOULDER,
+		getNext: () => DICTIONARY.STOP_LOSS
+	},
+	[DICTIONARY.STOP_LOSS]: {
+		id: DICTIONARY.STOP_LOSS,
+		text: dict.stopLossIfExist,
+		keyboard: keyboardWrapper([
+			[
+				{
+					text: dict.miss
+				}
+			]
+		]),
+		validate: ({ text }) => {
+			return text === dict.miss || !isNaN(Number(text));
+		},
+    onAnswer: async (msg) => {
+			if (msg.text !== dict.miss) {
+				history[msg.chat.id].stopLoss = Number(msg.text)
+			}
+    },
+		getPrev: () => DICTIONARY.TAKE_PROFIT,
+		getNext: () => DICTIONARY.SPIKING
+	},
+	[DICTIONARY.SPIKING]: {
+		id: DICTIONARY.SPIKING,
+		text: dict.spikingIfNeeded,
+		keyboard: keyboardWrapper([
+			[
+				{
+					text: dict.yes
+				},
+				{
+					text: dict.miss
+				}
+			]
+		]),
+		expects: [
+			dict.miss,
+			dict.yes
+		],
+    onAnswer: async (msg) => {
+			if (msg.text !== dict.miss) {
+				history[msg.chat.id].spiking = true
+			}
+			const payload = history[msg.chat.id]
+			await tradeApi.createTrade(payload);
+
+			if (payload.stopLoss) {
+				await priceApi.createPriceWithSymbol(
+					msg.chat.id,
+					dict.messageTemplates[0],
+					payload.type === dict.long.toUpperCase() ? 'BELOW' : 'ABOVE',
+					payload.stopLoss,
+					payload.symbol
+				)
+				Subscription(payload.symbol);
+			}
+
+			if (payload.takeProfit) {
+				await priceApi.createPriceWithSymbol(
+					msg.chat.id,
+					dict.messageTemplates[1],
+					payload.type === dict.short.toUpperCase() ? 'BELOW' : 'ABOVE',
+					payload.takeProfit,
+					payload.symbol
+				)
+				Subscription(payload.symbol);
+			}
+
+			if (payload.spiking) {
+				await spikeApi.createSpikeWithSymbol(
+					msg.chat.id,
+					payload.symbol,
+				)
+				Subscription(payload.symbol);
+			}
+
+			if (payload.stopLoss || payload.takeProfit) {
+				await updateStorage();
+			}
+
 			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeCreated, {
 				parse_mode: 'html'
 			})
 			delete history[msg.chat.id]
     },
-		getPrev: () => DICTIONARY.PRICE,
+		getPrev: () => DICTIONARY.STOP_LOSS,
 	},
 };

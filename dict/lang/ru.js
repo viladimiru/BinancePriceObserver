@@ -44,5 +44,10 @@ export default {
   thanksForFeedback: 'Спасибо! Сообщение передано администратору',
   leaveFeedback: 'Отзыв ' + emoji.pen,
   selectDesiredFunction: '<b>Выберите нужную функцию</b>',
-  quotesFetchError: 'Ошибка запроса\nПовторите попытку'
+  quotesFetchError: 'Ошибка запроса\nПовторите попытку',
+  miss: 'Пропустить ⤵️',
+  stopLossIfExist: 'Значение Stop loss (Если есть). Мы отправим уведомление при достижении значения',
+  takeProfitIfExist: 'Значение Take profit (Если есть). Мы отправим уведомление при достижении значения',
+  yes: 'Да',
+  spikingIfNeeded: `Вы хотите следить за скачками стоимости ${emoji.spike}?`
 }
