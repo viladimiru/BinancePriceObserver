@@ -199,14 +199,14 @@ async function getAlertSymbols(chatId) {
 
 async function isAlertSymbolExist(symbol, chatId) {
 	const [result] = await sequelize.query(`
-		SELECT pa.symbol FROM Prices p
+		SELECT COUNT(DISTINCT pa.symbol) as cnt FROM Prices p
 				LEFT JOIN Spikes s ON 
 					p.PairId=s.PairId
 				LEFT JOIN PAIRS pa ON pa.id=p.PairId
 			WHERE p.chatId=${chatId} AND pa.symbol='${symbol}'
 			GROUP BY p.PairId
 		UNION
-		SELECT pa.symbol FROM Spikes t
+		SELECT COUNT(DISTINCT pa.symbol) FROM Spikes t
 				LEFT JOIN Prices p ON 
 					p.PairId=t.PairId
 				LEFT JOIN Spikes s ON 
