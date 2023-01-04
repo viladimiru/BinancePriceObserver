@@ -15,6 +15,7 @@ export default {
   sendMessageWhen: 'Прислать сообщение когда цена будет выше/ниже',
   pairNotExists: 'Такой пары не существует',
   enterAlertPrice: 'Введите сумму, после которой хотите получить уведомление ' + emoji.bell,
+  enterOnlyNumbers: 'Вводите только цифры',
   alertPriceError: 'Вводите только цифры (15000.00)',
   messageTemplate: 'Напишите сообщение, которое хотите получить',
   messageTemplates: [

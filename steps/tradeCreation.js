@@ -55,7 +55,7 @@ export default {
 				},
 			],
 		]),
-		expect: [dict.long, dict.short],
+		expects: [dict.long, dict.short],
     onAnswer: async (msg) => {
 			history[msg.chat.id].type = msg.text.toUpperCase()
     },
@@ -66,6 +66,7 @@ export default {
 		id: DICTIONARY.PRICE,
 		text: dict.tradePrice,
 		keyboard: keyboardWrapper(),
+		errorText: dict.alertPriceError,
 		validate: ({ text }) => {
 			return !isNaN(Number(text));
 		},
@@ -78,6 +79,7 @@ export default {
 	[DICTIONARY.SHOULDER]: {
 		id: DICTIONARY.SHOULDER,
 		text: dict.shoulder,
+		errorText: dict.enterOnlyNumbers,
 		keyboard: keyboardWrapper(),
 		validate: ({ text }) => {
 			return !isNaN(Number(text));
@@ -91,6 +93,7 @@ export default {
 	[DICTIONARY.TAKE_PROFIT]: {
 		id: DICTIONARY.TAKE_PROFIT,
 		text: dict.takeProfitIfExist,
+		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper([
 			[
 				{
@@ -112,6 +115,7 @@ export default {
 	[DICTIONARY.STOP_LOSS]: {
 		id: DICTIONARY.STOP_LOSS,
 		text: dict.stopLossIfExist,
+		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper([
 			[
 				{
