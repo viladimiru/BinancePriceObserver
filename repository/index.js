@@ -5,6 +5,7 @@ import TRADE from './models/trade.js';
 import sequelize from './sequelize.js';
 import USER_SESSION from './models/userSession.js';
 import FEEDBACK from './models/feedback.js';
+import USER from './models/user.js';
 
 PAIR.hasMany(PRICE, {
 	as: 'prices',
@@ -32,4 +33,5 @@ export {
 	sequelize,
 	USER_SESSION,
 	FEEDBACK,
+	USER
 };

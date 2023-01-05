@@ -5,6 +5,7 @@ import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
 import express from 'express'
+import userApi from './api/userApi.js';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -31,6 +32,7 @@ bot.on('message', onMessage);
 InitObserver(bot);
 
 bot.onText(/^\/start$/, async function (msg) {
+	await userApi.createUser(msg)
 	const userId = msg.from.id;
 	await sessionApi.updateSession(userId, steps.START.id);
 	bot.sendMessage(msg.chat.id, steps.START.text, {
