@@ -1,14 +1,10 @@
-import pairApi from '../api/pairApi.js';
-import { keyboardWrapper } from '../utils/keyboard.js';
-import { set, PAIR_STATS, get, BOT_MESSANGER } from '../storage/index.js';
-import dict from '../dict/lang/index.js'
-import tradeApi from '../api/tradeApi.js';
-import emoji from '../dict/emoji.js';
-
-export const DICTIONARY = {
-	TRADE_LIST: 'TRADE_LIST',
-  REMOVE_TRADE: 'REMOVE_TRADE',
-};
+import pairApi from '../../api/pairApi.js';
+import { keyboardWrapper } from '../../utils/keyboard.js';
+import { set, PAIR_STATS, get, BOT_MESSANGER } from '../../storage/index.js';
+import dict from '../../dict/lang/index.js'
+import tradeApi from '../../api/tradeApi.js';
+import emoji from '../../dict/emoji.js';
+import DICT from './dict.js';
 
 const stickerDictionary = {
 	LONG: emoji.above,
@@ -20,11 +16,11 @@ const typeDictionary = {
 }
 
 export default {
-	[DICTIONARY.TRADE_LIST]: {
-		id: DICTIONARY.TRADE_LIST,
+	[DICT.removal.TRADE_LIST]: {
+		id: DICT.removal.TRADE_LIST,
 		text: dict.choosePair,
-		getPrev: () => 'START',
-		getNext: () => DICTIONARY.TRADE_LIST,
+		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
+		getNext: () => DICT.removal.TRADE_LIST,
 		validate: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ')
 			return await tradeApi.isChatTradeExists(msg.chat.id, symbol, typeDictionary[type], price);

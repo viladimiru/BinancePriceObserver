@@ -13,5 +13,6 @@ export default {
   thinking: '💬',
   ufo: '🛸',
   dollar: '💲',
-  pen: '📝'
+  pen: '📝',
+  case: '💼'
 }

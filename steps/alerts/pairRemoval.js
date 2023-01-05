@@ -1,16 +1,12 @@
-import pairApi from '../api/pairApi.js';
-import { keyboardWrapper } from '../utils/keyboard.js';
-import { set, get, PAIR_STATS, BOT_MESSANGER } from '../storage/index.js';
-import dict from '../dict/lang/index.js'
-import emoji from '../dict/emoji.js';
-import spikeApi from '../api/spikeApi.js';
-import priceApi from '../api/priceApi.js';
-import alertApi from '../api/alertApi.js';
-
-export const DICTIONARY = {
-	PAIRS_LIST: 'PAIRS_LIST',
-	ALERTS_LIST: 'ALERTS_LIST',
-};
+import pairApi from '../../api/pairApi.js';
+import { keyboardWrapper } from '../../utils/keyboard.js';
+import { set, get, PAIR_STATS, BOT_MESSANGER } from '../../storage/index.js';
+import dict from '../../dict/lang/index.js'
+import emoji from '../../dict/emoji.js';
+import spikeApi from '../../api/spikeApi.js';
+import priceApi from '../../api/priceApi.js';
+import alertApi from '../../api/alertApi.js';
+import DICT from './dict.js';
 
 const stickerDictionary = {
 	undefined: emoji.spike,
@@ -24,11 +20,11 @@ const typeDictionary = {
 const history = {}
 
 export default {
-	[DICTIONARY.PAIRS_LIST]: {
-		id: DICTIONARY.PAIRS_LIST,
+	[DICT.removal.PAIRS_LIST]: {
+		id: DICT.removal.PAIRS_LIST,
 		text: dict.choosePair,
-		getPrev: () => 'START',
-		getNext: () => DICTIONARY.ALERTS_LIST,
+		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
+		getNext: () => DICT.removal.ALERTS_LIST,
 		validate: async (msg) => {
 			return await pairApi.isAlertSymbolExist(msg.text, msg.chat.id)
 		},
@@ -53,15 +49,15 @@ export default {
 			return keyboardWrapper(list);
 		},
 	},
-	[DICTIONARY.ALERTS_LIST]: {
-		id: DICTIONARY.ALERTS_LIST,
+	[DICT.removal.ALERTS_LIST]: {
+		id: DICT.removal.ALERTS_LIST,
 		text: dict.chooseRemovalAlert,
-		getPrev: () => DICTIONARY.PAIRS_LIST,
+		getPrev: () => DICT.removal.PAIRS_LIST,
 		getNext: (msg) => {
 			if (msg.text === dict.deleteAllAlerts) {
-				return DICTIONARY.PAIRS_LIST
+				return DICT.removal.PAIRS_LIST
 			}
-			return DICTIONARY.ALERTS_LIST
+			return DICT.removal.ALERTS_LIST
 		},
 		validate: async (msg) => {
 			if (msg.text === dict.deleteAllAlerts) {

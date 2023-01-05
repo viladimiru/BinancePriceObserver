@@ -7,6 +7,7 @@ export default {
   long: 'Long',
   back: emoji.leftArrow + ' Назад',
   symbol: 'Название пары (к примеру BTCUSDT)',
+  whatDoYouWant: 'Что вы хотите сделать',
   completed: '<b>Готово!</b>\n\nКак только отследим введённую сумму мы пришлем вам уведомление!',
   toTheMain: 'На главную',
   error: 'Я вас не понимаю',
@@ -51,5 +52,10 @@ export default {
   takeProfitIfExist: 'Значение Take profit (Если есть). Мы отправим уведомление при достижении значения',
   yes: 'Да',
   spikingIfNeeded: `Вы хотите следить за скачками стоимости ${emoji.spike}?`,
-  deleteAllAlerts: 'Удалить все ' + emoji.trash
+  deleteAllAlerts: 'Удалить все ' + emoji.trash,
+  pairStat: 'Статистика по паре',
+  enterPairNameOrSelect: 'Напишите название пары или выберите избранную',
+  alerts: 'Уведомления ' + emoji.bell,
+  trades: 'Сделки ' + emoji.case,
+  stats: 'Статистика'
 }

@@ -1,28 +1,18 @@
-import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/lang/index.js';
-import tradeApi from '../api/tradeApi.js'
-import { BOT_MESSANGER, get } from '../storage/index.js';
-import futuresApi from '../api/futuresApi.js';
-import priceApi from '../api/priceApi.js';
-import { Subscription, updateStorage } from '../subscription.js';
-import spikeApi from '../api/spikeApi.js';
-
-export const DICTIONARY = {
-  SYMBOL: 'TRADE_SYMBOL',
-	TYPE: 'TRADE_TYPE',
-  PRICE: 'TRADE_PRICE',
-  FINISH: 'TRADE_FINISH',
-  SHOULDER: 'TRADE_SHOULDER',
-  STOP_LOSS: 'TRADE_STOP_LOSS',
-  TAKE_PROFIT: 'TRADE_TAKE_PROFIT',
-	SPIKING: 'TRADE_SPIKING'
-};
+import { keyboardWrapper } from '../../utils/keyboard.js';
+import dict from '../../dict/lang/index.js';
+import tradeApi from '../../api/tradeApi.js'
+import { BOT_MESSANGER, get } from '../../storage/index.js';
+import futuresApi from '../../api/futuresApi.js';
+import priceApi from '../../api/priceApi.js';
+import { Subscription, updateStorage } from '../../subscription.js';
+import spikeApi from '../../api/spikeApi.js';
+import DICT from './dict.js';
 
 const history = {}
 
 export default {
-	[DICTIONARY.SYMBOL]: {
-		id: DICTIONARY.SYMBOL,
+	[DICT.creation.SYMBOL]: {
+		id: DICT.creation.SYMBOL,
 		text: dict.symbol,
 		keyboard: keyboardWrapper(),
 		validate: async ({ text }) => {
@@ -40,10 +30,11 @@ export default {
 			}
 		},
 		errorText: dict.pairNotExists,
-		getNext: () => DICTIONARY.TYPE,
+		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
+		getNext: () => DICT.creation.TYPE,
 	},
-	[DICTIONARY.TYPE]: {
-		id: DICTIONARY.TYPE,
+	[DICT.creation.TYPE]: {
+		id: DICT.creation.TYPE,
 		text: dict.tradeType,
 		keyboard: keyboardWrapper([
 			[
@@ -59,11 +50,11 @@ export default {
     onAnswer: async (msg) => {
 			history[msg.chat.id].type = msg.text.toUpperCase()
     },
-		getNext: () => DICTIONARY.PRICE,
-		getPrev: () => DICTIONARY.SYMBOL,
+		getNext: () => DICT.creation.PRICE,
+		getPrev: () => DICT.creation.SYMBOL,
 	},
-	[DICTIONARY.PRICE]: {
-		id: DICTIONARY.PRICE,
+	[DICT.creation.PRICE]: {
+		id: DICT.creation.PRICE,
 		text: dict.tradePrice,
 		keyboard: keyboardWrapper(),
 		errorText: dict.alertPriceError,
@@ -73,11 +64,11 @@ export default {
     onAnswer: async (msg) => {
 			history[msg.chat.id].markPrice = Number(msg.text)
     },
-		getNext: () => DICTIONARY.SHOULDER,
-		getPrev: () => DICTIONARY.TYPE,
+		getNext: () => DICT.creation.SHOULDER,
+		getPrev: () => DICT.creation.TYPE,
 	},
-	[DICTIONARY.SHOULDER]: {
-		id: DICTIONARY.SHOULDER,
+	[DICT.creation.SHOULDER]: {
+		id: DICT.creation.SHOULDER,
 		text: dict.shoulder,
 		errorText: dict.enterOnlyNumbers,
 		keyboard: keyboardWrapper(),
@@ -87,11 +78,11 @@ export default {
     onAnswer: async (msg) => {
 			history[msg.chat.id].shoulder = Number(msg.text)
     },
-		getPrev: () => DICTIONARY.PRICE,
-		getNext: () => DICTIONARY.TAKE_PROFIT
+		getPrev: () => DICT.creation.PRICE,
+		getNext: () => DICT.creation.TAKE_PROFIT
 	},
-	[DICTIONARY.TAKE_PROFIT]: {
-		id: DICTIONARY.TAKE_PROFIT,
+	[DICT.creation.TAKE_PROFIT]: {
+		id: DICT.creation.TAKE_PROFIT,
 		text: dict.takeProfitIfExist,
 		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper([
@@ -109,11 +100,11 @@ export default {
 				history[msg.chat.id].takeProfit = Number(msg.text)
 			}
     },
-		getPrev: () => DICTIONARY.SHOULDER,
-		getNext: () => DICTIONARY.STOP_LOSS
+		getPrev: () => DICT.creation.SHOULDER,
+		getNext: () => DICT.creation.STOP_LOSS
 	},
-	[DICTIONARY.STOP_LOSS]: {
-		id: DICTIONARY.STOP_LOSS,
+	[DICT.creation.STOP_LOSS]: {
+		id: DICT.creation.STOP_LOSS,
 		text: dict.stopLossIfExist,
 		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper([
@@ -131,11 +122,11 @@ export default {
 				history[msg.chat.id].stopLoss = Number(msg.text)
 			}
     },
-		getPrev: () => DICTIONARY.TAKE_PROFIT,
-		getNext: () => DICTIONARY.SPIKING
+		getPrev: () => DICT.creation.TAKE_PROFIT,
+		getNext: () => DICT.creation.SPIKING
 	},
-	[DICTIONARY.SPIKING]: {
-		id: DICTIONARY.SPIKING,
+	[DICT.creation.SPIKING]: {
+		id: DICT.creation.SPIKING,
 		text: dict.spikingIfNeeded,
 		keyboard: keyboardWrapper([
 			[
@@ -197,6 +188,7 @@ export default {
 			})
 			delete history[msg.chat.id]
     },
-		getPrev: () => DICTIONARY.STOP_LOSS,
+		getPrev: () => DICT.creation.STOP_LOSS,
+		getNext: () => DICT.default.CHOOSE_TRADE_FUNC
 	},
 };

@@ -1,23 +1,15 @@
-import pairApi from '../api/pairApi.js';
-import { updateStorage, Subscription } from '../subscription.js';
-import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/lang/index.js';
-import { BOT_MESSANGER, get } from '../storage/index.js';
-import futuresApi from '../api/futuresApi.js';
-
-export const DICTIONARY = {
-	ADD_OBSERVER: 'ADD_OBSERVER',
-	CHOOSE_TRADE_TYPE: 'CHOOSE_TRADE_TYPE',
-	SET_PRICE: 'SET_PRICE',
-	SET_TRADE_PRICE: 'SET_TRADE_PRICE',
-	SET_MESSAGE: 'SET_MESSAGE',
-	FINISH: 'FINISH',
-};
+import pairApi from '../../api/pairApi.js';
+import { updateStorage, Subscription } from '../../subscription.js';
+import { keyboardWrapper } from '../../utils/keyboard.js';
+import dict from '../../dict/lang/index.js';
+import { BOT_MESSANGER, get } from '../../storage/index.js';
+import futuresApi from '../../api/futuresApi.js';
+import DICT from './dict.js';
 
 const history = {}
 
 export default {
-	[DICTIONARY.ADD_OBSERVER]: {
+	[DICT.creation.ADD_OBSERVER]: {
 		id: 'ADD_OBSERVER',
 		text: dict.symbol,
 		keyboard: keyboardWrapper(),
@@ -36,9 +28,10 @@ export default {
 			}
 		},
 		errorText: dict.pairNotExists,
-		getNext: () => DICTIONARY.CHOOSE_TRADE_TYPE,
+		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
+		getNext: () => DICT.creation.CHOOSE_TRADE_TYPE,
 	},
-	[DICTIONARY.CHOOSE_TRADE_TYPE]: {
+	[DICT.creation.CHOOSE_TRADE_TYPE]: {
 		id: 'CHOOSE_TRADE_TYPE',
 		text: dict.sendMessageWhen,
 		expects: [dict.above, dict.below, dict.spiking],
@@ -72,14 +65,15 @@ export default {
 				delete history[msg.chat.id]
 			}
 		},
-		getPrev: () => DICTIONARY.ADD_OBSERVER,
+		getPrev: () => DICT.creation.ADD_OBSERVER,
 		getNext: (msg) => {
 			if (msg.text !== dict.spiking) {
-				return DICTIONARY.SET_PRICE;
+				return DICT.creation.SET_PRICE;
 			}
+			return DICT.default.CHOOSE_PAIR_FUNC
 		},
 	},
-	[DICTIONARY.SET_PRICE]: {
+	[DICT.creation.SET_PRICE]: {
 		id: 'SET_PRICE',
 		text: dict.enterAlertPrice,
 		validate: ({ text }) => {
@@ -90,10 +84,10 @@ export default {
 		onAnswer: async (msg) => {
 			history[msg.chat.id].price = Number(msg.text)
 		},
-		getPrev: () => DICTIONARY.CHOOSE_TRADE_TYPE,
-		getNext: () => DICTIONARY.SET_MESSAGE,
+		getPrev: () => DICT.creation.CHOOSE_TRADE_TYPE,
+		getNext: () => DICT.creation.SET_MESSAGE,
 	},
-	[DICTIONARY.SET_MESSAGE]: {
+	[DICT.creation.SET_MESSAGE]: {
 		id: 'SET_MESSAGE',
 		text: dict.messageTemplate,
 		keyboard: keyboardWrapper([
@@ -109,6 +103,7 @@ export default {
 			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
 			delete history[msg.chat.id]
 		},
-		getPrev: () => DICTIONARY.SET_PRICE,
+		getPrev: () => DICT.creation.SET_PRICE,
+		getNext: () => DICT.default.CHOOSE_PAIR_FUNC,
 	},
 };
