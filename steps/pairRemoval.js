@@ -5,6 +5,7 @@ import dict from '../dict/lang/index.js'
 import emoji from '../dict/emoji.js';
 import spikeApi from '../api/spikeApi.js';
 import priceApi from '../api/priceApi.js';
+import alertApi from '../api/alertApi.js';
 
 export const DICTIONARY = {
 	PAIRS_LIST: 'PAIRS_LIST',
@@ -56,8 +57,16 @@ export default {
 		id: DICTIONARY.ALERTS_LIST,
 		text: dict.chooseRemovalAlert,
 		getPrev: () => DICTIONARY.PAIRS_LIST,
-		getNext: () => DICTIONARY.ALERTS_LIST,
+		getNext: (msg) => {
+			if (msg.text === dict.deleteAllAlerts) {
+				return DICTIONARY.PAIRS_LIST
+			}
+			return DICTIONARY.ALERTS_LIST
+		},
 		validate: async (msg) => {
+			if (msg.text === dict.deleteAllAlerts) {
+				return true
+			}
 			const [symbol, type, price] = msg.text.split(' ')
 			if (!typeDictionary[type]) {
 				return await spikeApi.isSpikeExist(symbol, msg.chat.id)
@@ -65,6 +74,9 @@ export default {
 			return await priceApi.isPriceExist(msg.chat.id, symbol, typeDictionary[type], price);
 		},
 		onAnswer: async (msg) => {
+			if (msg.text === dict.deleteAllAlerts) {
+				return await alertApi.deleteAlerts(msg.chat.id, history[msg.chat.id])
+			}
 			const [symbol, type, price] = msg.text.split(' ');
 			if (typeDictionary[type]) {
 				await priceApi.removePrice(symbol, msg.chat.id, typeDictionary[type], price)
@@ -109,14 +121,21 @@ export default {
 					count++;
 				});
 			});
-			list.push([
-				{
-					text: dict.back
-				},
-				{
-					text: dict.toTheMain
-				},
-			])
+			list.push(
+				[
+					{
+						text: dict.deleteAllAlerts
+					}
+				],
+				[
+					{
+						text: dict.back
+					},
+					{
+						text: dict.toTheMain
+					},
+				]
+			)
 			return keyboardWrapper(list, null, true);
 		},
 	},

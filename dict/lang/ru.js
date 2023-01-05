@@ -50,5 +50,6 @@ export default {
   stopLossIfExist: 'Значение Stop loss (Если есть). Мы отправим уведомление при достижении значения',
   takeProfitIfExist: 'Значение Take profit (Если есть). Мы отправим уведомление при достижении значения',
   yes: 'Да',
-  spikingIfNeeded: `Вы хотите следить за скачками стоимости ${emoji.spike}?`
+  spikingIfNeeded: `Вы хотите следить за скачками стоимости ${emoji.spike}?`,
+  deleteAllAlerts: 'Удалить все ' + emoji.trash
 }
