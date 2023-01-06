@@ -157,7 +157,6 @@ export default {
 					payload.stopLoss,
 					payload.symbol
 				)
-				Subscription(payload.symbol);
 			}
 
 			if (payload.takeProfit) {
@@ -168,7 +167,6 @@ export default {
 					payload.takeProfit,
 					payload.symbol
 				)
-				Subscription(payload.symbol);
 			}
 
 			if (payload.spiking) {
@@ -176,11 +174,11 @@ export default {
 					msg.chat.id,
 					payload.symbol,
 				)
-				Subscription(payload.symbol);
 			}
 
-			if (payload.stopLoss || payload.takeProfit) {
+			if (payload.stopLoss || payload.takeProfit || payload.spiking) {
 				await updateStorage();
+				Subscription(payload.symbol);
 			}
 
 			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeCreated, {
