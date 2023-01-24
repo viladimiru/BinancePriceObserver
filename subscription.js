@@ -1,4 +1,3 @@
-import Binance from 'node-binance-api';
 import spikeApi from './api/spikeApi.js';
 import pairApi from './api/pairApi.js';
 import priceApi from './api/priceApi.js'
@@ -10,10 +9,10 @@ import {
 	toFixed,
 } from './utils/number.js';
 import emoji from './dict/emoji.js';
+import binance from './plugins/binance.js';
 
 let subscriptions = {};
 const spikeControl = {};
-const binance = new Binance();
 
 export function Subscription(symbol) {
 	const item = getStorageItemBySymbol(symbol);
