@@ -6,6 +6,13 @@ async function addFeedback(msg) {
   })
 }
 
+async function getAll() {
+  const res = await FEEDBACK.findAll()
+  res.forEach(item => item.msg = JSON.parse(item.msg))
+  return res
+}
+
 export default {
-  addFeedback
+  addFeedback,
+  getAll
 }
