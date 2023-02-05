@@ -25,10 +25,12 @@ export default {
 		cbOnSend: async (msg) => {
 			try {
 				const result = await pairApi.getChatPairPrices(msg.chat.id);
+				console.log(result)
 				if (result) {
 					const trades = await tradeApi.getChatTradesByPairs(
 						result.map((item) => item.symbol)
 					);
+					console.log(trades)
 					let text = '';
 					result.forEach((item) => {
 						text += [
