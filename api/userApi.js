@@ -23,6 +23,11 @@ async function createUser(msg) {
   })
 }
 
+async function getUsers() {
+  return await USER.findAll()
+}
+
 export default {
 	createUser,
+  getUsers
 };
