@@ -1,4 +1,4 @@
-import { PAIR_STATS, BOT_MESSANGER } from './const.js';
+import { PAIR_STATS, BOT_MESSANGER, LOGS } from './const.js';
 
 const state = {};
 
@@ -14,4 +14,4 @@ function set(key, data) {
 	state[key] = data;
 }
 
-export { PAIR_STATS, BOT_MESSANGER, register, get, set };
+export { PAIR_STATS, BOT_MESSANGER, LOGS, register, get, set };

@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "export NODE_ENV=development && nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "pooling": "export NODE_ENV=pooling && node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +20,8 @@
     "node-binance-api": "^0.13.1",
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
-    "sequelize": "^6.28.0"
+    "sequelize": "^6.28.0",
+    "ws": "^8.12.0"
   },
   "devDependencies": {
     "sequelize-cli": "^6.5.2",

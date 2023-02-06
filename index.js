@@ -1,7 +1,7 @@
 
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';
-import { register, BOT_MESSANGER, PAIR_STATS } from './storage/index.js';
+import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
 import userApi from './api/userApi.js';
@@ -9,10 +9,12 @@ import { server } from './express/index.js';
 import bot from './bot.js';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+const isPooling = process.env.NODE_ENV === 'pooling';
 const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, bot.sendMessage.bind(bot));
+register(LOGS, [])
 
 bot.setMyCommands([
 	{
@@ -116,8 +118,9 @@ bot.on('polling_error', console.log);
 function sendMessage(chatId, msg, options = {}) {
 	return bot.sendMessage(chatId, msg, options);
 }
-
-server.post(`/tghook/bot${token}`, (req, res) => {
-	bot.processUpdate(req.body)
-	res.sendStatus(200)
-})
+if (!isPooling) {
+	server.post(`/tghook/bot${token}`, (req, res) => {
+		bot.processUpdate(req.body)
+		res.sendStatus(200)
+	})
+}

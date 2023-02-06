@@ -1,6 +1,6 @@
 import spikeApi from './api/spikeApi.js';
 import pairApi from './api/pairApi.js';
-import priceApi from './api/priceApi.js'
+import priceApi from './api/priceApi.js';
 import { get, set, PAIR_STATS, BOT_MESSANGER } from './storage/index.js';
 import {
 	biggestInArr,
@@ -10,16 +10,24 @@ import {
 } from './utils/number.js';
 import emoji from './dict/emoji.js';
 import binance from './plugins/binance.js';
+import { socketMailing } from './express/index.js';
 
 let subscriptions = {};
 const spikeControl = {};
 
 export function Subscription(symbol) {
 	const item = getStorageItemBySymbol(symbol);
+
+	socketMailing('subscription', {
+		pair: symbol,
+		isExists: !!subscriptions[item.symbol],
+	});
+
 	if (subscriptions[item.symbol]) return;
 	const endpoint = binance.futuresMarkPriceStream(item.symbol, observe, '@1s');
 	spikeControl[symbol] = { minute: [], hour: [] };
 	function observe(data) {
+		socketMailing('observe', data);
 		data.markPrice = parseFloat(data.markPrice);
 		const pair = getStorageItemTriggersBySymbol(symbol);
 
@@ -44,23 +52,29 @@ export function Subscription(symbol) {
 			}
 		});
 		finishedTriggers.forEach(async (item) => {
-			get(BOT_MESSANGER)(
-				item.chatId,
-				[
-					item.message,
-					`<b>${item.symbol}:</b> ${
-						item.type === 'ABOVE' ? emoji.above : emoji.below
-					} ${item.currentPrice}`,
-					`\nTrigger value: ${item.price}`,
-				].join('\n'),
-				{
-					parse_mode: 'HTML',
-				}
-			);
+			const msg = [
+				item.message,
+				`<b>${item.symbol}:</b> ${
+					item.type === 'ABOVE' ? emoji.above : emoji.below
+				} ${item.currentPrice}`,
+				`\nTrigger value: ${item.price}`,
+			].join('\n');
+			get(BOT_MESSANGER)(item.chatId, msg, {
+				parse_mode: 'HTML',
+			});
+			socketMailing('alert', {
+				message: msg,
+				chatId: item.chatId,
+			});
 			set(
 				PAIR_STATS,
 				item.type
-					? await priceApi.removePrice(item.symbol, item.chatId, item.type, item.price)
+					? await priceApi.removePrice(
+							item.symbol,
+							item.chatId,
+							item.type,
+							item.price
+					  )
 					: await spikeApi.removeSpike(item.symbol, item.chatId)
 			);
 			if (
@@ -181,24 +195,25 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 	const isBiggestCurrent = biggest[1] > smallest[1];
 	const currentPrice = isBiggestCurrent ? biggest[0] : smallest[0];
 	const prevPrice = isBiggestCurrent ? smallest[0] : biggest[0];
+	const msg = [
+		'<b>Скачки цен ' + emoji.spike,
+		symbol +
+			' ' +
+			toFixed(Math.abs(diff)) +
+			'%' +
+			(isBiggestCurrent ? emoji.above : emoji.belowRed),
+		'</b>',
+		'<i>Интервал: ' + interval + exp,
+		'Текущая цена: ' + Number(currentPrice),
+		'Предыдущая цена: ' + Number(prevPrice) + '</i>',
+	].join('\n');
 	spikes.forEach((item) => {
-		get(BOT_MESSANGER)(
-			item.chatId,
-			[
-				'<b>Скачки цен ' + emoji.spike,
-				symbol +
-					' ' +
-					toFixed(Math.abs(diff)) +
-					'%' +
-					(isBiggestCurrent ? emoji.above : emoji.belowRed),
-				'</b>',
-				'<i>Интервал: ' + interval + exp,
-				'Текущая цена: ' + Number(currentPrice),
-				'Предыдущая цена: ' + Number(prevPrice) + '</i>',
-			].join('\n'),
-			{
-				parse_mode: 'HTML',
-			}
-		);
+		socketMailing('spikeAlert', {
+			message: msg,
+			chatId: item.chatId,
+		});
+		get(BOT_MESSANGER)(item.chatId, msg, {
+			parse_mode: 'HTML',
+		});
 	});
 }
