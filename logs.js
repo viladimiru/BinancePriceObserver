@@ -5,7 +5,12 @@ const limit = 200;
 
 function addLog(data) {
 	let logs = get(LOGS);
-	logs = [data, ...(logs.length > limit ? logs.slice(0, limit - 1) : logs)];
+	if (Array.isArray(data)) {
+		const commonLength = logs.length + data.length
+		logs = [...data, ...(commonLength > limit ? logs.slice(0, commonLength - limit) : logs)]
+	} else {
+		logs = [data, ...(logs.length > limit ? logs.slice(0, limit - 1) : logs)];
+	}
 	set(LOGS, logs);
 }
 

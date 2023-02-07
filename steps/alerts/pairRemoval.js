@@ -79,7 +79,8 @@ export default {
 			} else {
 				await spikeApi.removeSpike(symbol, msg.chat.id)
 			}
-			set(PAIR_STATS, await pairApi.getPairs());
+			const pairs = await pairApi.getPairs()
+			set(PAIR_STATS, pairs.filter(item => item.prices.length || item.spikes.length));
 			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved)
 		},
 		errorText: dict.youNotCreatedThisPair,

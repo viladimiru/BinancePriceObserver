@@ -5,6 +5,7 @@ import Feedback from './api/feedback.js';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { addLog, getLogs } from '../logs.js';
+import { uid } from 'uid';
 
 const WsClients = {};
 
@@ -45,8 +46,8 @@ const wsServer = new WebSocketServer({ port: 3030 });
 wsServer.on('connection', onConnection);
 
 function onConnection(wsClient) {
-	console.log(1)
-	wsClient.send(JSON.stringify(getLogs()))
+	console.log(1);
+	wsClient.send(JSON.stringify(getLogs()));
 	wsClient.on('message', (client) => {
 		const parsedMsg = JSON.parse(client);
 		if (!WsClients[parsedMsg.username]) {
@@ -62,22 +63,31 @@ function onConnection(wsClient) {
 	});
 }
 
+let lastMailing = null
+let queue = []
+
 function socketMailing(actionType, data = {}) {
 	if (!actionType) {
-		throw new Error('Action type is required')
+		throw new Error('Action type is required');
 	}
 	if (typeof data !== 'object') {
-		throw new Error('Throw only objects!')
+		throw new Error('Throw only objects!');
 	}
 	const payload = {
 		action: actionType,
 		data,
-		timestamp: Date.now()
+		timestamp: Date.now(),
+		uid: uid(),
+	};
+	queue.push(payload)
+	if (lastMailing < Date.now() - 900) {
+		addLog(queue);
+		wsServer.clients.forEach((client) => {
+			client.send(JSON.stringify(queue));
+		});
+		lastMailing = Date.now()
+		queue = []
 	}
-	addLog(payload)
-	wsServer.clients.forEach((client) => {
-		client.send(JSON.stringify(payload))
-	})
 }
 
 export { app as server, wsServer, socketMailing };

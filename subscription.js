@@ -27,56 +27,58 @@ export function Subscription(symbol) {
 	const endpoint = binance.futuresMarkPriceStream(item.symbol, observe, '@1s');
 	spikeControl[symbol] = { minute: [], hour: [] };
 	function observe(data) {
-		socketMailing('observe', data);
-		data.markPrice = parseFloat(data.markPrice);
-		const pair = getStorageItemTriggersBySymbol(symbol);
+		try {
+			socketMailing('observe', data);
+			data.markPrice = parseFloat(data.markPrice);
+			const pair = getStorageItemTriggersBySymbol(symbol);
 
-		if (pair.spikes) {
-			spikeMonitor(symbol, data.markPrice);
-		}
-		const finishedTriggers = [];
-
-		pair.prices.forEach((price) => {
-			if (
-				(price.type === 'ABOVE' && price.price <= data.markPrice) ||
-				(price.type === 'BELOW' && price.price >= data.markPrice)
-			) {
-				finishedTriggers.push({
-					chatId: price.chatId,
-					price: price.price,
-					type: price.type,
-					message: price.message,
-					currentPrice: parseFloat(data.markPrice),
-					symbol: item.symbol,
-				});
+			if (pair.spikes) {
+				spikeMonitor(symbol, data.markPrice);
 			}
-		});
-		finishedTriggers.forEach(async (item) => {
-			const msg = [
-				item.message,
-				`<b>${item.symbol}:</b> ${
-					item.type === 'ABOVE' ? emoji.above : emoji.below
-				} ${item.currentPrice}`,
-				`\nTrigger value: ${item.price}`,
-			].join('\n');
-			get(BOT_MESSANGER)(item.chatId, msg, {
-				parse_mode: 'HTML',
+			const finishedTriggers = [];
+
+			pair.prices.forEach((price) => {
+				if (
+					(price.type === 'ABOVE' && price.price <= data.markPrice) ||
+					(price.type === 'BELOW' && price.price >= data.markPrice)
+				) {
+					finishedTriggers.push({
+						chatId: price.chatId,
+						price: price.price,
+						type: price.type,
+						message: price.message,
+						currentPrice: parseFloat(data.markPrice),
+						symbol: item.symbol,
+					});
+				}
 			});
-			socketMailing('alert', {
-				message: msg,
-				chatId: item.chatId,
+			finishedTriggers.forEach(async (item) => {
+				const msg = [
+					item.message,
+					`<b>${item.symbol}:</b> ${
+						item.type === 'ABOVE' ? emoji.above : emoji.below
+					} ${item.currentPrice}`,
+					`\nTrigger value: ${item.price}`,
+				].join('\n');
+				get(BOT_MESSANGER)(item.chatId, msg, {
+					parse_mode: 'HTML',
+				});
+				socketMailing('alert', {
+					message: msg,
+					chatId: item.chatId,
+				});
+				set(
+					PAIR_STATS,
+					item.type
+						? await priceApi.removePrice(
+								item.symbol,
+								item.chatId,
+								item.type,
+								item.price
+						  )
+						: await spikeApi.removeSpike(item.symbol, item.chatId)
+				);
 			});
-			set(
-				PAIR_STATS,
-				item.type
-					? await priceApi.removePrice(
-							item.symbol,
-							item.chatId,
-							item.type,
-							item.price
-					  )
-					: await spikeApi.removeSpike(item.symbol, item.chatId)
-			);
 			if (
 				!get(PAIR_STATS)
 					.map((item) => item.symbol)
@@ -84,14 +86,20 @@ export function Subscription(symbol) {
 			) {
 				removeSubscription(item.symbol);
 			}
-		});
+		} catch {
+			removeSubscription(item.symbol);
+		}
 	}
 	subscriptions[item.symbol] = endpoint;
 	return endpoint;
 }
 
 export async function InitObserver(_bot) {
-	set(PAIR_STATS, await pairApi.getPairs());
+	const pairs = await pairApi.getPairs();
+	set(
+		PAIR_STATS,
+		pairs.filter((item) => item.prices.length || item.spikes.length)
+	);
 	get(PAIR_STATS).forEach((item) => {
 		Subscription(item.symbol);
 	});
