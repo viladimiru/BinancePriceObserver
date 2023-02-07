@@ -1,7 +1,7 @@
 import { get, set } from './storage/index.js';
 import { LOGS } from './storage/const.js';
 
-const limit = 200;
+const limit = 2000;
 
 function addLog(data) {
 	let logs = get(LOGS);
