@@ -1,4 +1,3 @@
-
 import express from 'express';
 import feedbackApi from '../../api/feedbackApi.js';
 
@@ -9,8 +8,26 @@ Feedback.get('/list', async (_, res) => {
 		const list = await feedbackApi.getAll();
 		res.status(200).json(list || []);
 	} catch {
-		res.sendStatus(400)
+		res.sendStatus(400);
 	}
 });
 
-export default Feedback
+Feedback.delete('/list/:feedbackId', async (req, res) => {
+	const feedbackId = Number(req.params.feedbackId);
+	if (feedbackId !== feedbackId) {
+		res.status(422).send({
+			message: 'Feedback ID should be a number',
+		});
+	}	else {
+		try {
+			await feedbackApi.deleteFeedback(feedbackId)
+			res.sendStatus(200);
+		} catch (e) {
+			res.status(422).send({
+				error: e.message,
+			});
+		}
+	}
+});
+
+export default Feedback;

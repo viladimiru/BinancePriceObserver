@@ -5,7 +5,7 @@ import Feedback from './api/feedback.js';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { addLog, getLogs } from '../logs.js';
-import { uid } from 'uid';
+import {v4 as uuidv4} from 'uuid';
 
 const WsClients = {};
 
@@ -77,7 +77,7 @@ function socketMailing(actionType, data = {}) {
 		action: actionType,
 		data,
 		timestamp: Date.now(),
-		uid: uid(),
+		uid: uuidv4(),
 	};
 	queue.push(payload)
 	if (lastMailing < Date.now() - 900) {

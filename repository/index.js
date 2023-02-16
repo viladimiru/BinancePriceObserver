@@ -23,7 +23,7 @@ TRADE.belongsTo(PAIR);
 PRICE.belongsTo(PAIR);
 SPIKE.belongsTo(PAIR);
 
-await sequelize.sync();
+sequelize.sync();
 
 export {
 	PAIR,
