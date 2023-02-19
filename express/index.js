@@ -41,7 +41,12 @@ app.listen(process.env.PORT, () => {
 	console.log(`Express server is listening on ${process.env.PORT}`);
 });
 
-const wsServer = new WebSocketServer({ port: 3030 });
+const wsServer = new WebSocketServer({
+	port: 3030,
+	verifyClient({req}) {
+		return req.headers['sec-websocket-protocol'].indexOf(process.env.API_TOKEN) > -1
+	}
+});
 
 wsServer.on('connection', onConnection);
 
