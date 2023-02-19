@@ -40,7 +40,7 @@ async function updateSession(userId, step) {
 }
 
 export default {
-  getSession,
-  setSession,
-  updateSession,
-}
+	getSession,
+	setSession,
+	updateSession,
+};

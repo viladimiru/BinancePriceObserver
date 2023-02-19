@@ -2,18 +2,18 @@ import { PRICE, PAIR } from '../repository/index.js';
 import pairApi from './pairApi.js';
 
 async function isPriceExist(chatId, symbol, type, price) {
-  const result = await pairApi.findPair(symbol).then(async (pair) => {
+	const result = await pairApi.findPair(symbol).then(async (pair) => {
 		return await PRICE.findOne({
 			where: {
 				type: type,
 				chatId: chatId,
 				price: price,
-        PairId: pair.id
+				PairId: pair.id,
 			},
-      attributes: ['id']
+			attributes: ['id'],
 		});
 	});
-	return !!result
+	return !!result;
 }
 
 async function removePrice(symbol, chatId, type, price) {
@@ -23,10 +23,10 @@ async function removePrice(symbol, chatId, type, price) {
 				chatId: chatId,
 				type: type,
 				price: price,
-				PairId: pair.id
-			}
-		})
-	})
+				PairId: pair.id,
+			},
+		});
+	});
 	return await pairApi.getPairs();
 }
 async function createPrice(chatId, message, type, price, pairId) {
@@ -50,12 +50,12 @@ async function createPriceWithSymbol(chatId, message, type, price, symbol) {
 		raw: true,
 		nest: true,
 	});
-	await createPrice(chatId, message, type, price, pair.id)
+	await createPrice(chatId, message, type, price, pair.id);
 }
 
 export default {
 	removePrice,
 	isPriceExist,
 	createPrice,
-	createPriceWithSymbol
+	createPriceWithSymbol,
 };

@@ -27,5 +27,5 @@ export function diffInPercents(a, b) {
 }
 
 export function toFixed(number, dp = 8) {
-	return +parseFloat(number).toFixed( dp );
+	return +parseFloat(number).toFixed(dp);
 }

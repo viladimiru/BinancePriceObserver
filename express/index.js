@@ -5,7 +5,7 @@ import Feedback from './api/feedback.js';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { addLog, getLogs } from '../logs.js';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 const WsClients = {};
 
@@ -43,9 +43,11 @@ app.listen(process.env.PORT, () => {
 
 const wsServer = new WebSocketServer({
 	port: 3030,
-	verifyClient({req}) {
-		return req.headers['sec-websocket-protocol'].indexOf(process.env.API_TOKEN) > -1
-	}
+	verifyClient({ req }) {
+		return (
+			req.headers['sec-websocket-protocol'].indexOf(process.env.API_TOKEN) > -1
+		);
+	},
 });
 
 wsServer.on('connection', onConnection);
@@ -67,8 +69,8 @@ function onConnection(wsClient) {
 	});
 }
 
-let lastMailing = null
-let queue = []
+let lastMailing = null;
+let queue = [];
 
 function socketMailing(actionType, data = {}) {
 	if (!actionType) {
@@ -83,14 +85,14 @@ function socketMailing(actionType, data = {}) {
 		timestamp: Date.now(),
 		uid: uuidv4(),
 	};
-	queue.push(payload)
+	queue.push(payload);
 	if (lastMailing < Date.now() - 900) {
 		addLog(queue);
 		wsServer.clients.forEach((client) => {
 			client.send(JSON.stringify(queue));
 		});
-		lastMailing = Date.now()
-		queue = []
+		lastMailing = Date.now();
+		queue = [];
 	}
 }
 

@@ -6,7 +6,7 @@ import { BOT_MESSANGER, get } from '../../storage/index.js';
 import futuresApi from '../../api/futuresApi.js';
 import DICT from './dict.js';
 
-const history = {}
+const history = {};
 
 export default {
 	[DICT.creation.ADD_OBSERVER]: {
@@ -24,8 +24,8 @@ export default {
 		onAnswer: async (msg) => {
 			history[msg.chat.id] = {
 				chatId: msg.chat.id,
-				symbol: msg.text.toUpperCase()
-			}
+				symbol: msg.text.toUpperCase(),
+			};
 		},
 		errorText: dict.pairNotExists,
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
@@ -56,13 +56,13 @@ export default {
 				[dict.below]: 'BELOW',
 				[dict.spiking]: 'SPIKE',
 			}[msg.text];
-			history[msg.chat.id].type = type
+			history[msg.chat.id].type = type;
 			if (msg.text === dict.spiking) {
 				await pairApi.createPair(history[msg.chat.id]);
 				await updateStorage();
 				Subscription(history[msg.chat.id].symbol);
-				await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
-				delete history[msg.chat.id]
+				await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated);
+				delete history[msg.chat.id];
 			}
 		},
 		getPrev: () => DICT.creation.ADD_OBSERVER,
@@ -70,7 +70,7 @@ export default {
 			if (msg.text !== dict.spiking) {
 				return DICT.creation.SET_PRICE;
 			}
-			return DICT.default.CHOOSE_PAIR_FUNC
+			return DICT.default.CHOOSE_PAIR_FUNC;
 		},
 	},
 	[DICT.creation.SET_PRICE]: {
@@ -82,7 +82,7 @@ export default {
 		errorText: dict.alertPriceError,
 		keyboard: keyboardWrapper(),
 		onAnswer: async (msg) => {
-			history[msg.chat.id].price = Number(msg.text)
+			history[msg.chat.id].price = Number(msg.text);
 		},
 		getPrev: () => DICT.creation.CHOOSE_TRADE_TYPE,
 		getNext: () => DICT.creation.SET_MESSAGE,
@@ -96,12 +96,12 @@ export default {
 			})),
 		]),
 		onAnswer: async (msg) => {
-			history[msg.chat.id].message = msg.text
+			history[msg.chat.id].message = msg.text;
 			await pairApi.createPair(history[msg.chat.id]);
 			await updateStorage();
 			Subscription(history[msg.chat.id].symbol);
-			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated)
-			delete history[msg.chat.id]
+			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated);
+			delete history[msg.chat.id];
 		},
 		getPrev: () => DICT.creation.SET_PRICE,
 		getNext: () => DICT.default.CHOOSE_PAIR_FUNC,

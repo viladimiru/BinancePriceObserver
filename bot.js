@@ -12,4 +12,4 @@ if (!isDevelopment && !isPooling) {
 	bot = new TelegramApi(token, { polling: true });
 }
 
-export default bot
+export default bot;

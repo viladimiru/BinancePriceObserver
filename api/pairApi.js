@@ -1,9 +1,4 @@
-import {
-	PAIR,
-	PRICE,
-	SPIKE,
-	sequelize,
-} from '../repository/index.js';
+import { PAIR, PRICE, SPIKE, sequelize } from '../repository/index.js';
 import Binance from 'node-binance-api';
 import priceApi from './priceApi.js';
 import spikeApi from './spikeApi.js';
@@ -62,7 +57,7 @@ async function getPairs() {
 async function getChatPairs(chatId, symbol) {
 	const result = await PAIR.findAll({
 		where: {
-			symbol: symbol
+			symbol: symbol,
 		},
 		include: [
 			{
@@ -128,7 +123,7 @@ async function getChatPairsRaw(chatId) {
 			WHERE t.chatId=${chatId}
 			GROUP BY t.PairId
 	`);
-	return result.map(r => r.symbol);
+	return result.map((r) => r.symbol);
 }
 async function getAlertSymbols(chatId) {
 	const [result] = await sequelize.query(`
@@ -148,7 +143,7 @@ async function getAlertSymbols(chatId) {
 			WHERE t.chatId=${chatId}
 			GROUP BY t.PairId
 	`);
-	return result.map(r => r.symbol);
+	return result.map((r) => r.symbol);
 }
 
 async function isAlertSymbolExist(symbol, chatId) {
@@ -191,5 +186,5 @@ export default {
 	getChatPairPrices,
 	findPair,
 	getAlertSymbols,
-	isAlertSymbolExist
+	isAlertSymbolExist,
 };

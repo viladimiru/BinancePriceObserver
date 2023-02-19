@@ -18,7 +18,7 @@ Users.post('/mailing', async (req, res) => {
 		const { message, options = {} } = req.body;
 		if (!message) {
 			res.status(422).send({
-				message: 'Message is required'
+				message: 'Message is required',
 			});
 		} else {
 			const users = await userApi.getUsers();

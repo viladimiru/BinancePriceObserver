@@ -1,19 +1,19 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
 import { set, PAIR_STATS, get, BOT_MESSANGER } from '../../storage/index.js';
-import dict from '../../dict/lang/index.js'
+import dict from '../../dict/lang/index.js';
 import tradeApi from '../../api/tradeApi.js';
 import emoji from '../../dict/emoji.js';
 import DICT from './dict.js';
 
 const stickerDictionary = {
 	LONG: emoji.above,
-	SHORT: emoji.below
-}
+	SHORT: emoji.below,
+};
 const typeDictionary = {
 	[stickerDictionary.LONG]: 'LONG',
 	[stickerDictionary.SHORT]: 'SHORT',
-}
+};
 
 export default {
 	[DICT.removal.TRADE_LIST]: {
@@ -22,14 +22,24 @@ export default {
 		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
 		getNext: () => DICT.removal.TRADE_LIST,
 		validate: async (msg) => {
-			const [symbol, type, price] = msg.text.split(' ')
-			return await tradeApi.isChatTradeExists(msg.chat.id, symbol, typeDictionary[type], price);
+			const [symbol, type, price] = msg.text.split(' ');
+			return await tradeApi.isChatTradeExists(
+				msg.chat.id,
+				symbol,
+				typeDictionary[type],
+				price
+			);
 		},
 		onAnswer: async (msg) => {
 			const [symbol, type, price] = msg.text.split(' ');
-			await tradeApi.removeTrade(symbol, msg.chat.id, typeDictionary[type], price);
+			await tradeApi.removeTrade(
+				symbol,
+				msg.chat.id,
+				typeDictionary[type],
+				price
+			);
 			set(PAIR_STATS, await pairApi.getPairs());
-			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeSuccessfullyRemoved)
+			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeSuccessfullyRemoved);
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
@@ -46,7 +56,7 @@ export default {
 						text: [
 							pair.symbol,
 							stickerDictionary[trade.type],
-							trade.markPrice
+							trade.markPrice,
 						].join(' '),
 					});
 					count++;

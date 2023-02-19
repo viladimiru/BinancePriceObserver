@@ -1,4 +1,4 @@
-import dict from '../dict/lang/index.js'
+import dict from '../dict/lang/index.js';
 
 export function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 	const result = {
@@ -20,13 +20,13 @@ export function keyboardWrapper(keyboard = [], options = {}, hideBackBtn) {
 }
 
 export async function asyncKeyboardWrapper(
-  keyboard = async () => {},
-  options = {},
-  hideBackBtn
+	keyboard = async () => {},
+	options = {},
+	hideBackBtn
 ) {
-  if (typeof keyboard === 'function') {
-    const _keyboard = await keyboard()
-    return keyboardWrapper(_keyboard, options, hideBackBtn)
-  }
-  throw new Error('Invalid keyboard argument [Should be function]')
+	if (typeof keyboard === 'function') {
+		const _keyboard = await keyboard();
+		return keyboardWrapper(_keyboard, options, hideBackBtn);
+	}
+	throw new Error('Invalid keyboard argument [Should be function]');
 }

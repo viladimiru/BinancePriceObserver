@@ -13,7 +13,7 @@ export default {
 	mode: 'production',
 	plugins: [
 		nodeResolve({
-			preferBuiltins: true
+			preferBuiltins: true,
 		}),
 		json(),
 		commonjs({
@@ -21,7 +21,7 @@ export default {
 			ignoreDynamicRequires: true,
 		}),
 		terser({
-			compress: true
-		})
+			compress: true,
+		}),
 	],
 };

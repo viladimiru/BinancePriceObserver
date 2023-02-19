@@ -25,13 +25,4 @@ SPIKE.belongsTo(PAIR);
 
 sequelize.sync();
 
-export {
-	PAIR,
-	PRICE,
-	SPIKE,
-	TRADE,
-	sequelize,
-	USER_SESSION,
-	FEEDBACK,
-	USER
-};
+export { PAIR, PRICE, SPIKE, TRADE, sequelize, USER_SESSION, FEEDBACK, USER };

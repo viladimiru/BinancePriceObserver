@@ -46,10 +46,10 @@ async function removeTrade(symbol, chatId, type, price) {
 				chatId: chatId,
 				type: type,
 				markPrice: price,
-				PairId: pair.id
+				PairId: pair.id,
 			},
 		});
-	})
+	});
 }
 
 async function isChatTradeExists(chatId, symbol, type, price) {

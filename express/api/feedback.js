@@ -18,9 +18,9 @@ Feedback.delete('/list/:feedbackId', async (req, res) => {
 		res.status(422).send({
 			message: 'Feedback ID should be a number',
 		});
-	}	else {
+	} else {
 		try {
-			await feedbackApi.deleteFeedback(feedbackId)
+			await feedbackApi.deleteFeedback(feedbackId);
 			res.sendStatus(200);
 		} catch (e) {
 			res.status(400).send({

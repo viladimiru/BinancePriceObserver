@@ -2,21 +2,21 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    return Promise.all([
-      queryInterface.addColumn('Feedbacks', 'delete', {
-        defaultValue: false,
-        type: Sequelize.BOOLEAN,
-      })
-    ])
-  },
+	async up(queryInterface, Sequelize) {
+		return Promise.all([
+			queryInterface.addColumn('Feedbacks', 'delete', {
+				defaultValue: false,
+				type: Sequelize.BOOLEAN,
+			}),
+		]);
+	},
 
-  async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-  }
+	async down(queryInterface, Sequelize) {
+		/**
+		 * Add reverting commands here.
+		 *
+		 * Example:
+		 * await queryInterface.dropTable('users');
+		 */
+	},
 };

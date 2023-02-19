@@ -1,4 +1,3 @@
-
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';
 import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './storage/index.js';
@@ -14,7 +13,7 @@ const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, bot.sendMessage.bind(bot));
-register(LOGS, [])
+register(LOGS, []);
 
 bot.setMyCommands([
 	{
@@ -28,7 +27,7 @@ bot.on('message', onMessage);
 InitObserver(bot);
 
 bot.onText(/^\/start$/, async function (msg) {
-	await userApi.createUser(msg)
+	await userApi.createUser(msg);
 	const userId = msg.from.id;
 	await sessionApi.updateSession(userId, steps.START.id);
 	bot.sendMessage(msg.chat.id, steps.START.text, {
@@ -120,7 +119,7 @@ function sendMessage(chatId, msg, options = {}) {
 }
 if (!isPooling) {
 	server.post(`/tghook/bot${token}`, (req, res) => {
-		bot.processUpdate(req.body)
-		res.sendStatus(200)
-	})
+		bot.processUpdate(req.body);
+		res.sendStatus(200);
+	});
 }

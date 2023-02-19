@@ -33,7 +33,7 @@ async function createSpikeWithSymbol(chatId, symbol) {
 		raw: true,
 		nest: true,
 	});
-	return await createSpike(chatId, pair.id)
+	return await createSpike(chatId, pair.id);
 }
 
 async function removeSpike(symbol, chatId) {
@@ -41,24 +41,24 @@ async function removeSpike(symbol, chatId) {
 		return await SPIKE.destroy({
 			where: {
 				chatId: chatId,
-				PairId: pair.id
-			}
-		})
-	})
+				PairId: pair.id,
+			},
+		});
+	});
 	return await pairApi.getPairs();
 }
 
 async function isSpikeExist(symbol, chatId) {
-  const result = await pairApi.findPair(symbol).then(async (pair) => {
+	const result = await pairApi.findPair(symbol).then(async (pair) => {
 		return await SPIKE.findOne({
 			where: {
 				chatId: chatId,
-        PairId: pair.id
+				PairId: pair.id,
 			},
-      attributes: ['id']
+			attributes: ['id'],
 		});
 	});
-	return !!result
+	return !!result;
 }
 
 export default {
@@ -67,5 +67,5 @@ export default {
 	isSpikeExist,
 	removeSpike,
 	createSpike,
-	createSpikeWithSymbol
-}
+	createSpikeWithSymbol,
+};

@@ -1,7 +1,7 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
 import { set, get, PAIR_STATS, BOT_MESSANGER } from '../../storage/index.js';
-import dict from '../../dict/lang/index.js'
+import dict from '../../dict/lang/index.js';
 import emoji from '../../dict/emoji.js';
 import spikeApi from '../../api/spikeApi.js';
 import priceApi from '../../api/priceApi.js';
@@ -11,13 +11,13 @@ import DICT from './dict.js';
 const stickerDictionary = {
 	undefined: emoji.spike,
 	ABOVE: emoji.above,
-	BELOW: emoji.below
-}
+	BELOW: emoji.below,
+};
 const typeDictionary = {
 	[stickerDictionary.ABOVE]: 'ABOVE',
 	[stickerDictionary.BELOW]: 'BELOW',
-}
-const history = {}
+};
+const history = {};
 
 export default {
 	[DICT.removal.PAIRS_LIST]: {
@@ -26,10 +26,10 @@ export default {
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
 		getNext: () => DICT.removal.ALERTS_LIST,
 		validate: async (msg) => {
-			return await pairApi.isAlertSymbolExist(msg.text, msg.chat.id)
+			return await pairApi.isAlertSymbolExist(msg.text, msg.chat.id);
 		},
 		onAnswer: async (msg) => {
-			history[msg.chat.id] = msg.text.toUpperCase()
+			history[msg.chat.id] = msg.text.toUpperCase();
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
@@ -55,37 +55,53 @@ export default {
 		getPrev: () => DICT.removal.PAIRS_LIST,
 		getNext: (msg) => {
 			if (msg.text === dict.deleteAllAlerts) {
-				return DICT.removal.PAIRS_LIST
+				return DICT.removal.PAIRS_LIST;
 			}
-			return DICT.removal.ALERTS_LIST
+			return DICT.removal.ALERTS_LIST;
 		},
 		validate: async (msg) => {
 			if (msg.text === dict.deleteAllAlerts) {
-				return true
+				return true;
 			}
-			const [symbol, type, price] = msg.text.split(' ')
+			const [symbol, type, price] = msg.text.split(' ');
 			if (!typeDictionary[type]) {
-				return await spikeApi.isSpikeExist(symbol, msg.chat.id)
+				return await spikeApi.isSpikeExist(symbol, msg.chat.id);
 			}
-			return await priceApi.isPriceExist(msg.chat.id, symbol, typeDictionary[type], price);
+			return await priceApi.isPriceExist(
+				msg.chat.id,
+				symbol,
+				typeDictionary[type],
+				price
+			);
 		},
 		onAnswer: async (msg) => {
 			if (msg.text === dict.deleteAllAlerts) {
-				return await alertApi.deleteAlerts(msg.chat.id, history[msg.chat.id])
+				return await alertApi.deleteAlerts(msg.chat.id, history[msg.chat.id]);
 			}
 			const [symbol, type, price] = msg.text.split(' ');
 			if (typeDictionary[type]) {
-				await priceApi.removePrice(symbol, msg.chat.id, typeDictionary[type], price)
+				await priceApi.removePrice(
+					symbol,
+					msg.chat.id,
+					typeDictionary[type],
+					price
+				);
 			} else {
-				await spikeApi.removeSpike(symbol, msg.chat.id)
+				await spikeApi.removeSpike(symbol, msg.chat.id);
 			}
-			const pairs = await pairApi.getPairs()
-			set(PAIR_STATS, pairs.filter(item => item.prices.length || item.spikes.length));
-			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved)
+			const pairs = await pairApi.getPairs();
+			set(
+				PAIR_STATS,
+				pairs.filter((item) => item.prices.length || item.spikes.length)
+			);
+			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved);
 		},
 		errorText: dict.youNotCreatedThisPair,
 		keyboard: async (msg) => {
-			const pairs = await pairApi.getChatPairs(msg.chat.id, history[msg.chat.id]);
+			const pairs = await pairApi.getChatPairs(
+				msg.chat.id,
+				history[msg.chat.id]
+			);
 			let count = 0;
 			let list = [[]];
 			pairs.forEach((pair) => {
@@ -98,7 +114,7 @@ export default {
 						text: [
 							pair.symbol,
 							stickerDictionary[price.type],
-							price.price
+							price.price,
 						].join(' '),
 					});
 					count++;
@@ -112,7 +128,7 @@ export default {
 						text: [
 							pair.symbol,
 							stickerDictionary[price.type],
-							price.price
+							price.price,
 						].join(' '),
 					});
 					count++;
@@ -121,18 +137,18 @@ export default {
 			list.push(
 				[
 					{
-						text: dict.deleteAllAlerts
-					}
+						text: dict.deleteAllAlerts,
+					},
 				],
 				[
 					{
-						text: dict.back
+						text: dict.back,
 					},
 					{
-						text: dict.toTheMain
+						text: dict.toTheMain,
 					},
 				]
-			)
+			);
 			return keyboardWrapper(list, null, true);
 		},
 	},
