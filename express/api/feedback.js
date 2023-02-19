@@ -23,7 +23,7 @@ Feedback.delete('/list/:feedbackId', async (req, res) => {
 			await feedbackApi.deleteFeedback(feedbackId)
 			res.sendStatus(200);
 		} catch (e) {
-			res.status(422).send({
+			res.status(400).send({
 				error: e.message,
 			});
 		}
