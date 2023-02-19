@@ -46,7 +46,6 @@ const wsServer = new WebSocketServer({ port: 3030 });
 wsServer.on('connection', onConnection);
 
 function onConnection(wsClient) {
-	console.log(1);
 	wsClient.send(JSON.stringify(getLogs()));
 	wsClient.on('message', (client) => {
 		const parsedMsg = JSON.parse(client);
