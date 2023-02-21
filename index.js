@@ -6,6 +6,9 @@ import dict from './dict/lang/index.js';
 import userApi from './api/userApi.js';
 import { server } from './express/index.js';
 import bot from './bot.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isPooling = process.env.NODE_ENV === 'pooling';
@@ -30,6 +33,18 @@ bot.onText(/^\/start$/, async function (msg) {
 	await userApi.createUser(msg);
 	const userId = msg.from.id;
 	await sessionApi.updateSession(userId, steps.START.id);
+	bot.sendMessage(
+		process.env.ADMIN_CHAT_ID,
+		[
+			'<b>Новый пользователь</b>',
+			`<i>${msg.from.first_name + (msg.from.last_name || '')} | @${
+				msg.from.username
+			} | ${msg.from.language_code}</i>`,
+		].join('\n'),
+		{
+			parse_mode: 'HTML',
+		}
+	);
 	bot.sendMessage(msg.chat.id, steps.START.text, {
 		parse_mode: 'HTML',
 		...steps.START.keyboard,
