@@ -1,12 +1,20 @@
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';
-import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './storage/index.js';
+import {
+	register,
+	BOT_MESSANGER,
+	PAIR_STATS,
+	LOGS,
+	set,
+} from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
 import dict from './dict/lang/index.js';
 import userApi from './api/userApi.js';
 import { server } from './express/index.js';
 import bot from './bot.js';
 import dotenv from 'dotenv';
+import { LAST_ACTIVITY } from './storage/const.js';
+import { addLastActivity } from './last-activity.js';
 
 dotenv.config();
 
@@ -17,6 +25,7 @@ const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, bot.sendMessage.bind(bot));
 register(LOGS, []);
+register(LAST_ACTIVITY, {});
 
 bot.setMyCommands([
 	{
@@ -125,6 +134,7 @@ async function onMessage(msg) {
 			steps[nextStep].cbOnSend(sentMsg);
 		}
 	}
+	addLastActivity(msg);
 }
 
 bot.on('polling_error', console.log);

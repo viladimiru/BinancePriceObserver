@@ -1,9 +1,10 @@
 import express from 'express';
 import feedbackApi from '../../api/feedbackApi.js';
+import { isAuthed } from '../middleware/isAuthed.js';
 
 const Feedback = express.Router();
 
-Feedback.get('/list', async (_, res) => {
+Feedback.get('/list', isAuthed, async (_, res) => {
 	try {
 		const list = await feedbackApi.getAll();
 		res.status(200).json(list || []);
@@ -12,7 +13,7 @@ Feedback.get('/list', async (_, res) => {
 	}
 });
 
-Feedback.delete('/list/:feedbackId', async (req, res) => {
+Feedback.delete('/list/:feedbackId', isAuthed, async (req, res) => {
 	const feedbackId = Number(req.params.feedbackId);
 	if (feedbackId !== feedbackId) {
 		res.status(422).send({
