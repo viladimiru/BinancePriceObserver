@@ -13,7 +13,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 
 const app = express();
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'https://www.lk.flamingo-house.top'];
 
 const corsOptions = {
 	origin: function (origin, callback) {
