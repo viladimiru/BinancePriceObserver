@@ -1,18 +1,21 @@
 import pairApi from '../../api/pairApi.js';
 import { updateStorage, Subscription } from '../../subscription.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import dict from '../../dict/lang/index.js';
 import { BOT_MESSANGER, get } from '../../storage/index.js';
 import futuresApi from '../../api/futuresApi.js';
 import DICT from './dict.js';
+import { dictionary } from '../../dict/index.js';
 
 const history = {};
 
 export default {
 	[DICT.creation.ADD_OBSERVER]: {
 		id: 'ADD_OBSERVER',
-		text: dict.symbol,
-		keyboard: keyboardWrapper(),
+		text: (msg) => dictionary(msg.from.language_code).symbol,
+		keyboard: (msg) =>
+			keyboardWrapper([], {
+				language_code: msg.from.language_code,
+			}),
 		validate: async ({ text }) => {
 			try {
 				const res = await futuresApi.getPairIndex(text.toUpperCase());
@@ -27,47 +30,60 @@ export default {
 				symbol: msg.text.toUpperCase(),
 			};
 		},
-		errorText: dict.pairNotExists,
+		errorText: (msg) => dictionary(msg.from.language_code).pairNotExists,
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
 		getNext: () => DICT.creation.CHOOSE_TRADE_TYPE,
 	},
 	[DICT.creation.CHOOSE_TRADE_TYPE]: {
 		id: 'CHOOSE_TRADE_TYPE',
-		text: dict.sendMessageWhen,
-		expects: [dict.above, dict.below, dict.spiking],
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).sendMessageWhen,
+		expects: (msg) => [
+			dictionary(msg.from.language_code).above,
+			dictionary(msg.from.language_code).below,
+			dictionary(msg.from.language_code).spiking,
+		],
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).above,
+						},
+						{
+							text: dictionary(msg.from.language_code).below,
+						},
+					],
+					[
+						{
+							text: dictionary(msg.from.language_code).spiking,
+						},
+					],
+				],
 				{
-					text: dict.above,
-				},
-				{
-					text: dict.below,
-				},
-			],
-			[
-				{
-					text: dict.spiking,
-				},
-			],
-		]),
+					language_code: msg.from.language_code,
+				}
+			),
 		onAnswer: async (msg) => {
 			const type = {
-				[dict.above]: 'ABOVE',
-				[dict.below]: 'BELOW',
-				[dict.spiking]: 'SPIKE',
+				[dictionary(msg.from.language_code).above]: 'ABOVE',
+				[dictionary(msg.from.language_code).below]: 'BELOW',
+				[dictionary(msg.from.language_code).spiking]: 'SPIKE',
 			}[msg.text];
 			history[msg.chat.id].type = type;
-			if (msg.text === dict.spiking) {
+			if (msg.text === dictionary(msg.from.language_code).spiking) {
 				await pairApi.createPair(history[msg.chat.id]);
 				await updateStorage();
 				Subscription(history[msg.chat.id].symbol);
-				await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated);
+				await get(BOT_MESSANGER)(
+					msg.chat.id,
+					dictionary(msg.from.language_code).pairSuccessfullyCreated
+				);
 				delete history[msg.chat.id];
 			}
 		},
 		getPrev: () => DICT.creation.ADD_OBSERVER,
 		getNext: (msg) => {
-			if (msg.text !== dict.spiking) {
+			if (msg.text !== dictionary(msg.from.language_code).spiking) {
 				return DICT.creation.SET_PRICE;
 			}
 			return DICT.default.CHOOSE_PAIR_FUNC;
@@ -75,12 +91,15 @@ export default {
 	},
 	[DICT.creation.SET_PRICE]: {
 		id: 'SET_PRICE',
-		text: dict.enterAlertPrice,
+		text: (msg) => dictionary(msg.from.language_code).enterAlertPrice,
 		validate: ({ text }) => {
 			return !isNaN(Number(text));
 		},
-		errorText: dict.alertPriceError,
-		keyboard: keyboardWrapper(),
+		errorText: (msg) => dictionary(msg.from.language_code).alertPriceError,
+		keyboard: (msg) =>
+			keyboardWrapper([], {
+				language_code: msg.from.language_code,
+			}),
 		onAnswer: async (msg) => {
 			history[msg.chat.id].price = Number(msg.text);
 		},
@@ -89,18 +108,27 @@ export default {
 	},
 	[DICT.creation.SET_MESSAGE]: {
 		id: 'SET_MESSAGE',
-		text: dict.messageTemplate,
-		keyboard: keyboardWrapper([
-			dict.messageTemplates.map((item) => ({
-				text: item,
-			})),
-		]),
+		text: (msg) => dictionary(msg.from.language_code).messageTemplate,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					dictionary(msg.from.language_code).messageTemplates.map((item) => ({
+						text: item,
+					})),
+				],
+				{
+					language_code: msg.from.language_code,
+				}
+			),
 		onAnswer: async (msg) => {
 			history[msg.chat.id].message = msg.text;
 			await pairApi.createPair(history[msg.chat.id]);
 			await updateStorage();
 			Subscription(history[msg.chat.id].symbol);
-			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyCreated);
+			await get(BOT_MESSANGER)(
+				msg.chat.id,
+				dictionary(msg.from.language_code).pairSuccessfullyCreated
+			);
 			delete history[msg.chat.id];
 		},
 		getPrev: () => DICT.creation.SET_PRICE,

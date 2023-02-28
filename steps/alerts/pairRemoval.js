@@ -1,12 +1,12 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
 import { set, get, PAIR_STATS, BOT_MESSANGER } from '../../storage/index.js';
-import dict from '../../dict/lang/index.js';
 import emoji from '../../dict/emoji.js';
 import spikeApi from '../../api/spikeApi.js';
 import priceApi from '../../api/priceApi.js';
 import alertApi from '../../api/alertApi.js';
 import DICT from './dict.js';
+import { dictionary } from '../../dict/index.js';
 
 const stickerDictionary = {
 	undefined: emoji.spike,
@@ -22,7 +22,7 @@ const history = {};
 export default {
 	[DICT.removal.PAIRS_LIST]: {
 		id: DICT.removal.PAIRS_LIST,
-		text: dict.choosePair,
+		text: (msg) => dictionary(msg.from.language_code).choosePair,
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
 		getNext: () => DICT.removal.ALERTS_LIST,
 		validate: async (msg) => {
@@ -31,7 +31,8 @@ export default {
 		onAnswer: async (msg) => {
 			history[msg.chat.id] = msg.text.toUpperCase();
 		},
-		errorText: dict.youNotCreatedThisPair,
+		errorText: (msg) =>
+			dictionary(msg.from.language_code).youNotCreatedThisPair,
 		keyboard: async (msg) => {
 			const pairs = await pairApi.getAlertSymbols(msg.chat.id);
 			let count = 0;
@@ -46,21 +47,23 @@ export default {
 				});
 				count++;
 			});
-			return keyboardWrapper(list);
+			return keyboardWrapper(list, {
+				language_code: msg.from.language_code,
+			});
 		},
 	},
 	[DICT.removal.ALERTS_LIST]: {
 		id: DICT.removal.ALERTS_LIST,
-		text: dict.chooseRemovalAlert,
+		text: (msg) => dictionary(msg.from.language_code).chooseRemovalAlert,
 		getPrev: () => DICT.removal.PAIRS_LIST,
 		getNext: (msg) => {
-			if (msg.text === dict.deleteAllAlerts) {
+			if (msg.text === dictionary(msg.from.language_code).deleteAllAlerts) {
 				return DICT.removal.PAIRS_LIST;
 			}
 			return DICT.removal.ALERTS_LIST;
 		},
 		validate: async (msg) => {
-			if (msg.text === dict.deleteAllAlerts) {
+			if (msg.text === dictionary(msg.from.language_code).deleteAllAlerts) {
 				return true;
 			}
 			const [symbol, type, price] = msg.text.split(' ');
@@ -75,7 +78,7 @@ export default {
 			);
 		},
 		onAnswer: async (msg) => {
-			if (msg.text === dict.deleteAllAlerts) {
+			if (msg.text === dictionary(msg.from.language_code).deleteAllAlerts) {
 				return await alertApi.deleteAlerts(msg.chat.id, history[msg.chat.id]);
 			}
 			const [symbol, type, price] = msg.text.split(' ');
@@ -94,9 +97,13 @@ export default {
 				PAIR_STATS,
 				pairs.filter((item) => item.prices.length || item.spikes.length)
 			);
-			await get(BOT_MESSANGER)(msg.chat.id, dict.pairSuccessfullyRemoved);
+			await get(BOT_MESSANGER)(
+				msg.chat.id,
+				dictionary(msg.from.language_code).pairSuccessfullyRemoved
+			);
 		},
-		errorText: dict.youNotCreatedThisPair,
+		errorText: (msg) =>
+			dictionary(msg.from.language_code).youNotCreatedThisPair,
 		keyboard: async (msg) => {
 			const pairs = await pairApi.getChatPairs(
 				msg.chat.id,
@@ -137,19 +144,25 @@ export default {
 			list.push(
 				[
 					{
-						text: dict.deleteAllAlerts,
+						text: dictionary(msg.from.language_code).deleteAllAlerts,
 					},
 				],
 				[
 					{
-						text: dict.back,
+						text: dictionary(msg.from.language_code).back,
 					},
 					{
-						text: dict.toTheMain,
+						text: dictionary(msg.from.language_code).toTheMain,
 					},
 				]
 			);
-			return keyboardWrapper(list, null, true);
+			return keyboardWrapper(
+				list,
+				{
+					language_code: msg.from.language_code,
+				},
+				true
+			);
 		},
 	},
 };

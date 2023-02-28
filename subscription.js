@@ -11,6 +11,7 @@ import {
 import emoji from './dict/emoji.js';
 import binance from './plugins/binance.js';
 import { socketMailing } from './express/index.js';
+import { dictionary } from './dict/index.js';
 
 let subscriptions = {};
 const spikeControl = {};
@@ -203,19 +204,17 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 	const isBiggestCurrent = biggest[1] > smallest[1];
 	const currentPrice = isBiggestCurrent ? biggest[0] : smallest[0];
 	const prevPrice = isBiggestCurrent ? smallest[0] : biggest[0];
-	const msg = [
-		'<b>Скачки цен ' + emoji.spike,
-		symbol +
-			' ' +
-			toFixed(Math.abs(diff)) +
-			'%' +
-			(isBiggestCurrent ? emoji.above : emoji.belowRed),
-		'</b>',
-		'<i>Интервал: ' + interval + exp,
-		'Текущая цена: ' + Number(currentPrice),
-		'Предыдущая цена: ' + Number(prevPrice) + '</i>',
-	].join('\n');
 	spikes.forEach((item) => {
+		const msg = spikeMsgWrapper(
+			item.User.lang,
+			symbol,
+			diff,
+			interval,
+			exp,
+			currentPrice,
+			prevPrice,
+			isBiggestCurrent
+		);
 		socketMailing('spikeAlert', {
 			message: msg,
 			chatId: item.chatId,
@@ -224,4 +223,32 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 			parse_mode: 'HTML',
 		});
 	});
+}
+
+function spikeMsgWrapper(
+	language,
+	symbol,
+	diff,
+	interval,
+	exp,
+	currentPrice,
+	prevPrice,
+	isBiggestCurrent
+) {
+	const map = {
+		'сек.': dictionary(language).secExp,
+		'мин.': dictionary(language).minExp,
+	};
+	return [
+		'<b>' + dictionary(language).priceSpiking + ' ' + emoji.spike,
+		symbol +
+			' ' +
+			toFixed(Math.abs(diff)) +
+			'%' +
+			(isBiggestCurrent ? emoji.above : emoji.belowRed),
+		'</b>',
+		'<i>' + dictionary(language).interval + ': ' + interval + map[exp],
+		dictionary(language).currentPrice + ': ' + Number(currentPrice),
+		dictionary(language).previousPrice + ': ' + Number(prevPrice) + '</i>',
+	].join('\n');
 }

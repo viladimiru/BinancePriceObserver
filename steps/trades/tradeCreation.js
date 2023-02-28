@@ -1,5 +1,4 @@
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import dict from '../../dict/lang/index.js';
 import tradeApi from '../../api/tradeApi.js';
 import { BOT_MESSANGER, get } from '../../storage/index.js';
 import futuresApi from '../../api/futuresApi.js';
@@ -7,14 +6,18 @@ import priceApi from '../../api/priceApi.js';
 import { Subscription, updateStorage } from '../../subscription.js';
 import spikeApi from '../../api/spikeApi.js';
 import DICT from './dict.js';
+import { dictionary } from '../../dict/index.js';
 
 const history = {};
 
 export default {
 	[DICT.creation.SYMBOL]: {
 		id: DICT.creation.SYMBOL,
-		text: dict.symbol,
-		keyboard: keyboardWrapper(),
+		text: (msg) => dictionary(msg.from.language_code).symbol,
+		keyboard: (msg) =>
+			keyboardWrapper([], {
+				language_code: msg.from.language_code,
+			}),
 		validate: async ({ text }) => {
 			try {
 				const res = await futuresApi.getPairIndex(text.toUpperCase());
@@ -29,24 +32,33 @@ export default {
 				symbol: msg.text.toUpperCase(),
 			};
 		},
-		errorText: dict.pairNotExists,
+		errorText: (msg) => dictionary(msg.from.language_code).pairNotExists,
 		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
 		getNext: () => DICT.creation.TYPE,
 	},
 	[DICT.creation.TYPE]: {
 		id: DICT.creation.TYPE,
-		text: dict.tradeType,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).tradeType,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).long,
+						},
+						{
+							text: dictionary(msg.from.language_code).short,
+						},
+					],
+				],
 				{
-					text: dict.long,
-				},
-				{
-					text: dict.short,
-				},
-			],
-		]),
-		expects: [dict.long, dict.short],
+					language_code: msg.from.language_code,
+				}
+			),
+		expects: (msg) => [
+			dictionary(msg.from.language_code).long,
+			dictionary(msg.from.language_code).short,
+		],
 		onAnswer: async (msg) => {
 			history[msg.chat.id].type = msg.text.toUpperCase();
 		},
@@ -55,9 +67,12 @@ export default {
 	},
 	[DICT.creation.PRICE]: {
 		id: DICT.creation.PRICE,
-		text: dict.tradePrice,
-		keyboard: keyboardWrapper(),
-		errorText: dict.alertPriceError,
+		text: (msg) => dictionary(msg.from.language_code).tradePrice,
+		keyboard: (msg) =>
+			keyboardWrapper([], {
+				language_code: msg.from.language_code,
+			}),
+		errorText: (msg) => dictionary(msg.from.language_code).alertPriceError,
 		validate: ({ text }) => {
 			return !isNaN(Number(text));
 		},
@@ -69,9 +84,12 @@ export default {
 	},
 	[DICT.creation.SHOULDER]: {
 		id: DICT.creation.SHOULDER,
-		text: dict.shoulder,
-		errorText: dict.enterOnlyNumbers,
-		keyboard: keyboardWrapper(),
+		text: (msg) => dictionary(msg.from.language_code).shoulder,
+		errorText: (msg) => dictionary(msg.from.language_code).enterOnlyNumbers,
+		keyboard: (msg) =>
+			keyboardWrapper([], {
+				language_code: msg.from.language_code,
+			}),
 		validate: ({ text }) => {
 			return !isNaN(Number(text));
 		},
@@ -83,20 +101,29 @@ export default {
 	},
 	[DICT.creation.TAKE_PROFIT]: {
 		id: DICT.creation.TAKE_PROFIT,
-		text: dict.takeProfitIfExist,
-		errorText: dict.alertPriceError,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).takeProfitIfExist,
+		errorText: (msg) => dictionary(msg.from.language_code).alertPriceError,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).miss,
+						},
+					],
+				],
 				{
-					text: dict.miss,
-				},
-			],
-		]),
-		validate: ({ text }) => {
-			return text === dict.miss || !isNaN(Number(text));
+					language_code: msg.from.language_code,
+				}
+			),
+		validate: (msg) => {
+			return (
+				msg.text === dictionary(msg.from.language_code).miss ||
+				!isNaN(Number(msg.text))
+			);
 		},
 		onAnswer: async (msg) => {
-			if (msg.text !== dict.miss) {
+			if (msg.text !== dictionary(msg.from.language_code).miss) {
 				history[msg.chat.id].takeProfit = Number(msg.text);
 			}
 		},
@@ -105,20 +132,26 @@ export default {
 	},
 	[DICT.creation.STOP_LOSS]: {
 		id: DICT.creation.STOP_LOSS,
-		text: dict.stopLossIfExist,
-		errorText: dict.alertPriceError,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).stopLossIfExist,
+		errorText: (msg) => dictionary(msg.from.language_code).alertPriceError,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).miss,
+						},
+					],
+				],
 				{
-					text: dict.miss,
-				},
-			],
-		]),
-		validate: ({ text }) => {
-			return text === dict.miss || !isNaN(Number(text));
+					language_code: msg.from.language_code,
+				}
+			),
+		validate: ({ text, from: { language_code } }) => {
+			return text === dictionary(language_code).miss || !isNaN(Number(text));
 		},
 		onAnswer: async (msg) => {
-			if (msg.text !== dict.miss) {
+			if (msg.text !== dictionary(msg.from.language_code).miss) {
 				history[msg.chat.id].stopLoss = Number(msg.text);
 			}
 		},
@@ -127,20 +160,29 @@ export default {
 	},
 	[DICT.creation.SPIKING]: {
 		id: DICT.creation.SPIKING,
-		text: dict.spikingIfNeeded,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).spikingIfNeeded,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).yes,
+						},
+						{
+							text: dictionary(msg.from.language_code).miss,
+						},
+					],
+				],
 				{
-					text: dict.yes,
-				},
-				{
-					text: dict.miss,
-				},
-			],
-		]),
-		expects: [dict.miss, dict.yes],
+					language_code: msg.from.language_code,
+				}
+			),
+		expects: (msg) => [
+			dictionary(msg.from.language_code).miss,
+			dictionary(msg.from.language_code).yes,
+		],
 		onAnswer: async (msg) => {
-			if (msg.text !== dict.miss) {
+			if (msg.text !== dictionary(msg.from.language_code).miss) {
 				history[msg.chat.id].spiking = true;
 			}
 			const payload = history[msg.chat.id];
@@ -149,8 +191,10 @@ export default {
 			if (payload.stopLoss) {
 				await priceApi.createPriceWithSymbol(
 					msg.chat.id,
-					dict.messageTemplates[0],
-					payload.type === dict.long.toUpperCase() ? 'BELOW' : 'ABOVE',
+					dictionary(msg.from.language_code).messageTemplates[0],
+					payload.type === dictionary(msg.from.language_code).long.toUpperCase()
+						? 'BELOW'
+						: 'ABOVE',
 					payload.stopLoss,
 					payload.symbol
 				);
@@ -159,8 +203,11 @@ export default {
 			if (payload.takeProfit) {
 				await priceApi.createPriceWithSymbol(
 					msg.chat.id,
-					dict.messageTemplates[1],
-					payload.type === dict.short.toUpperCase() ? 'BELOW' : 'ABOVE',
+					dictionary(msg.from.language_code).messageTemplates[1],
+					payload.type ===
+						dictionary(msg.from.language_code).short.toUpperCase()
+						? 'BELOW'
+						: 'ABOVE',
 					payload.takeProfit,
 					payload.symbol
 				);
@@ -175,9 +222,13 @@ export default {
 				Subscription(payload.symbol);
 			}
 
-			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeCreated, {
-				parse_mode: 'html',
-			});
+			await get(BOT_MESSANGER)(
+				msg.chat.id,
+				dictionary(msg.from.language_code).tradeCreated,
+				{
+					parse_mode: 'html',
+				}
+			);
 			delete history[msg.chat.id];
 		},
 		getPrev: () => DICT.creation.STOP_LOSS,

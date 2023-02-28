@@ -22,6 +22,10 @@ PAIR.hasMany(TRADE, {
 TRADE.belongsTo(PAIR);
 PRICE.belongsTo(PAIR);
 SPIKE.belongsTo(PAIR);
+SPIKE.belongsTo(USER, {
+	foreignKey: 'chatId',
+	targetKey: 'chatId',
+});
 
 sequelize.sync();
 

@@ -1,31 +1,40 @@
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import dict from '../../dict/lang/index.js';
 import STEP_DICT from './dict.js';
 import pairCreation from './pairCreation.js';
 import pairRemoval from './pairRemoval.js';
+import { dictionary } from '../../dict/index.js';
 
 export const ALERT_DICT = STEP_DICT;
 
 export default {
 	[STEP_DICT.default.CHOOSE_PAIR_FUNC]: {
 		id: STEP_DICT.default.CHOOSE_PAIR_FUNC,
-		text: dict.whatDoYouWant,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).whatDoYouWant,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).addObserver,
+						},
+						{
+							text: dictionary(msg.from.language_code).removeObserver,
+						},
+					],
+				],
 				{
-					text: dict.addObserver,
-				},
-				{
-					text: dict.removeObserver,
-				},
-			],
-		]),
-		expects: [dict.addObserver, dict.removeObserver],
-		errorText: dict.pairNotExists,
+					language_code: msg.from.language_code,
+				}
+			),
+		expects: (msg) => [
+			dictionary(msg.from.language_code).addObserver,
+			dictionary(msg.from.language_code).removeObserver,
+		],
+		errorText: (msg) => dictionary(msg.from.language_code).pairNotExists,
 		getNext: (msg) => {
-			if (msg.text === dict.addObserver)
+			if (msg.text === dictionary(msg.from.language_code).addObserver)
 				return ALERT_DICT.creation.ADD_OBSERVER;
-			if (msg.text === dict.removeObserver)
+			if (msg.text === dictionary(msg.from.language_code).removeObserver)
 				return ALERT_DICT.removal.PAIRS_LIST;
 		},
 	},

@@ -1,15 +1,20 @@
-import { SPIKE, PAIR } from '../repository/index.js';
+import { SPIKE, PAIR, USER } from '../repository/index.js';
 import pairApi from './pairApi.js';
 
 async function getSpikePairs(symbol) {
 	const result = await SPIKE.findAll({
-		include: {
-			model: PAIR,
-			where: {
-				symbol: symbol,
+		include: [
+			{
+				model: PAIR,
+				where: {
+					symbol: symbol,
+				},
+				attributes: [],
 			},
-			attributes: [],
-		},
+			{
+				model: USER,
+			},
+		],
 	});
 	return result.map((item) => item.get({ plain: true }));
 }

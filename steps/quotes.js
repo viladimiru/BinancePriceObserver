@@ -1,10 +1,10 @@
 import { keyboardWrapper } from '../utils/keyboard.js';
-import dict from '../dict/lang/index.js';
 import pairApi from '../api/pairApi.js';
 import tradeApi from '../api/tradeApi.js';
 import { diffInPercents, toFixed } from '../utils/number.js';
 import emoji from '../dict/emoji.js';
 import { get, BOT_MESSANGER } from '../storage/index.js';
+import { dictionary } from '../dict/index.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -13,24 +13,28 @@ export const DICTIONARY = {
 export default {
 	[DICTIONARY.QUOTES]: {
 		id: 'QUOTES',
-		text: dict.loadingQuotes,
-		keyboard: keyboardWrapper([
-			[
+		text: (msg) => dictionary(msg.from.language_code).loadingQuotes,
+		keyboard: (msg) =>
+			keyboardWrapper(
+				[
+					[
+						{
+							text: dictionary(msg.from.language_code).update,
+						},
+					],
+				],
 				{
-					text: dict.update,
-				},
-			],
-		]),
-		expect: [dict.update],
+					language_code: msg.from.language_code,
+				}
+			),
+		expect: (msg) => [dictionary(msg.from.language_code).update],
 		cbOnSend: async (msg) => {
 			try {
 				const result = await pairApi.getChatPairPrices(msg.chat.id);
-				console.log(result);
 				if (result) {
 					const trades = await tradeApi.getChatTradesByPairs(
 						result.map((item) => item.symbol)
 					);
-					console.log(trades);
 					let text = '';
 					result.forEach((item) => {
 						text += [
@@ -40,7 +44,11 @@ export default {
 						text += '<i>';
 						const _trades = transformTrades(trades, item);
 						_trades.forEach((trade) => {
-							text += wrapTradeText(item.markPrice, trade);
+							text += wrapTradeText(
+								item.markPrice,
+								trade,
+								msg.from.language_code
+							);
 						});
 						text += '</i>';
 						text += '\n';
@@ -49,17 +57,26 @@ export default {
 						parse_mode: 'html',
 					});
 				} else {
-					await get(BOT_MESSANGER)(msg.chat.id, dict.listIsEmpty);
+					await get(BOT_MESSANGER)(
+						msg.chat.id,
+						dictionary(msg.from.language_code).listIsEmpty
+					);
 				}
 			} catch {
-				await get(BOT_MESSANGER)(msg.chat.id, dict.quotesFetchError);
+				await get(BOT_MESSANGER)(
+					msg.chat.id,
+					dictionary(msg.from.language_code).quotesFetchError
+				);
 			}
 		},
-		getNext: (msg) => (msg.text === dict.update ? DICTIONARY.QUOTES : 'START'),
+		getNext: (msg) =>
+			msg.text === dictionary(msg.from.language_code).update
+				? DICTIONARY.QUOTES
+				: 'START',
 	},
 };
 
-function wrapTradeText(markPrice, trade) {
+function wrapTradeText(markPrice, trade, language) {
 	let text = '\n';
 	text += [trade.type, ' | '].join('');
 	if (trade.isWin) {
@@ -72,7 +89,7 @@ function wrapTradeText(markPrice, trade) {
 		text += toFixed(Math.abs(diff)) + '%';
 		text += ' | ';
 	}
-	text += 'Вход: ' + trade.markPrice;
+	text += dictionary(language).entry + ': ' + trade.markPrice;
 	return text;
 }
 

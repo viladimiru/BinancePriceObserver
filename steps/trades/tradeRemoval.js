@@ -1,7 +1,6 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
 import { set, PAIR_STATS, get, BOT_MESSANGER } from '../../storage/index.js';
-import dict from '../../dict/lang/index.js';
 import tradeApi from '../../api/tradeApi.js';
 import emoji from '../../dict/emoji.js';
 import DICT from './dict.js';
@@ -18,7 +17,7 @@ const typeDictionary = {
 export default {
 	[DICT.removal.TRADE_LIST]: {
 		id: DICT.removal.TRADE_LIST,
-		text: dict.choosePair,
+		text: (msg) => dictionary(msg.from.language_code).choosePair,
 		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
 		getNext: () => DICT.removal.TRADE_LIST,
 		validate: async (msg) => {
@@ -39,9 +38,13 @@ export default {
 				price
 			);
 			set(PAIR_STATS, await pairApi.getPairs());
-			await get(BOT_MESSANGER)(msg.chat.id, dict.tradeSuccessfullyRemoved);
+			await get(BOT_MESSANGER)(
+				msg.chat.id,
+				dictionary(msg.from.language_code).tradeSuccessfullyRemoved
+			);
 		},
-		errorText: dict.youNotCreatedThisPair,
+		errorText: (msg) =>
+			dictionary(msg.from.language_code).youNotCreatedThisPair,
 		keyboard: async (msg) => {
 			const pairs = await tradeApi.getChatTrades(msg.chat.id);
 			let count = 0;
@@ -62,7 +65,9 @@ export default {
 					count++;
 				});
 			});
-			return keyboardWrapper(list);
+			return keyboardWrapper(list, {
+				language_code: msg.from.language_code,
+			});
 		},
 	},
 };

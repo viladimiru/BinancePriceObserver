@@ -64,4 +64,11 @@ export default {
 	alerts: 'Уведомления ' + emoji.bell,
 	trades: 'Сделки ' + emoji.case,
 	stats: 'Статистика',
+	priceSpiking: 'Скачки цен',
+	interval: 'Интервал',
+	currentPrice: 'Текущая цена',
+	previousPrice: 'Предыдущая цена',
+	secExp: 'сек.',
+	minExp: 'мин.',
+	entry: 'Вход',
 };

@@ -1,20 +1,14 @@
 import { InitObserver } from './subscription.js';
 import steps from './steps/index.js';
-import {
-	register,
-	BOT_MESSANGER,
-	PAIR_STATS,
-	LOGS,
-	set,
-} from './storage/index.js';
+import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './storage/index.js';
 import sessionApi from './api/sessionApi.js';
-import dict from './dict/lang/index.js';
 import userApi from './api/userApi.js';
 import { server } from './express/index.js';
 import bot from './bot.js';
 import dotenv from 'dotenv';
 import { LAST_ACTIVITY } from './storage/const.js';
 import { addLastActivity } from './last-activity.js';
+import { dictionary } from './dict/index.js';
 
 dotenv.config();
 
@@ -29,7 +23,7 @@ register(LAST_ACTIVITY, {});
 
 bot.setMyCommands([
 	{
-		description: dict.start,
+		description: 'Start',
 		command: '/start',
 	},
 ]);
@@ -54,9 +48,9 @@ bot.onText(/^\/start$/, async function (msg) {
 			parse_mode: 'HTML',
 		}
 	);
-	bot.sendMessage(msg.chat.id, steps.START.text, {
+	bot.sendMessage(msg.chat.id, steps.START.text(msg), {
 		parse_mode: 'HTML',
-		...steps.START.keyboard,
+		...steps.START.keyboard(msg),
 	});
 });
 
@@ -65,7 +59,7 @@ async function onMessage(msg) {
 
 	const userId = msg.from.id;
 
-	if (msg.text === dict.toTheMain) {
+	if (msg.text === dictionary(msg.from.language_code).toTheMain) {
 		await sessionApi.updateSession(userId, steps.START.id);
 		bot.sendMessage(msg.chat.id, steps.START.text, {
 			parse_mode: 'HTML',
@@ -76,7 +70,7 @@ async function onMessage(msg) {
 
 	const session = await sessionApi.getSession(userId);
 
-	if (msg.text === dict.back) {
+	if (msg.text === dictionary(msg.from.language_code).back) {
 		let prevStep;
 		try {
 			prevStep = steps[session.step].getPrev(msg);
@@ -88,20 +82,23 @@ async function onMessage(msg) {
 				? await steps[prevStep].keyboard(msg)
 				: steps[prevStep].keyboard;
 		await sessionApi.updateSession(userId, prevStep);
-		sendMessage(msg.chat.id, steps[prevStep].text, {
+		sendMessage(msg.chat.id, steps[prevStep].text(msg), {
 			...prevStepKeyboard,
 			parse_mode: 'HTML',
 		});
 	} else if (
-		steps[session.step].expects &&
-		!steps[session.step].expects.includes(msg.text)
+		steps[session.step].expects?.(msg) &&
+		!steps[session.step].expects(msg).includes(msg.text)
 	) {
-		sendMessage(msg.chat.id, dict.iDontUnderstand);
+		sendMessage(
+			msg.chat.id,
+			dictionary(msg.from.language_code).iDontUnderstand
+		);
 	} else if (
 		steps[session.step].validate &&
 		!(await steps[session.step].validate(msg))
 	) {
-		sendMessage(msg.chat.id, steps[session.step].errorText);
+		sendMessage(msg.chat.id, steps[session.step].errorText(msg));
 	} else {
 		if (
 			steps[session.step].onAnswer &&
@@ -123,7 +120,7 @@ async function onMessage(msg) {
 				: steps[nextStep].keyboard;
 
 		await sessionApi.updateSession(userId, nextStep);
-		const sentMsg = await sendMessage(msg.chat.id, steps[nextStep].text, {
+		const sentMsg = await sendMessage(msg.chat.id, steps[nextStep].text(msg), {
 			...nextStepKeyboard,
 			parse_mode: 'HTML',
 		});
