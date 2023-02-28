@@ -44,7 +44,7 @@ export default {
 	removeTrade: 'Delete trade ' + emoji.trash,
 	shoulder: 'Shoulder size',
 	feedback:
-		'You can rate this bot, leave request for expansions or say about some bugs',
+		'You can rate this bot, leave request for expansions or report about some bugs',
 	thanksForFeedback: 'Thanks! Message was sent to administartor',
 	leaveFeedback: 'Feedback ' + emoji.pen,
 	selectDesiredFunction: '<b>Select desired function</b>',

@@ -61,9 +61,9 @@ async function onMessage(msg) {
 
 	if (msg.text === dictionary(msg.from.language_code).toTheMain) {
 		await sessionApi.updateSession(userId, steps.START.id);
-		bot.sendMessage(msg.chat.id, steps.START.text, {
+		bot.sendMessage(msg.chat.id, steps.START.text(msg), {
 			parse_mode: 'HTML',
-			...steps[steps.START.id].keyboard,
+			...steps[steps.START.id].keyboard(msg),
 		});
 		return;
 	}
