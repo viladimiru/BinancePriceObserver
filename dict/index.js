@@ -7,5 +7,5 @@ const LANG_MAP = {
 };
 
 export function dictionary(language) {
-	return LANG_MAP[language || 'en'];
+	return LANG_MAP[language] || LANG_MAP['en'];
 }

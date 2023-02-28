@@ -142,11 +142,12 @@ export default {
 				});
 			});
 			list.push(
-				[
-					{
-						text: dictionary(msg.from.language_code).deleteAllAlerts,
-					},
-				],
+				// TODO: This functional delete all client alerts
+				// [
+				// 	{
+				// 		text: dictionary(msg.from.language_code).deleteAllAlerts,
+				// 	},
+				// ],
 				[
 					{
 						text: dictionary(msg.from.language_code).back,

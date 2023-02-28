@@ -1,6 +1,7 @@
 import { PAIR, PRICE, SPIKE } from '../repository/index.js';
 
 async function deleteAlerts(chatId, symbol) {
+	// TODO: This functional delete all client alerts
 	const promises = [
 		PRICE.destroy({
 			where: {

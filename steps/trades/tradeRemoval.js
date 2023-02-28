@@ -4,6 +4,7 @@ import { set, PAIR_STATS, get, BOT_MESSANGER } from '../../storage/index.js';
 import tradeApi from '../../api/tradeApi.js';
 import emoji from '../../dict/emoji.js';
 import DICT from './dict.js';
+import { dictionary } from '../../dict/index.js';
 
 const stickerDictionary = {
 	LONG: emoji.above,
