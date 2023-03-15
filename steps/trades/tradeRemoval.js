@@ -1,10 +1,11 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import { set, PAIR_STATS, get, BOT_MESSANGER } from '../../storage/index.js';
+import { set, PAIR_STATS } from '../../storage/index.js';
 import tradeApi from '../../api/tradeApi.js';
 import emoji from '../../dict/emoji.js';
 import DICT from './dict.js';
 import { dictionary } from '../../dict/index.js';
+import { sendMessage } from '../../services/chat.js';
 
 const stickerDictionary = {
 	LONG: emoji.above,
@@ -39,7 +40,7 @@ export default {
 				price
 			);
 			set(PAIR_STATS, await pairApi.getPairs());
-			await get(BOT_MESSANGER)(
+			await sendMessage(
 				msg.chat.id,
 				dictionary(msg.from.language_code).tradeSuccessfullyRemoved
 			);

@@ -1,7 +1,7 @@
 import spikeApi from './api/spikeApi.js';
 import pairApi from './api/pairApi.js';
 import priceApi from './api/priceApi.js';
-import { get, set, PAIR_STATS, BOT_MESSANGER } from './storage/index.js';
+import { get, set, PAIR_STATS } from './storage/index.js';
 import {
 	biggestInArr,
 	diffInPercents,
@@ -12,6 +12,8 @@ import emoji from './dict/emoji.js';
 import binance from './plugins/binance.js';
 import { socketMailing } from './express/index.js';
 import { dictionary } from './dict/index.js';
+import { addLog, logger } from './logs.js';
+import { sendMessage } from './services/chat.js';
 
 let subscriptions = {};
 const spikeControl = {};
@@ -61,7 +63,7 @@ export function Subscription(symbol) {
 					} ${item.currentPrice}`,
 					`\nTrigger value: ${item.price}`,
 				].join('\n');
-				get(BOT_MESSANGER)(item.chatId, msg, {
+				sendMessage(item.chatId, msg, {
 					parse_mode: 'HTML',
 				});
 				socketMailing('alert', {
@@ -219,7 +221,7 @@ async function sendSpikeAlert(symbol, diff, interval, exp, smallest, biggest) {
 			message: msg,
 			chatId: item.chatId,
 		});
-		get(BOT_MESSANGER)(item.chatId, msg, {
+		sendMessage(item.chatId, msg, {
 			parse_mode: 'HTML',
 		});
 	});

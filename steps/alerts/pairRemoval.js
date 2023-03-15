@@ -1,12 +1,13 @@
 import pairApi from '../../api/pairApi.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import { set, get, PAIR_STATS, BOT_MESSANGER } from '../../storage/index.js';
+import { set, PAIR_STATS } from '../../storage/index.js';
 import emoji from '../../dict/emoji.js';
 import spikeApi from '../../api/spikeApi.js';
 import priceApi from '../../api/priceApi.js';
 import alertApi from '../../api/alertApi.js';
 import DICT from './dict.js';
 import { dictionary } from '../../dict/index.js';
+import { sendMessage } from '../../services/chat.js';
 
 const stickerDictionary = {
 	undefined: emoji.spike,
@@ -97,7 +98,7 @@ export default {
 				PAIR_STATS,
 				pairs.filter((item) => item.prices.length || item.spikes.length)
 			);
-			await get(BOT_MESSANGER)(
+			await sendMessage(
 				msg.chat.id,
 				dictionary(msg.from.language_code).pairSuccessfullyRemoved
 			);

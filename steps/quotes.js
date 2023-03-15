@@ -3,8 +3,8 @@ import pairApi from '../api/pairApi.js';
 import tradeApi from '../api/tradeApi.js';
 import { diffInPercents, toFixed } from '../utils/number.js';
 import emoji from '../dict/emoji.js';
-import { get, BOT_MESSANGER } from '../storage/index.js';
 import { dictionary } from '../dict/index.js';
+import { sendMessage } from '../services/chat.js';
 
 export const DICTIONARY = {
 	QUOTES: 'QUOTES',
@@ -53,17 +53,17 @@ export default {
 						text += '</i>';
 						text += '\n';
 					});
-					await get(BOT_MESSANGER)(msg.chat.id, text, {
+					await sendMessage(msg.chat.id, text, {
 						parse_mode: 'html',
 					});
 				} else {
-					await get(BOT_MESSANGER)(
+					await sendMessage(
 						msg.chat.id,
 						dictionary(msg.from.language_code).listIsEmpty
 					);
 				}
 			} catch {
-				await get(BOT_MESSANGER)(
+				await sendMessage(
 					msg.chat.id,
 					dictionary(msg.from.language_code).quotesFetchError
 				);

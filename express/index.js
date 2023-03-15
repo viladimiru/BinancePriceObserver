@@ -6,6 +6,7 @@ import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { addLog, getLogs } from '../logs.js';
 import { v4 as uuidv4 } from 'uuid';
+import { Logger } from './api/logger.js';
 
 const WsClients = {};
 
@@ -13,7 +14,10 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const token = isDevelopment ? process.env.TEST_TOKEN : process.env.TOKEN;
 
 const app = express();
-const whitelist = ['http://localhost:3000', 'https://www.lk.flamingo-house.top'];
+const whitelist = [
+	'http://localhost:3000',
+	'https://www.lk.flamingo-house.top',
+];
 
 const corsOptions = {
 	origin: function (origin, callback) {
@@ -31,6 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', Users);
 app.use('/api/feedback', Feedback);
+app.use('/api/logger', Logger);
 
 app.post(`/tghook/bot${token}`, (req, res) => {
 	bot.processUpdate(req.body);

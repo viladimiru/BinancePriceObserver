@@ -7,6 +7,7 @@ import { Subscription, updateStorage } from '../../subscription.js';
 import spikeApi from '../../api/spikeApi.js';
 import DICT from './dict.js';
 import { dictionary } from '../../dict/index.js';
+import { sendMessage } from '../../services/chat.js';
 
 const history = {};
 
@@ -222,7 +223,7 @@ export default {
 				Subscription(payload.symbol);
 			}
 
-			await get(BOT_MESSANGER)(
+			await sendMessage(
 				msg.chat.id,
 				dictionary(msg.from.language_code).tradeCreated,
 				{

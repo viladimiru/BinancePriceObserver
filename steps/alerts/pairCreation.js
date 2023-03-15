@@ -1,10 +1,10 @@
 import pairApi from '../../api/pairApi.js';
 import { updateStorage, Subscription } from '../../subscription.js';
 import { keyboardWrapper } from '../../utils/keyboard.js';
-import { BOT_MESSANGER, get } from '../../storage/index.js';
 import futuresApi from '../../api/futuresApi.js';
 import DICT from './dict.js';
 import { dictionary } from '../../dict/index.js';
+import { sendMessage } from '../../services/chat.js';
 
 const history = {};
 
@@ -74,7 +74,7 @@ export default {
 				await pairApi.createPair(history[msg.chat.id]);
 				await updateStorage();
 				Subscription(history[msg.chat.id].symbol);
-				await get(BOT_MESSANGER)(
+				await sendMessage(
 					msg.chat.id,
 					dictionary(msg.from.language_code).pairSuccessfullyCreated
 				);
@@ -125,7 +125,7 @@ export default {
 			await pairApi.createPair(history[msg.chat.id]);
 			await updateStorage();
 			Subscription(history[msg.chat.id].symbol);
-			await get(BOT_MESSANGER)(
+			await sendMessage(
 				msg.chat.id,
 				dictionary(msg.from.language_code).pairSuccessfullyCreated
 			);
