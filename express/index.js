@@ -4,9 +4,10 @@ import Users from './api/users.js';
 import Feedback from './api/feedback.js';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
-import { addLog, getLogs } from '../logs.js';
+import { getLogs } from '../logs.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from './api/logger.js';
+import { logger } from '../logs.js';
 
 const WsClients = {};
 
@@ -57,8 +58,8 @@ const wsServer = new WebSocketServer({
 
 wsServer.on('connection', onConnection);
 
-function onConnection(wsClient) {
-	wsClient.send(JSON.stringify(getLogs()));
+async function onConnection(wsClient) {
+	wsClient.send(JSON.stringify(await getLogs()));
 	wsClient.on('message', (client) => {
 		const parsedMsg = JSON.parse(client);
 		if (!WsClients[parsedMsg.username]) {
@@ -87,12 +88,11 @@ function socketMailing(actionType, data = {}) {
 	const payload = {
 		action: actionType,
 		data,
-		timestamp: Date.now(),
 		uid: uuidv4(),
 	};
 	queue.push(payload);
 	if (lastMailing < Date.now() - 900) {
-		addLog(queue);
+		logger.info(queue);
 		wsServer.clients.forEach((client) => {
 			client.send(JSON.stringify(queue));
 		});

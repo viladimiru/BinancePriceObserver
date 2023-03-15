@@ -1,16 +1,13 @@
-import { logger } from '../../logs.js';
+import { getLogs, methodLog } from '../../logs.js';
 import express from 'express';
+import { apiErrorWrapper } from '../../utils/apiErrorWrapper.js';
 
 export const Logger = express.Router();
 
-Logger.get('/logs', (_, res) => {
-	logger.query(
-		{
-			rows: 2000,
-			fields: ['message', 'timestamp', 'level'],
-		},
-		(_, result) => {
-			res.status(200).json(result);
-		}
-	);
+Logger.get('/logs', async (req, res) => {
+	try {
+		res.status(200).send(await getLogs(req.query));
+	} catch (e) {
+		res.status(500).send(apiErrorWrapper(methodLog('/logs', 500, e.message)));
+	}
 });

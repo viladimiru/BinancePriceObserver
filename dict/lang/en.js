@@ -6,7 +6,7 @@ export default {
 	short: 'Short',
 	long: 'Long',
 	back: emoji.leftArrow + ' Go back',
-	symbol: 'Pair name (BTCUSDT)',
+	symbol: 'Pair name (for example BTCUSDT)',
 	whatDoYouWant: 'What do you want',
 	completed: '<b>Done!</b>\n\nWe will send you alert when get target price!',
 	toTheMain: 'To the main',

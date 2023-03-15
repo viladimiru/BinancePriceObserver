@@ -1,6 +1,7 @@
-import { get, set } from './storage/index.js';
-import { LOGS } from './storage/const.js';
 import { createLogger, format, transports } from 'winston';
+
+// 10 mb
+const maxLogSize = 1024 * 1024 * 10;
 
 export const logger = createLogger({
 	level: 'info',
@@ -16,30 +17,35 @@ export const logger = createLogger({
 		service: 'binance-price-bot',
 	},
 	transports: [
-		new transports.File({ filename: 'err.log', level: 'error' }),
-		new transports.File({ filename: 'combined.log' }),
+		new transports.File({
+			filename: 'err.log',
+			level: 'error',
+			maxsize: maxLogSize,
+		}),
+		new transports.File({ filename: 'combined.log', maxsize: maxLogSize }),
 	],
 });
 
-const limit = 2000;
-
-function addLog(data) {
-	logger.info(data);
-	let logs = get(LOGS);
-	if (Array.isArray(data)) {
-		const commonLength = logs.length + data.length;
-		logs = [
-			...data,
-			...(commonLength > limit ? logs.slice(0, commonLength - limit) : logs),
-		];
-	} else {
-		logs = [data, ...(logs.length > limit ? logs.slice(0, limit - 1) : logs)];
-	}
-	set(LOGS, logs);
+function getLogs(query) {
+	return new Promise((resolve, reject) => {
+		logger.query(
+			{
+				rows: 2000,
+				fields: ['message', 'timestamp', 'level'],
+				...query,
+			},
+			(error, result) => {
+				if (error) reject(error);
+				else resolve(result.file);
+			}
+		);
+	});
 }
 
-function getLogs() {
-	return get(LOGS);
+function methodLog(method, status, message) {
+	const log = [`[${method}]`, status, message].join(' | ');
+	logger.error(log);
+	return message;
 }
 
-export { addLog, getLogs };
+export { getLogs, methodLog };

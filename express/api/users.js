@@ -4,6 +4,8 @@ import bot from '../../bot.js';
 import { get } from '../../storage/index.js';
 import { LAST_ACTIVITY } from '../../storage/const.js';
 import { isAuthed } from '../middleware/isAuthed.js';
+import { apiErrorWrapper } from '../../utils/apiErrorWrapper.js';
+import { methodLog } from '../../logs.js';
 
 const Users = express.Router();
 
@@ -12,7 +14,9 @@ Users.get('/list', isAuthed, async (_, res) => {
 		const users = await userApi.getUsers();
 		res.status(200).json(users);
 	} catch {
-		res.sendStatus(400);
+		res
+			.status(400)
+			.send(apiErrorWrapper(methodLog('/list', 400, 'Get Users list error')));
 	}
 });
 
@@ -31,7 +35,9 @@ Users.post('/mailing', isAuthed, async (req, res) => {
 			res.sendStatus(200);
 		}
 	} catch {
-		res.sendStatus(400);
+		res
+			.status(500)
+			.send(apiErrorWrapper(methodLog('/mailing', 500, 'Users mailing error')));
 	}
 });
 
@@ -52,9 +58,9 @@ Users.post('/mailing/to/:chatId', isAuthed, async (req, res) => {
 				await bot.sendMessage(chatId, message, options);
 				res.sendStatus(200);
 			} catch (e) {
-				res.status(422).send({
-					error: e.message,
-				});
+				res
+					.status(500)
+					.send(apiErrorWrapper(methodLog('/mailing', 500, e.message)));
 			}
 		}
 	} catch {

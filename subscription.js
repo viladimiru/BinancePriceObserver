@@ -12,7 +12,6 @@ import emoji from './dict/emoji.js';
 import binance from './plugins/binance.js';
 import { socketMailing } from './express/index.js';
 import { dictionary } from './dict/index.js';
-import { addLog, logger } from './logs.js';
 import { sendMessage } from './services/chat.js';
 
 let subscriptions = {};
