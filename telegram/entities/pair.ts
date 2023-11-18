@@ -4,7 +4,7 @@ import z from 'zod'
 export function validateCreatePairArguments(data: unknown): [Parameters<CreatePair>[0], true] | [undefined, false] {
 	const result = z.object({
 		symbol: z.string(),
-		type: z.string(),
+		type: z.enum(['SPIKE', 'PRICE']),
 		chatId: z.number(),
 		message: z.string(),
 		price: z.number(),
