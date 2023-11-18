@@ -17,7 +17,7 @@ export const setPriceView = createView({
 	},
 	onAnswer: async (message) => {
 		alertTradeStore.set(message.chat.id, {
-			markPrice: Number(message.text)
+			markPrice: Number(message.text),
 		});
 	},
 });

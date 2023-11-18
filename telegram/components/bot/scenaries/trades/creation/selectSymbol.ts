@@ -23,8 +23,8 @@ export const selectSymbolView = createView({
 	onAnswer: async (message) => {
 		alertTradeStore.set(message.chat.id, {
 			chatId: message.chat.id,
-			symbol: message.text.toUpperCase()
-		})
+			symbol: message.text.toUpperCase(),
+		});
 	},
 	errorText: (message) => dictionary(message.from.language_code).pairNotExists,
 });

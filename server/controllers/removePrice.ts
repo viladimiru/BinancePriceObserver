@@ -3,7 +3,9 @@ import { removePrice } from '../models/price';
 
 export async function removePriceController(
 	request: Request,
-	response: Response<Awaited<ReturnType<typeof removePrice>> | { error: unknown }>
+	response: Response<
+		Awaited<ReturnType<typeof removePrice>> | { error: unknown }
+	>
 ): Promise<void> {
 	try {
 		const result = await removePrice(request.body);

@@ -30,7 +30,7 @@ export const setTakeProfitView = createView({
 	onAnswer: async (message) => {
 		if (message.text !== dictionary(message.from.language_code).miss) {
 			alertTradeStore.set(message.chat.id, {
-				takeProfit: Number(message.text)
+				takeProfit: Number(message.text),
 			});
 		}
 	},

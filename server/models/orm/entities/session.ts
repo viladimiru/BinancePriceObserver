@@ -4,7 +4,9 @@ import {
 	type SessionEntity,
 } from '../../../../shared/models/orm/entities/session';
 
-export function createSessionModel(orm: Sequelize): ModelDefined<SessionEntity, SessionCreationEntity> {
+export function createSessionModel(
+	orm: Sequelize
+): ModelDefined<SessionEntity, SessionCreationEntity> {
 	return orm.define('UserSession', {
 		userId: {
 			type: DataTypes.INTEGER,

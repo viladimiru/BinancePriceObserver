@@ -8,7 +8,7 @@ const store: Partial<
 			symbol: string;
 			type: string;
 			message: string;
-			markPrice: number,
+			markPrice: number;
 			shoulder: number;
 			spiking: boolean;
 			stopLoss: number;

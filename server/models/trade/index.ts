@@ -15,9 +15,9 @@ export const createTrade: CreateTrade = async ({
 	chatId,
 	shoulder,
 }) => {
-	const transaction = await orm.transaction()
+	const transaction = await orm.transaction();
 	try {
-		const pair = await findPairOrCreate({ symbol })
+		const pair = await findPairOrCreate({ symbol });
 
 		if (!pair) {
 			throw new Error('Unexpected error');
@@ -86,15 +86,18 @@ export const isChatTradeExist: IsChatTradeExist = async ({
 	type,
 	markPrice,
 }) => {
-	return await findPair({ symbol }, {
-		model: TRADE,
-		as: 'trades',
-		where: {
-			chatId,
-			type,
-			markPrice,
-		},
-	}).then(Boolean)
+	return await findPair(
+		{ symbol },
+		{
+			model: TRADE,
+			as: 'trades',
+			where: {
+				chatId,
+				type,
+				markPrice,
+			},
+		}
+	).then(Boolean);
 };
 
 export const getChatTradesByPairs: GetChatTradesByPairs = async ({ pairs }) => {

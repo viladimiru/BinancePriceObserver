@@ -29,6 +29,6 @@ export const selectTypeView = createView({
 	onAnswer: async (message) => {
 		alertTradeStore.set(message.chat.id, {
 			type: message.text.toUpperCase(),
-		})
+		});
 	},
 });

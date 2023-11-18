@@ -1,5 +1,10 @@
 import TelegramApi from 'node-telegram-bot-api';
-import { isDevelopment, isPooling, isProdTest, getBotToken } from '../../../environment';
+import {
+	isDevelopment,
+	isPooling,
+	isProdTest,
+	getBotToken,
+} from '../../../environment';
 
 let bot: TelegramApi;
 if (!isDevelopment && !isPooling && !isProdTest) {

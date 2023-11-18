@@ -4,7 +4,9 @@ import {
 	type FeedbackEntity,
 } from '../../../../shared/models/orm/entities/feedback';
 
-export function createFeedbackModel(orm: Sequelize): ModelDefined<FeedbackEntity, FeedbackCreationEntity> {
+export function createFeedbackModel(
+	orm: Sequelize
+): ModelDefined<FeedbackEntity, FeedbackCreationEntity> {
 	return orm.define('Feedback', {
 		msg: DataTypes.TEXT,
 		delete: DataTypes.BOOLEAN,

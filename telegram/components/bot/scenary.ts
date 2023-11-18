@@ -83,7 +83,9 @@ export const createScenary: CreateScenary = ({ views, mainView }) => {
 	};
 };
 
-function getMappedViews(views: InitializedScenary[]): Record<string, InitializedScenary> {
+function getMappedViews(
+	views: InitializedScenary[]
+): Record<string, InitializedScenary> {
 	return views.reduce((views, view) => {
 		if (views[view.id]) {
 			throw new Error(
@@ -92,5 +94,5 @@ function getMappedViews(views: InitializedScenary[]): Record<string, Initialized
 		}
 		views[view.id] = view;
 		return views;
-	}, {})
+	}, {});
 }

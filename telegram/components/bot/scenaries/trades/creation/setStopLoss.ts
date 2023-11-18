@@ -27,7 +27,7 @@ export const setStopLossView = createView({
 	onAnswer: async (message) => {
 		if (message.text !== dictionary(message.from.language_code).miss) {
 			alertTradeStore.set(message.chat.id, {
-				stopLoss: Number(message.text)
+				stopLoss: Number(message.text),
 			});
 		}
 	},

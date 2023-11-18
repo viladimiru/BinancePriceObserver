@@ -27,7 +27,7 @@ export const setAlertMessageView = createView({
 		alertCreationStore.set(message.chat.id, {
 			message: message.text,
 		});
-		console.log(alertCreationStore.get(message.chat.id))
+		console.log(alertCreationStore.get(message.chat.id));
 		await apiClient.createPair(alertCreationStore.get(message.chat.id));
 		await updateStorage();
 		Subscription(symbol);

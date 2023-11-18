@@ -43,8 +43,8 @@ export const chooseTradeTypeView = createView({
 			[dictionary(message.from.language_code).spiking]: 'SPIKE',
 		}[message.text];
 		alertCreationStore.set(message.chat.id, {
-			type
-		})
+			type,
+		});
 		if (message.text === dictionary(message.from.language_code).spiking) {
 			await apiClient.createPair(alertCreationStore.get(message.chat.id));
 			await updateStorage();

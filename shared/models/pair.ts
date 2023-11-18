@@ -17,9 +17,12 @@ export interface PairWithEntities extends PairEntity {
 }
 
 export type CreatePair = (arg1: CreatePairParams) => Promise<void>;
-export type FindPair = (arg1: {
-	symbol: string;
-}, arg2?: Includeable) => Promise<PairEntity | undefined>;
+export type FindPair = (
+	arg1: {
+		symbol: string;
+	},
+	arg2?: Includeable
+) => Promise<PairEntity | undefined>;
 export type GetPairs = () => Promise<PairWithEntities[]>;
 export type GetChatPairs = (arg1: {
 	chatId: number;

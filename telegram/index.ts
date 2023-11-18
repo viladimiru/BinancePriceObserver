@@ -102,7 +102,7 @@ async function onMessage(msg: BotMessage): Promise<void> {
 					msg.chat.id,
 					dictionary(msg.from.language_code).iDontUnderstand
 				);
-			} else if (currentView.validate && !await currentView.validate(msg)) {
+			} else if (currentView.validate && !(await currentView.validate(msg))) {
 				if (!currentView.errorText) {
 					return;
 				}

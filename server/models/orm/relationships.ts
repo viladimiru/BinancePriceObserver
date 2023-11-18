@@ -9,7 +9,7 @@ export function setRelationships(
 	price: ReturnType<typeof createPriceModel>,
 	spike: ReturnType<typeof createSpikeModel>,
 	trade: ReturnType<typeof createTradeModel>,
-	user: ReturnType<typeof createUserModel>,
+	user: ReturnType<typeof createUserModel>
 ): void {
 	pair.hasMany(price, {
 		as: 'prices',

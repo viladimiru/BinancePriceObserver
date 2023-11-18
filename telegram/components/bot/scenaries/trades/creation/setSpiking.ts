@@ -33,7 +33,7 @@ export const setSpikingView = createView({
 		// todo: controller POST createTrade
 		if (message.text !== dictionary(message.from.language_code).miss) {
 			alertTradeStore.set(message.chat.id, {
-				spiking: true
+				spiking: true,
 			});
 		}
 		const payload = alertTradeStore.get(message.chat.id);

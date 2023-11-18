@@ -27,21 +27,25 @@ export const findPair: FindPair = async (params, include = undefined) => {
 	return res?.dataValues;
 };
 
-export const findPairOrCreate = async ({ symbol }: { symbol: string }): ReturnType<FindPair> => {
+export const findPairOrCreate = async ({
+	symbol,
+}: {
+	symbol: string;
+}): ReturnType<FindPair> => {
 	try {
 		return await PAIR.create({
-			symbol
-		}).then((result) => result.dataValues)
+			symbol,
+		}).then((result) => result.dataValues);
 	} catch {
 		return await findPair({ symbol });
 	}
-}
+};
 
 export const createPair: CreatePair = async (params) => {
 	const transaction = await orm.transaction();
 
 	try {
-		const pair = await findPairOrCreate({ symbol: params.symbol })
+		const pair = await findPairOrCreate({ symbol: params.symbol });
 
 		if (!pair) {
 			throw new Error('Unexpected error');
@@ -65,7 +69,7 @@ export const createPair: CreatePair = async (params) => {
 		await transaction.commit();
 	} catch (error) {
 		// TODO: need to propagate error after rollback
-		await transaction.rollback()
+		await transaction.rollback();
 	}
 };
 

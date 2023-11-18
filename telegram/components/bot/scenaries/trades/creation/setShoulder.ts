@@ -17,7 +17,7 @@ export const setShoulderView = createView({
 	},
 	onAnswer: async (message) => {
 		alertTradeStore.set(message.chat.id, {
-			shoulder: Number(message.text)
+			shoulder: Number(message.text),
 		});
 	},
 });

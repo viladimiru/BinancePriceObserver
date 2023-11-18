@@ -95,9 +95,9 @@ const feedbackViewWithGuidance = feedbackView.setGuidance();
 const quotesViewWithGuidance = quotesView.setGuidance({
 	getNextId(message) {
 		return message.text === dictionary(message.from.language_code).update
-				? quotesView.id
-				: 'START'
-	}
+			? quotesView.id
+			: 'START';
+	},
 });
 
 const chooseAlertActionViewWithGuidance = chooseAlertActionView.setGuidance({
@@ -139,7 +139,7 @@ const setAlertMessageViewWithGuidance = setAlertMessageView.setGuidance({
 	getNextId: () => choosePairView.id,
 });
 
-const choosePairViewWithGuidance = choosePairView.setGuidance()
+const choosePairViewWithGuidance = choosePairView.setGuidance();
 
 const pairsListViewWithGuidance = pairsListView.setGuidance({
 	getPrevId: () => choosePairView.id,
@@ -158,44 +158,44 @@ const chooseTradeActionViewWithGuidance = chooseTradeActionView.setGuidance({
 		}
 		return 'START';
 	},
-})
+});
 
 const selectSymbolViewWithGuidance = selectSymbolView.setGuidance({
 	getNextId: () => selectTypeView.id,
 	getPrevId: () => chooseTradeActionView.id,
-})
+});
 
 const selectTypeViewWihtGuidance = selectTypeView.setGuidance({
 	getNextId: () => setPriceView.id,
 	getPrevId: () => selectSymbolView.id,
-})
+});
 
 const setPriceViewWithGuidance = setPriceView.setGuidance({
 	getNextId: () => setShoulderView.id,
 	getPrevId: () => selectTypeView.id,
-})
+});
 
 const setShoulderViewWithGuidance = setShoulderView.setGuidance({
 	getNextId: () => setTakeProfitView.id,
 	getPrevId: () => setPriceView.id,
-})
+});
 
 const setTakeProfitViewWithGuidance = setTakeProfitView.setGuidance({
 	getNextId: () => setStopLossView.id,
 	getPrevId: () => setShoulderView.id,
-})
+});
 
 const setStopLossViewWithGuidance = setStopLossView.setGuidance({
 	getNextId: () => setSpikingView.id,
 	getPrevId: () => setTakeProfitView.id,
-})
+});
 
 const setSpikingViewWithGuidance = setSpikingView.setGuidance({
 	getNextId: () => chooseTradeActionView.id,
 	getPrevId: () => setStopLossView.id,
-})
+});
 
-const tradeListViewWithGuidance = tradeListView.setGuidance()
+const tradeListViewWithGuidance = tradeListView.setGuidance();
 
 export const scenary = createScenary({
 	views: [
