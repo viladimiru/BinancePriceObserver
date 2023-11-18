@@ -5,16 +5,11 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"dev": "export NODE_ENV=development && nodemon index.js",
 		"run_server": "ts-node-esm ./server/index.ts",
-		"dev_server": "nodemon --watch ./server ./server/index.ts",
 		"run_tg": "export NODE_ENV=development && ts-node-esm ./telegram/index.ts",
+		"dev_server": "nodemon --watch ./server ./server/index.ts",
 		"dev_tg": "export NODE_ENV=development && nodemon --watch ./telegram ./telegram/index.ts",
-		"test_tg": "export NODE_ENV=prod-test && nodemon --watch ./telegram ./telegram/index.ts",
-		"start": "node index.js",
-		"pooling": "export NODE_ENV=pooling && node index.js",
-		"build": "rollup -c",
-		"eslint_fix": "eslint . --fix --ext .ts",
+		"tg_test_run": "export NODE_ENV=prod-test && nodemon --watch ./telegram ./telegram/index.ts",
 		"prepare": "husky install",
 		"test_telegram": "NODE_ENV=test jest --verbose ./telegram",
 		"test_server": "NODE_ENV=test jest --verbose ./server"
