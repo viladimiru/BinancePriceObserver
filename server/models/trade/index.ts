@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import {
 	type CreateTrade,
 	type GetChatTrades,
@@ -106,7 +107,9 @@ export const getChatTradesByPairs: GetChatTradesByPairs = async ({ pairs }) => {
 			model: PAIR,
 			attributes: ['symbol'],
 			where: {
-				symbol: pairs,
+				symbol: {
+					[Op.in]: pairs,
+				},
 			},
 		},
 		raw: true,
