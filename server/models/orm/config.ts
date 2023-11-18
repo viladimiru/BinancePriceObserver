@@ -9,7 +9,7 @@ import { type Options } from 'sequelize';
 
 export function getOrmConfig(): Options {
 	const result: Options = {
-		host: 'localhost',
+		host: '127.0.0.1',
 		dialect: 'mysql',
 	};
 
