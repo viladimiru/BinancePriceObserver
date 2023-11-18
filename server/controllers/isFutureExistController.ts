@@ -3,7 +3,7 @@ import { isFutureExist } from '../models/future';
 
 export async function isFutureExistController(
 	request: Request,
-	response: Response
+	response: Response<boolean | { error: unknown }>
 ): Promise<void> {
 	try {
 		const result = await isFutureExist({

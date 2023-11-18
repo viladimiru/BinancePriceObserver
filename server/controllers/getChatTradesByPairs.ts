@@ -3,7 +3,9 @@ import { getChatTradesByPairs } from '../models/trade';
 
 export async function getChatTradesByPairsController(
 	request: Request,
-	response: Response
+	response: Response<
+		Awaited<ReturnType<typeof getChatTradesByPairs> | { error: unknown }>
+	>
 ): Promise<void> {
 	try {
 		// TODO: validate

@@ -1,9 +1,10 @@
 import { type Request, type Response } from 'express';
 import { getSession } from '../models/session';
+import { type SessionEntity } from '../../shared/models/orm/entities/session';
 
 export async function getSessionController(
 	request: Request,
-	response: Response
+	response: Response<SessionEntity | { error: unknown }>
 ): Promise<void> {
 	try {
 		// TODO: validate

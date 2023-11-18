@@ -3,7 +3,9 @@ import { getChatPairPrices } from '../models/pair';
 
 export async function getChatPairPricesController(
 	request: Request,
-	response: Response
+	response: Response<
+		Awaited<ReturnType<typeof getChatPairPrices>> | { error: unknown }
+	>
 ): Promise<void> {
 	try {
 		const result = await getChatPairPrices({

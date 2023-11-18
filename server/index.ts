@@ -1,12 +1,6 @@
-import { createPriceAlertController } from './controllers/createPriceAlert';
-import { createSpikingAlertController } from './controllers/createSpikingAlert';
 import { createTradeController } from './controllers/createTrade';
-import { deleteAlertController } from './controllers/deleteAlert';
 import { deleteTradeController } from './controllers/deleteTrade';
 import { sendFeedbackController } from './controllers/sendFeedback';
-import { getPairSymbolsWithAlertsController } from './controllers/getPairSymbolsWithAlerts';
-import { getPairsWithEntitiesController } from './controllers/getPairsWithEntities';
-import { getQuotesController } from './controllers/getQuotes';
 import { app } from './express/index';
 import { createUserController } from './controllers/createUser';
 import { updateSessionController } from './controllers/updateSession';
@@ -28,8 +22,6 @@ import { getChatTradesByPairsController } from './controllers/getChatTradesByPai
 import { isSpikeExistController } from './controllers/isSpikeExist';
 
 app.post('/sendFeedback', sendFeedbackController);
-app.post('/createSpikingAlert', createSpikingAlertController);
-app.post('/createPriceAlert', createPriceAlertController);
 app.post('/createTrade', createTradeController);
 app.post('/createUser', createUserController);
 app.post('/updateSession', updateSessionController);
@@ -37,12 +29,6 @@ app.post('/createPair', createPairController);
 app.post('/createPriceWithSymbol', createPriceWithSymbolController);
 app.post('/createSpikeWithSymbol', createSpikeWithSymbolController);
 
-app.get('/getQuoutes/:chatId', getQuotesController);
-app.get(
-	'/getPairSymbolsWithAlerts/:chatId',
-	getPairSymbolsWithAlertsController
-);
-app.get('/getPairsWithEntities/:chatId', getPairsWithEntitiesController);
 app.get('/getPairs', getPairsController);
 app.get('/getSession', getSessionController);
 app.get('/isFutureExist/:symbol', isFutureExistController);
@@ -56,7 +42,6 @@ app.get('/getChatTradesByPairs', getChatTradesByPairsController);
 app.get('/isSpikeExist', isSpikeExistController);
 app.get('/isPriceExist', isSpikeExistController);
 
-app.delete('/deleteAlert', deleteAlertController);
 app.delete('/deleteTrade', deleteTradeController);
 app.delete('/removePrice', removePriceController);
 app.delete('/removeSpike', removeSpikeController);

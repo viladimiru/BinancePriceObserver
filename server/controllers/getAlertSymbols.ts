@@ -3,7 +3,7 @@ import { getAlertSymbols } from '../models/pair';
 
 export async function getAlertSymbolsController(
 	request: Request,
-	response: Response
+	response: Response<string[] | { error: unknown }>
 ): Promise<void> {
 	try {
 		const result = await getAlertSymbols({

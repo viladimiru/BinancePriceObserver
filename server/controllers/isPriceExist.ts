@@ -3,7 +3,7 @@ import { isPriceExist } from '../models/price';
 
 export async function isPriceExistController(
 	request: Request,
-	response: Response
+	response: Response<boolean | { error: unknown }>
 ): Promise<void> {
 	try {
 		// @ts-expect-error parse query
