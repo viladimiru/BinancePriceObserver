@@ -1,3 +1,6 @@
-/**/node_modules/*
-node_modules/
+node_modules
 coverage
+.husky
+.eslintrc.json
+package.json
+package-lock.json
