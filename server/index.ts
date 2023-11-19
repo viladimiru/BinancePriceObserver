@@ -20,6 +20,7 @@ import { getSpikePairsController } from './controllers/getSpikePairs';
 import { getChatPairPricesController } from './controllers/getChatPairPrices';
 import { getChatTradesByPairsController } from './controllers/getChatTradesByPairs';
 import { isSpikeExistController } from './controllers/isSpikeExist';
+import { isPriceExistController } from './controllers/isPriceExist';
 
 app.post('/sendFeedback', sendFeedbackController);
 app.post('/createTrade', createTradeController);
@@ -40,7 +41,7 @@ app.get('/getSpikePairs/:symbol', getSpikePairsController);
 app.get('/getChatPairPrices/:chatId', getChatPairPricesController);
 app.get('/getChatTradesByPairs', getChatTradesByPairsController);
 app.get('/isSpikeExist', isSpikeExistController);
-app.get('/isPriceExist', isSpikeExistController);
+app.get('/isPriceExist', isPriceExistController);
 
 app.delete('/deleteTrade', deleteTradeController);
 app.delete('/removePrice', removePriceController);

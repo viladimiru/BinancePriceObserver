@@ -4,9 +4,7 @@ import { apiClient } from '../../../../api';
 import { dictionary } from '../../../../dictionary';
 import { createView } from '../../../scenary';
 import { keyboardWrapper } from '../../../../utils/keyboard';
-
-// TODO: set strict type
-const history: any = {};
+import { alertRemovalStore } from './store';
 
 export const pairsListView = createView({
 	id: 'PAIRS_LIST',
@@ -19,7 +17,8 @@ export const pairsListView = createView({
 		});
 	},
 	onAnswer: async (message: BotMessage) => {
-		history[message.chat.id] = message.text.toUpperCase();
+		const symbol = message.text.toUpperCase();
+		alertRemovalStore.set(String(message.chat.id), { symbol });
 	},
 	errorText: (message: BotMessage) =>
 		dictionary(message.from.language_code).youNotCreatedThisPair,

@@ -6,6 +6,7 @@ import { Bot, type BotMessage } from '../../..';
 import { apiClient } from '../../../../api';
 import { setPairStats } from '../../../../storage';
 import emoji from '../../../../dictionary/emoji';
+import { alertRemovalStore } from './store';
 
 const stickerDictionary: Record<string, string> = {
 	undefined: emoji.spike,
@@ -16,9 +17,6 @@ const typeDictionary = {
 	[stickerDictionary.ABOVE]: 'ABOVE',
 	[stickerDictionary.BELOW]: 'BELOW',
 };
-
-// TODO: strong type
-const history: any = {};
 
 export const alertsListView = createView({
 	id: 'ALERTS_LIST',
@@ -45,16 +43,18 @@ export const alertsListView = createView({
 		});
 	},
 	onAnswer: async (message: BotMessage) => {
+		const [symbol, type, price] = message.text.split(' ');
+		alertRemovalStore.set(String(message.chat.id), { symbol });
+
 		if (
 			message.text === dictionary(message.from.language_code).deleteAllAlerts
 		) {
 			await apiClient.deleteAlerts({
 				chatId: message.chat.id,
-				symbol: history[message.chat.id],
+				symbol,
 			});
 			return;
 		}
-		const [symbol, type, price] = message.text.split(' ');
 
 		// TODO: IT SHOULD BE ONE FUNCTION
 		if (typeDictionary[type]) {
@@ -83,9 +83,14 @@ export const alertsListView = createView({
 		dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message: BotMessage) => {
 		// TODO: fix get chat pairs history
+		const symbol = alertRemovalStore.get(String(message.chat.id))?.symbol;
+		if (!symbol) {
+			// TODO: think how to throw and handle errors
+			throw new Error('missing symbol');
+		}
 		const pairs = await apiClient.getChatPairs({
 			chatId: message.chat.id,
-			symbol: history[message.chat.id],
+			symbol,
 		});
 		let count = 0;
 		const list: KeyboardButton[][] = [[]];
