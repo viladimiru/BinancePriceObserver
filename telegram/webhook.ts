@@ -18,9 +18,11 @@ if (!isPooling) {
 	const port = process.env.WEBHOOK_LISTENER_PORT;
 	server
 		.listen(port, () => {
+			console.log(`Express server is listening on ${port}`);
 			logger.log('info', `Express server is listening on ${port}`);
 		})
 		.on('error', (...args) => {
+			console.error('Webhook express server initialization error');
 			logger.log('error', 'Webhook express server initialization error', args);
 		});
 }
