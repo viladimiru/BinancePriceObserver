@@ -17,9 +17,13 @@ export async function getSessionController(
 }
 
 function getValidatedQuery(query: unknown): Parameters<typeof getSession>[0] {
-	return z
+	const result = z
 		.object({
-			userId: z.number(),
+			userId: z.string(),
 		})
 		.parse(query);
+
+	return {
+		userId: Number(result.userId),
+	};
 }

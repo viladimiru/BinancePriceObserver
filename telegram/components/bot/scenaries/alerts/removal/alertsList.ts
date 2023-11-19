@@ -40,7 +40,6 @@ export const alertsListView = createView({
 		const [symbol, type, price] = message.text.split(' ');
 		alertRemovalStore.set(String(message.chat.id), { symbol });
 
-		// TODO: IT SHOULD BE ONE FUNCTION
 		if (typeDictionary[type]) {
 			await apiClient.removePrice({
 				symbol,
@@ -63,7 +62,6 @@ export const alertsListView = createView({
 	},
 	errorText: (message: BotMessage) => dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message: BotMessage) => {
-		// TODO: fix get chat pairs history
 		const symbol = alertRemovalStore.get(String(message.chat.id))?.symbol;
 		if (!symbol) {
 			// TODO: think how to throw and handle errors

@@ -30,7 +30,6 @@ export const setSpikingView = createView({
 		dictionary(message.from.language_code).yes,
 	],
 	onAnswer: async (message) => {
-		// todo: controller POST createTrade
 		if (message.text !== dictionary(message.from.language_code).miss) {
 			alertTradeStore.set(message.chat.id, {
 				spiking: true,

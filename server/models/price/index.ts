@@ -64,7 +64,6 @@ export const createPriceWithSymbol: CreatePriceWithSymbol = async ({
 	price,
 	symbol,
 }) => {
-	// TODO: create separate method because its duplicate function
 	const pair = await findPair({ symbol });
 	if (!pair) {
 		throw new Error('pair not found');

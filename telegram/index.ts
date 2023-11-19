@@ -66,6 +66,7 @@ async function onMessage(msg: BotMessage): Promise<void> {
 	const mainView = scenary.getMain();
 	const session = await apiClient.getSession({ userId });
 	const currentView = scenary.get(session.step);
+	console.log(session.step);
 
 	try {
 		switch (msg.text) {
@@ -94,6 +95,7 @@ async function onMessage(msg: BotMessage): Promise<void> {
 			}
 			default: {
 				if (currentView.expects && !currentView.expects(msg).includes(msg.text)) {
+					console.log('unexpected value', msg.text, ' | expected value', currentView.expects(msg));
 					Bot.sendMessage(msg.chat.id, dictionary(msg.from.language_code).iDontUnderstand);
 				} else if (currentView.validate && !(await currentView.validate(msg))) {
 					if (!currentView.errorText) {

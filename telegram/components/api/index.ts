@@ -84,7 +84,7 @@ class ApiClient extends Axios {
 	};
 
 	// TODO: rename method
-	getPairIndex: IsFutureExist = async (symbol: any) => {
+	getPairIndex: IsFutureExist = async ({ symbol }) => {
 		return await this.get(`/isFutureExist/${symbol}`);
 	};
 
