@@ -11,7 +11,7 @@ export function biggestInArr(arr: number[]): [number, number] {
 }
 
 export function smallestInArr(arr: number[]): [number, number] {
-	let smallest: [number, number] = [0, 0];
+	let smallest: [number, number] = [Infinity, Infinity];
 	arr.forEach((item, index) => {
 		if (!smallest) {
 			smallest = [item, index];

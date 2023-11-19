@@ -189,7 +189,6 @@ function spikeMonitor(symbol: string, markPrice: number): void {
 				smallestInMinute,
 				biggestInMinute
 			);
-			current.minute = [];
 		}
 	}
 
