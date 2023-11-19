@@ -42,7 +42,7 @@ function getValidatedStore(store: unknown): Parameters<typeof apiClient.createPa
 	return z
 		.object({
 			symbol: z.string(),
-			type: z.string(),
+			type: z.enum(['SPIKE', 'ABOVE', 'BELOW']),
 			chatId: z.coerce.number(),
 			message: z.string(),
 			price: z.coerce.number(),

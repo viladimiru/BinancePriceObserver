@@ -5,7 +5,9 @@ import { dictionary } from '../../../../dictionary';
 import { Subscription, updateStorage } from '../../../../subscription';
 import { keyboardWrapper } from '../../../../utils/keyboard';
 import { createView } from '../../../scenary';
-import { type AlertCreationEntity, alertCreationStore } from '../store';
+import { alertCreationStore } from '../store';
+
+type ValidatedStore = Parameters<typeof apiClient.createPair>[0];
 
 export const chooseTradeTypeView = createView({
 	id: 'CHOOSE_TRADE_TYPE',
@@ -37,11 +39,12 @@ export const chooseTradeTypeView = createView({
 			}
 		),
 	onAnswer: async (message) => {
-		const type = {
+		const typesMap: Record<string, ValidatedStore['type']> = {
 			[dictionary(message.from.language_code).above]: 'ABOVE',
 			[dictionary(message.from.language_code).below]: 'BELOW',
 			[dictionary(message.from.language_code).spiking]: 'SPIKE',
-		}[message.text];
+		};
+		const type = typesMap[message.text];
 		alertCreationStore.set(message.chat.id, {
 			type,
 		});
@@ -59,14 +62,21 @@ export const chooseTradeTypeView = createView({
 	},
 });
 
-function getValidatedStore(
-	store: unknown
-): Pick<AlertCreationEntity, 'symbol' | 'type' | 'chatId'> {
+function getValidatedStore(store: unknown): ValidatedStore {
 	return z
 		.object({
 			symbol: z.string(),
-			type: z.string(),
+			type: z.literal('SPIKE'),
 			chatId: z.number(),
 		})
+		.or(
+			z.object({
+				symbol: z.string(),
+				type: z.enum(['ABOVE', 'BELOW']),
+				chatId: z.number(),
+				message: z.string(),
+				price: z.coerce.number(),
+			})
+		)
 		.parse(store);
 }

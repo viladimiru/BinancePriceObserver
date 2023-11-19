@@ -88,7 +88,7 @@ class ApiClient extends Axios {
 		return await this.get(`/isFutureExist/${symbol}`);
 	};
 
-	createPair: CreatePair = async (request: any) => {
+	createPair: CreatePair = async (request) => {
 		await this.post('/createPair', request);
 	};
 
@@ -129,12 +129,12 @@ class ApiClient extends Axios {
 	};
 
 	createSpikeWithSymbol: CreateSpikeWithSymbol = async (request) => {
-		await this.post('/createPriceWithSymbol', request);
+		await this.post('/createSpikeWithSymbol', request);
 	};
 
 	isChatTradeExist: IsChatTradeExist = async (request) => {
 		return await this.get('/isChatTradeExist', {
-			data: request,
+			params: request,
 		});
 	};
 
@@ -157,12 +157,12 @@ export const apiClient = new ApiClient({
 });
 
 apiClient.interceptors.request.use((request) => {
-	logger.log('info', 'REQUEST_URL', request.url);
+	logger.log('info', 'REQUEST_URL: ' + request.url);
 	return request;
 });
 
 apiClient.interceptors.response.use((response) => {
-	logger.log('info', 'REQUEST_URL', response.config.url);
+	logger.log('info', 'RESPONSE_URL: ' + response.config.url);
 	return response;
 });
 
@@ -173,7 +173,7 @@ apiClient.interceptors.response.use(
 	(error) => {
 		let errorMessage = error?.response?.data;
 		if (!errorMessage) {
-			logger.log('error', 'unexpected response error', error);
+			logger.log('error', 'unexpected response error', error?.response);
 			errorMessage = 'Unexpected error';
 		}
 		throw new Error(errorMessage);

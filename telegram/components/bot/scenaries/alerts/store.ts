@@ -3,7 +3,7 @@ import { createStore } from '../../../store-factory';
 export interface AlertCreationEntity {
 	chatId: number;
 	symbol: string;
-	type: string;
+	type: 'SPIKE' | 'ABOVE' | 'BELOW';
 	message: string;
 	price: number;
 }

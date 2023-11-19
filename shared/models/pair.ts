@@ -3,13 +3,19 @@ import { type PairEntity } from './orm/entities/pair';
 import { type PriceEntity } from './orm/entities/price';
 import { type SpikeEntity } from './orm/entities/spike';
 
-export interface CreatePairParams {
-	symbol: string;
-	type: string;
-	chatId: number;
-	message?: string;
-	price?: number;
-}
+export type CreatePairParams =
+	| {
+			symbol: string;
+			chatId: number;
+			type: 'SPIKE';
+	  }
+	| {
+			symbol: string;
+			chatId: number;
+			type: 'ABOVE' | 'BELOW';
+			message: string;
+			price: number;
+	  };
 
 export interface PairWithEntities extends PairEntity {
 	spikes: SpikeEntity[];
