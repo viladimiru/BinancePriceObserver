@@ -112,8 +112,6 @@ export const getChatTradesByPairs: GetChatTradesByPairs = async ({ pairs }) => {
 				},
 			},
 		},
-		raw: true,
-		nest: true,
 	});
 
 	return result.map((item) => item.dataValues) as Awaited<

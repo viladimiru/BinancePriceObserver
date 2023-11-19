@@ -91,7 +91,6 @@ export const getPairs: GetPairs = async () => {
 };
 
 export const getChatPairs: GetChatPairs = async (params) => {
-	console.log(params);
 	const result = await PAIR.findAll({
 		where: {
 			symbol: params.symbol,
@@ -136,6 +135,7 @@ export const updatePairPrice: UpdatePairPrice = async ({
 };
 
 export const getChatPairsRaw: GetChatPairsRaw = async ({ chatId }) => {
+	// TODO: rewrite query more modern
 	const [result] = await orm.query(`
 		SELECT pa.symbol FROM Prices p
 				LEFT JOIN Trades t ON 

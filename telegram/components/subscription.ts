@@ -95,7 +95,6 @@ export function Subscription(symbol: string): void {
 						  })
 				);
 			}
-			console.log(getPairStats());
 			if (
 				!getPairStats()
 					.map((item) => item.symbol)

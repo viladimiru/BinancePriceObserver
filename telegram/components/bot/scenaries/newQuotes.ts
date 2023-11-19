@@ -65,7 +65,6 @@ export const quotesView = createView({
 				);
 			}
 		} catch (error) {
-			console.log(error);
 			await Bot.sendMessage(
 				message.chat.id,
 				dictionary(message.from?.language_code).quotesFetchError

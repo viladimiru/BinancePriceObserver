@@ -17,6 +17,9 @@ const typeDictionary = {
 	[stickerDictionary.BELOW]: 'BELOW',
 };
 
+// TODO: strong type
+const history: any = {};
+
 export const alertsListView = createView({
 	id: 'ALERTS_LIST',
 	text: (message: BotMessage) =>
@@ -79,6 +82,7 @@ export const alertsListView = createView({
 	errorText: (message: BotMessage) =>
 		dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message: BotMessage) => {
+		// TODO: fix get chat pairs history
 		const pairs = await apiClient.getChatPairs({
 			chatId: message.chat.id,
 			symbol: history[message.chat.id],

@@ -86,9 +86,7 @@ class ApiClient extends Axios {
 
 	getChatTradesByPairs: GetChatTradesByPairs = async (request) => {
 		return await this.get('/getChatTradesByPairs', {
-			params: {
-				pairs: request,
-			},
+			params: request,
 		});
 	};
 
@@ -175,17 +173,17 @@ export const apiClient = new ApiClient({
 	transformResponse: axios.defaults.transformResponse,
 	baseURL: 'http://localhost:3000/',
 });
+// TODO: move requests and responses in logger
+// apiClient.interceptors.request.use((request) => {
+// 	console.log('REQUEST_URL:', request.url);
+// 	console.log('REQUEST_DATA:', request.data);
+// 	return request;
+// });
 
-apiClient.interceptors.request.use((request) => {
-	console.log('REQUEST_URL:', request.url);
-	console.log('REQUEST_DATA:', request.data);
-	return request;
-});
-
-apiClient.interceptors.response.use((response) => {
-	console.log('RESPONSE_URL:', response.config.url);
-	console.log('RESPONSE_DATA:', response.data);
-	return response;
-});
+// apiClient.interceptors.response.use((response) => {
+// 	console.log('RESPONSE_URL:', response.config.url);
+// 	console.log('RESPONSE_DATA:', response.data);
+// 	return response;
+// });
 
 apiClient.interceptors.response.use((response) => response.data);
