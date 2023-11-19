@@ -1,5 +1,4 @@
 import axios, { Axios } from 'axios';
-import { type DeleteAlerts } from '../../../shared/models/alerts';
 import {
 	type UpdateSession,
 	type GetSession,
@@ -121,12 +120,6 @@ class ApiClient extends Axios {
 	isPriceExist: IsPriceExist = async (request) => {
 		return await this.get('/isPriceExist', {
 			params: request,
-		});
-	};
-
-	deleteAlerts: DeleteAlerts = async (params) => {
-		await this.delete('/deleteAlerts', {
-			data: params,
 		});
 	};
 

@@ -1,92 +1,77 @@
-import { keyboardWrapper } from '../../utils/keyboard.js';
-import { diffInPercents, toFixed } from '../../utils/number.js';
-import emoji from '../../dictionary/emoji.js';
-import { dictionary } from '../../dictionary/index.js';
-import { apiClient } from '../../api/index.js';
-import { Bot, type BotMessage } from '../index';
-import { type GetChatTradesByPairs } from '../../../../shared/models/trade.js';
-import { type FuturePrice } from '../../../../shared/models/future.js';
+import { Bot } from '..';
+import { type FuturePrice } from '../../../../shared/models/future';
+import { type GetChatTradesByPairs } from '../../../../shared/models/trade';
+import { getValidatedLanguage } from '../../../entities/language';
+import { apiClient } from '../../api';
+import { dictionary } from '../../dictionary';
+import emoji from '../../dictionary/emoji';
+import { keyboardWrapper } from '../../utils/keyboard';
+import { diffInPercents, toFixed } from '../../utils/number';
+import { createView } from '../scenary';
 
 type ExpandedTradeEntity = Awaited<ReturnType<GetChatTradesByPairs>>[number] & {
 	isWin: boolean;
 	isLoss: boolean;
 };
 
-export const DICTIONARY = {
-	QUOTES: 'QUOTES',
-};
-
-export default {
-	[DICTIONARY.QUOTES]: {
-		id: 'QUOTES',
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).loadingQuotes,
-		keyboard: (message: BotMessage) =>
-			keyboardWrapper(
+export const quotesView = createView({
+	id: 'QUOTES',
+	text: (message) => dictionary(message.from.language_code).loadingQuotes,
+	keyboard: (message) =>
+		keyboardWrapper(
+			[
 				[
-					[
-						{
-							text: dictionary(message.from.language_code).update,
-						},
-					],
+					{
+						text: dictionary(message.from.language_code).update,
+					},
 				],
-				{
-					language_code: message.from.language_code,
-				}
-			),
-		expect: (message: BotMessage) => [
-			dictionary(message.from.language_code).update,
-		],
-		cbOnSend: async (message: BotMessage) => {
-			try {
-				// todo: CONTROLLER GET /getQuotes
-				const result = await apiClient.getChatPairPrices({
-					chatId: message.chat.id,
+			],
+			{
+				language_code: message.from.language_code,
+			}
+		),
+	expects: (message) => [dictionary(message.from.language_code).update],
+	cbOnSend: async (message) => {
+		try {
+			const result = await apiClient.getChatPairPrices({
+				chatId: message.chat.id,
+			});
+			if (result) {
+				const trades = await apiClient.getChatTradesByPairs({
+					pairs: result.map((item) => item.symbol),
 				});
-				if (result) {
-					const trades = await apiClient.getChatTradesByPairs({
-						pairs: result.map((item) => item.symbol),
-					});
-					let text = '';
-					result.forEach((item) => {
-						text += [`<b>${item.symbol}</b>`, toFixed(item.markPrice)].join(
-							': '
+				let text = '';
+				result.forEach((item) => {
+					text += [`<b>${item.symbol}</b>`, toFixed(item.markPrice)].join(': ');
+					text += '<i>';
+					const _trades = transformTrades(trades, item);
+					_trades.forEach((trade) => {
+						text += wrapTradeText(
+							item.markPrice,
+							trade,
+							getValidatedLanguage(message.from?.language_code)
 						);
-						text += '<i>';
-						const _trades = transformTrades(trades, item);
-						_trades.forEach((trade) => {
-							text += wrapTradeText(
-								item.markPrice,
-								trade,
-								message.from.language_code
-							);
-						});
-						text += '</i>';
-						text += '\n';
 					});
-					await Bot.sendMessage(message.chat.id, text, {
-						parse_mode: 'HTML',
-					});
-				} else {
-					await Bot.sendMessage(
-						message.chat.id,
-						dictionary(message.from.language_code).listIsEmpty
-					);
-				}
-			} catch (error) {
-				console.log(error);
+					text += '</i>';
+					text += '\n';
+				});
+				await Bot.sendMessage(message.chat.id, text, {
+					parse_mode: 'HTML',
+				});
+			} else {
 				await Bot.sendMessage(
 					message.chat.id,
-					dictionary(message.from.language_code).quotesFetchError
+					dictionary(message.from?.language_code).listIsEmpty
 				);
 			}
-		},
-		getNext: (message: BotMessage) =>
-			message.text === dictionary(message.from.language_code).update
-				? DICTIONARY.QUOTES
-				: 'START',
+		} catch (error) {
+			await Bot.sendMessage(
+				message.chat.id,
+				dictionary(message.from?.language_code).quotesFetchError
+			);
+		}
 	},
-};
+});
 
 function wrapTradeText(
 	markPrice: number,
