@@ -19,9 +19,9 @@ function getValidatedQuery(query: unknown): Parameters<typeof isPriceExist>[0] {
 	return z
 		.object({
 			symbol: z.string(),
-			chatId: z.number(),
+			chatId: z.coerce.number(),
 			type: z.string(),
-			price: z.number(),
+			price: z.coerce.number(),
 		})
 		.parse(query);
 }

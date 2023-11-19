@@ -153,6 +153,7 @@ export const apiClient = new ApiClient({
 	transformRequest: axios.defaults.transformRequest,
 	transformResponse: axios.defaults.transformResponse,
 	baseURL: `http://localhost:${process.env.SERVER_PORT}/`,
+	validateStatus: (status) => status < 400,
 });
 
 apiClient.interceptors.request.use((request) => {
@@ -165,4 +166,16 @@ apiClient.interceptors.response.use((response) => {
 	return response;
 });
 
-apiClient.interceptors.response.use((response) => response.data);
+apiClient.interceptors.response.use(
+	(response) => {
+		return response.data;
+	},
+	(error) => {
+		let errorMessage = error?.response?.data;
+		if (!errorMessage) {
+			logger.log('error', 'unexpected response error', error);
+			errorMessage = 'Unexpected error';
+		}
+		throw new Error(errorMessage);
+	}
+);

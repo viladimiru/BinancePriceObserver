@@ -18,7 +18,7 @@ export async function isSpikeExistController(
 function getValidatedQuery(query: unknown): Parameters<typeof isSpikeExist>[0] {
 	return z
 		.object({
-			chatId: z.number(),
+			chatId: z.coerce.number(),
 			symbol: z.string(),
 		})
 		.parse(query);

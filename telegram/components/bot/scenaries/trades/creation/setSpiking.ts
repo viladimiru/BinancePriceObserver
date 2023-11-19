@@ -1,10 +1,11 @@
+import { z } from 'zod';
 import { Bot } from '../../..';
 import { apiClient } from '../../../../api';
 import { dictionary } from '../../../../dictionary';
 import { Subscription, updateStorage } from '../../../../subscription';
 import { keyboardWrapper } from '../../../../utils/keyboard';
 import { createView } from '../../../scenary';
-import { alertTradeStore } from '../store';
+import { type AlertTradeEntity, alertTradeStore } from '../store';
 
 export const setSpikingView = createView({
 	id: 'SET_SPIKING',
@@ -35,45 +36,45 @@ export const setSpikingView = createView({
 				spiking: true,
 			});
 		}
-		const payload = alertTradeStore.get(message.chat.id);
-		await apiClient.createTrade(payload);
+		const store = getValidatedStore(alertTradeStore.get(message.chat.id));
+		await apiClient.createTrade(store);
 
-		if (payload.stopLoss) {
+		if (store.stopLoss) {
 			await apiClient.createPriceWithSymbol({
 				chatId: message.chat.id,
 				message: dictionary(message.from.language_code).messageTemplates[0],
 				type:
-					payload.type === dictionary(message.from.language_code).long.toUpperCase()
+					store.type === dictionary(message.from.language_code).long.toUpperCase()
 						? 'BELOW'
 						: 'ABOVE',
-				price: payload.stopLoss,
-				symbol: payload.symbol,
+				price: store.stopLoss,
+				symbol: store.symbol,
 			});
 		}
 
-		if (payload.takeProfit) {
+		if (store.takeProfit) {
 			await apiClient.createPriceWithSymbol({
 				chatId: message.chat.id,
 				message: dictionary(message.from.language_code).messageTemplates[1],
 				type:
-					payload.type === dictionary(message.from.language_code).short.toUpperCase()
+					store.type === dictionary(message.from.language_code).short.toUpperCase()
 						? 'BELOW'
 						: 'ABOVE',
-				price: payload.takeProfit,
-				symbol: payload.symbol,
+				price: store.takeProfit,
+				symbol: store.symbol,
 			});
 		}
 
-		if (payload.spiking) {
+		if (store.spiking) {
 			await apiClient.createSpikeWithSymbol({
 				chatId: message.chat.id,
-				symbol: payload.symbol,
+				symbol: store.symbol,
 			});
 		}
 
-		if (payload.stopLoss || payload.takeProfit || payload.spiking) {
+		if (store.stopLoss || store.takeProfit || store.spiking) {
 			await updateStorage();
-			Subscription(payload.symbol);
+			Subscription(store.symbol);
 		}
 
 		await Bot.sendMessage(message.chat.id, dictionary(message.from.language_code).tradeCreated, {
@@ -83,3 +84,18 @@ export const setSpikingView = createView({
 		alertTradeStore.deleteKey(message.chat.id);
 	},
 });
+
+function getValidatedStore(store: unknown): AlertTradeEntity {
+	return z
+		.object({
+			chatId: z.coerce.number(),
+			symbol: z.string(),
+			type: z.string(),
+			markPrice: z.coerce.number(),
+			shoulder: z.coerce.number(),
+			spiking: z.coerce.boolean().optional(),
+			stopLoss: z.coerce.number().optional(),
+			takeProfit: z.coerce.number().optional(),
+		})
+		.parse(store);
+}

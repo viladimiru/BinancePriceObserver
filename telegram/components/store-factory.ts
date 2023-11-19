@@ -1,9 +1,7 @@
 interface StoreReturnType<T, K extends keyof T> {
 	deleteKey: (key: K) => void;
 	set: (key: K, value: T[K]) => void;
-	// TODO: fix any type
-	// get: (key: K) => T[K];
-	get: (key: K) => any;
+	get: (key: K) => T[K];
 }
 
 export function createStore<T, K extends keyof T>(initialValue: T): StoreReturnType<T, K> {

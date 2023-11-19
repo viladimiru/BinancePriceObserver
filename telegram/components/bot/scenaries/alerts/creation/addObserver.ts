@@ -17,7 +17,7 @@ export const addObserverView = createView({
 			return await apiClient.isFutureExist({
 				symbol: text.toUpperCase(),
 			});
-		} catch {
+		} catch (error) {
 			return false;
 		}
 	},

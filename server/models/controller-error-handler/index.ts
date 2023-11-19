@@ -18,7 +18,7 @@ export function controllerErrorHandler(error: unknown): ControllerError {
 		message = error.message;
 	}
 
-	logger.log('error', message);
+	logger.log('error', message, error);
 
 	return {
 		error: message,

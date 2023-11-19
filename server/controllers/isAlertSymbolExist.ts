@@ -18,7 +18,7 @@ export async function isAlertSymbolExistController(
 function getValidatedQuery(query: unknown): Parameters<typeof isAlertSymbolExist>[0] {
 	return z
 		.object({
-			chatId: z.number(),
+			chatId: z.coerce.number(),
 			symbol: z.string(),
 		})
 		.parse(query);

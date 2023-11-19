@@ -19,7 +19,7 @@ export async function getChatPairsController(
 function getValidatedQuery(query: unknown): Parameters<typeof getChatPairs>[0] {
 	return z
 		.object({
-			chatId: z.number(),
+			chatId: z.coerce.number(),
 			symbol: z.string(),
 		})
 		.parse(query);

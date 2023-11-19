@@ -5,10 +5,10 @@ import { type SpikeEntity } from './orm/entities/spike';
 
 export interface CreatePairParams {
 	symbol: string;
-	type: 'SPIKE' | 'PRICE';
+	type: string;
 	chatId: number;
-	message: string;
-	price: number;
+	message?: string;
+	price?: number;
 }
 
 export interface PairWithEntities extends PairEntity {

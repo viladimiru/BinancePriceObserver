@@ -1,7 +1,9 @@
 import { type PairEntity } from './orm/entities/pair';
 import { type TradeCreationEntity, type TradeEntity } from './orm/entities/trade';
 
-export type CreateTrade = (arg1: TradeCreationEntity & Pick<PairEntity, 'symbol'>) => Promise<void>;
+export type CreateTrade = (
+	arg1: Omit<TradeCreationEntity, 'PairId'> & Pick<PairEntity, 'symbol'>
+) => Promise<void>;
 export type GetChatTrades = (
 	arg1: Pick<TradeCreationEntity, 'chatId'>
 ) => Promise<Array<PairEntity & { trades: TradeEntity[] }>>;

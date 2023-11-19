@@ -1,6 +1,6 @@
 export interface TradeCreationEntity {
 	chatId: number;
-	type: 'LONG' | 'SHORT';
+	type: string;
 	markPrice: number;
 	shoulder: number;
 	PairId: number;

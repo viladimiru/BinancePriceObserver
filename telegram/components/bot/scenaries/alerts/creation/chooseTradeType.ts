@@ -1,10 +1,11 @@
+import { z } from 'zod';
 import { Bot, type BotMessage } from '../../..';
 import { apiClient } from '../../../../api';
 import { dictionary } from '../../../../dictionary';
 import { Subscription, updateStorage } from '../../../../subscription';
 import { keyboardWrapper } from '../../../../utils/keyboard';
 import { createView } from '../../../scenary';
-import { alertCreationStore } from '../store';
+import { type AlertCreationEntity, alertCreationStore } from '../store';
 
 export const chooseTradeTypeView = createView({
 	id: 'CHOOSE_TRADE_TYPE',
@@ -45,9 +46,10 @@ export const chooseTradeTypeView = createView({
 			type,
 		});
 		if (message.text === dictionary(message.from.language_code).spiking) {
-			await apiClient.createPair(alertCreationStore.get(message.chat.id));
+			const store = getValidatedStore(alertCreationStore.get(message.chat.id));
+			await apiClient.createPair(store);
 			await updateStorage();
-			Subscription(alertCreationStore.get(message.chat.id).symbol);
+			Subscription(store.symbol);
 			await Bot.sendMessage(
 				message.chat.id,
 				dictionary(message.from.language_code).pairSuccessfullyCreated
@@ -56,3 +58,15 @@ export const chooseTradeTypeView = createView({
 		}
 	},
 });
+
+function getValidatedStore(
+	store: unknown
+): Pick<AlertCreationEntity, 'symbol' | 'type' | 'chatId'> {
+	return z
+		.object({
+			symbol: z.string(),
+			type: z.string(),
+			chatId: z.number(),
+		})
+		.parse(store);
+}
