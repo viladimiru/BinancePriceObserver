@@ -3,6 +3,8 @@ import {
 	getDatabasePassword,
 	getDatabaseUsername,
 	getTestDatabaseName,
+	getTestDatabasePassword,
+	getTestDatabaseUsername,
 	isTest,
 } from '../../../environment';
 import { type Options } from 'sequelize';
@@ -14,10 +16,9 @@ export function getOrmConfig(): Options {
 	};
 
 	if (isTest) {
-		// TODO: add for test environment separate username and password
+		result.username = getTestDatabaseUsername();
+		result.password = getTestDatabasePassword();
 		result.database = getTestDatabaseName();
-		result.username = getDatabaseUsername();
-		result.password = getDatabasePassword();
 		result.logging = false;
 		result.sync = {
 			force: true,
