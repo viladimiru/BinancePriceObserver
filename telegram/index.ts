@@ -72,59 +72,80 @@ async function onMessage(msg: BotMessage): Promise<void> {
 	const session = await apiClient.getSession({ userId });
 	const currentView = scenary.get(session.step);
 
-	switch (msg.text) {
-		case dictionary(msg.from.language_code).toTheMain:
-			await apiClient.updateSession({
-				userId,
-				step: mainView.id,
-			});
-			Bot.sendMessage(msg.chat.id, mainView.text(msg), {
-				parse_mode: 'HTML',
-				...(await mainView.keyboard(msg)),
-			});
-			return;
-		case dictionary(msg.from.language_code).back: {
-			const prevStep = scenary.get(session.step).getPrev(msg);
-			const prevStepKeyboard = await prevStep.keyboard(msg);
-			await apiClient.updateSession({
-				userId,
-				step: prevStep.id,
-			});
-			Bot.sendMessage(msg.chat.id, prevStep.text(msg), {
-				...prevStepKeyboard,
-				parse_mode: 'HTML',
-			});
-			return;
-		}
-		default: {
-			if (currentView.expects && !currentView.expects(msg).includes(msg.text)) {
-				Bot.sendMessage(
-					msg.chat.id,
-					dictionary(msg.from.language_code).iDontUnderstand
-				);
-			} else if (currentView.validate && !(await currentView.validate(msg))) {
-				if (!currentView.errorText) {
-					return;
-				}
-				Bot.sendMessage(msg.chat.id, currentView.errorText?.(msg));
-			} else {
-				await currentView.onAnswer?.(msg);
-
-				const nextView = currentView.getNext(msg);
-
-				const nextStepKeyboard = await nextView.keyboard(msg);
-
+	try {
+		switch (msg.text) {
+			case dictionary(msg.from.language_code).toTheMain:
 				await apiClient.updateSession({
 					userId,
-					step: nextView.id,
+					step: mainView.id,
 				});
-				const sentMsg = await Bot.sendMessage(msg.chat.id, nextView.text(msg), {
-					...nextStepKeyboard,
+				Bot.sendMessage(msg.chat.id, mainView.text(msg), {
+					parse_mode: 'HTML',
+					...(await mainView.keyboard(msg)),
+				});
+				return;
+			case dictionary(msg.from.language_code).back: {
+				const prevStep = scenary.get(session.step).getPrev(msg);
+				const prevStepKeyboard = await prevStep.keyboard(msg);
+				await apiClient.updateSession({
+					userId,
+					step: prevStep.id,
+				});
+				Bot.sendMessage(msg.chat.id, prevStep.text(msg), {
+					...prevStepKeyboard,
 					parse_mode: 'HTML',
 				});
-				nextView.cbOnSend?.(sentMsg);
+				return;
+			}
+			default: {
+				if (
+					currentView.expects &&
+					!currentView.expects(msg).includes(msg.text)
+				) {
+					Bot.sendMessage(
+						msg.chat.id,
+						dictionary(msg.from.language_code).iDontUnderstand
+					);
+				} else if (currentView.validate && !(await currentView.validate(msg))) {
+					if (!currentView.errorText) {
+						return;
+					}
+					Bot.sendMessage(msg.chat.id, currentView.errorText?.(msg));
+				} else {
+					await currentView.onAnswer?.(msg);
+
+					const nextView = currentView.getNext(msg);
+
+					const nextStepKeyboard = await nextView.keyboard(msg);
+
+					await apiClient.updateSession({
+						userId,
+						step: nextView.id,
+					});
+					const sentMsg = await Bot.sendMessage(
+						msg.chat.id,
+						nextView.text(msg),
+						{
+							...nextStepKeyboard,
+							parse_mode: 'HTML',
+						}
+					);
+					nextView.cbOnSend?.(sentMsg);
+				}
 			}
 		}
+	} catch (error) {
+		// TODO: add logger on unexpected errors here
+		console.log(error);
+
+		await apiClient.updateSession({
+			userId,
+			step: mainView.id,
+		});
+		Bot.sendMessage(msg.chat.id, mainView.text(msg), {
+			parse_mode: 'HTML',
+			...(await mainView.keyboard(msg)),
+		});
 	}
 }
 
