@@ -1,4 +1,5 @@
 import { type Response } from 'express';
+import { logger } from '../logger';
 
 interface ControllerError {
 	error: string;
@@ -17,8 +18,7 @@ export function controllerErrorHandler(error: unknown): ControllerError {
 		message = error.message;
 	}
 
-	// TODO: log it somewhere
-	console.log(error);
+	logger.log('error', message);
 
 	return {
 		error: message,

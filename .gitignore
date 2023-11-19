@@ -3,5 +3,5 @@ dist
 .env
 cache
 combined.log
-err.log
+error.log
 coverage

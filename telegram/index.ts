@@ -5,6 +5,7 @@ import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './components/storage/
 import { dictionary } from './components/dictionary/index.js';
 import { apiClient } from './components/api/index';
 import { Bot, scenary, type BotMessage } from './components/bot';
+import { logger } from './logger.js';
 
 register(PAIR_STATS, []);
 register(BOT_MESSANGER, Bot.sendMessage);
@@ -66,7 +67,6 @@ async function onMessage(msg: BotMessage): Promise<void> {
 	const mainView = scenary.getMain();
 	const session = await apiClient.getSession({ userId });
 	const currentView = scenary.get(session.step);
-	console.log(session.step);
 
 	try {
 		switch (msg.text) {
@@ -95,7 +95,10 @@ async function onMessage(msg: BotMessage): Promise<void> {
 			}
 			default: {
 				if (currentView.expects && !currentView.expects(msg).includes(msg.text)) {
-					console.log('unexpected value', msg.text, ' | expected value', currentView.expects(msg));
+					logger.log(
+						'warn',
+						`incorrect answer ${msg.text}, expected ${JSON.stringify(currentView.expects(msg))}`
+					);
 					Bot.sendMessage(msg.chat.id, dictionary(msg.from.language_code).iDontUnderstand);
 				} else if (currentView.validate && !(await currentView.validate(msg))) {
 					if (!currentView.errorText) {
@@ -122,8 +125,7 @@ async function onMessage(msg: BotMessage): Promise<void> {
 			}
 		}
 	} catch (error) {
-		// TODO: add logger on unexpected errors here
-		console.log(error);
+		logger.log('error', 'unexpected message error', error);
 
 		await apiClient.updateSession({
 			userId,

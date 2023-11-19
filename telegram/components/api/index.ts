@@ -28,6 +28,7 @@ import {
 	type RemoveSpike,
 	type CreateSpikeWithSymbol,
 } from '../../../shared/models/spike';
+import { logger } from '../../logger';
 
 class ApiClient extends Axios {
 	sendFeedback: AddFeedback = async (params) => {
@@ -153,17 +154,15 @@ export const apiClient = new ApiClient({
 	transformResponse: axios.defaults.transformResponse,
 	baseURL: `http://localhost:${process.env.SERVER_PORT}/`,
 });
-// TODO: move requests and responses in logger
-// apiClient.interceptors.request.use((request) => {
-// 	console.log('REQUEST_URL:', request.url);
-// 	console.log('REQUEST_DATA:', request.data);
-// 	return request;
-// });
 
-// apiClient.interceptors.response.use((response) => {
-// 	console.log('RESPONSE_URL:', response.config.url);
-// 	console.log('RESPONSE_DATA:', response.data);
-// 	return response;
-// });
+apiClient.interceptors.request.use((request) => {
+	logger.log('info', 'REQUEST_URL', request.url);
+	return request;
+});
+
+apiClient.interceptors.response.use((response) => {
+	logger.log('info', 'REQUEST_URL', response.config.url);
+	return response;
+});
 
 apiClient.interceptors.response.use((response) => response.data);
