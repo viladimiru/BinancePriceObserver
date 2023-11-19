@@ -190,6 +190,7 @@ function spikeMonitor(symbol: string, markPrice: number): void {
 				biggestInMinute
 			);
 		}
+		current.minute = [];
 	}
 
 	if (current.hour.length === 60) {
