@@ -5,17 +5,24 @@ import {
 	type ResponseWithError,
 	controllerErrorHandler,
 } from '../models/controller-error-handler';
+import { z } from 'zod';
 
 export async function getSessionController(
 	request: Request,
 	response: ResponseWithError<SessionEntity>
 ): Promise<void> {
 	try {
-		// TODO: validate
-		// @ts-expect-error parse query
-		const result = await getSession(request.query);
+		const result = await getSession(getValidatedQuery(request.query));
 		response.status(200).send(result);
 	} catch (error) {
 		response.status(500).send(controllerErrorHandler(error));
 	}
+}
+
+function getValidatedQuery(query: unknown): Parameters<typeof getSession>[0] {
+	return z
+		.object({
+			userId: z.number(),
+		})
+		.parse(query);
 }
