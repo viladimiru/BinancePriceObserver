@@ -1,11 +1,13 @@
-import { type Request, type Response } from 'express';
+import { type Request } from 'express';
 import { getChatPairPrices } from '../models/pair';
+import {
+	type ResponseWithError,
+	controllerErrorHandler,
+} from '../models/controller-error-handler';
 
 export async function getChatPairPricesController(
 	request: Request,
-	response: Response<
-		Awaited<ReturnType<typeof getChatPairPrices>> | { error: unknown }
-	>
+	response: ResponseWithError<Awaited<ReturnType<typeof getChatPairPrices>>>
 ): Promise<void> {
 	try {
 		const result = await getChatPairPrices({
@@ -13,8 +15,6 @@ export async function getChatPairPricesController(
 		});
 		response.status(200).send(result);
 	} catch (error) {
-		response.status(500).send({
-			error,
-		});
+		response.status(500).send(controllerErrorHandler(error));
 	}
 }

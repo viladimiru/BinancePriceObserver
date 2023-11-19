@@ -1,11 +1,13 @@
-import { type Request, type Response } from 'express';
+import { type Request } from 'express';
 import { getChatTradesByPairs } from '../models/trade';
+import {
+	controllerErrorHandler,
+	type ResponseWithError,
+} from '../models/controller-error-handler';
 
 export async function getChatTradesByPairsController(
 	request: Request,
-	response: Response<
-		Awaited<ReturnType<typeof getChatTradesByPairs> | { error: unknown }>
-	>
+	response: ResponseWithError<Awaited<ReturnType<typeof getChatTradesByPairs>>>
 ): Promise<void> {
 	try {
 		// TODO: validate
@@ -13,8 +15,6 @@ export async function getChatTradesByPairsController(
 		const result = await getChatTradesByPairs({ pairs: request.query.pairs });
 		response.status(200).send(result);
 	} catch (error) {
-		response.status(500).send({
-			error,
-		});
+		response.status(500).send(controllerErrorHandler(error));
 	}
 }

@@ -1,10 +1,14 @@
-import { type Request, type Response } from 'express';
+import { type Request } from 'express';
 import { getSession } from '../models/session';
 import { type SessionEntity } from '../../shared/models/orm/entities/session';
+import {
+	type ResponseWithError,
+	controllerErrorHandler,
+} from '../models/controller-error-handler';
 
 export async function getSessionController(
 	request: Request,
-	response: Response<SessionEntity | { error: unknown }>
+	response: ResponseWithError<SessionEntity>
 ): Promise<void> {
 	try {
 		// TODO: validate
@@ -12,8 +16,6 @@ export async function getSessionController(
 		const result = await getSession(request.query);
 		response.status(200).send(result);
 	} catch (error) {
-		response.status(500).send({
-			error,
-		});
+		response.status(500).send(controllerErrorHandler(error));
 	}
 }

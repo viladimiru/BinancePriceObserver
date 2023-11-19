@@ -1,9 +1,13 @@
-import { type Request, type Response } from 'express';
+import { type Request } from 'express';
 import { getAlertSymbols } from '../models/pair';
+import {
+	type ResponseWithError,
+	controllerErrorHandler,
+} from '../models/controller-error-handler';
 
 export async function getAlertSymbolsController(
 	request: Request,
-	response: Response<string[] | { error: unknown }>
+	response: ResponseWithError<string[]>
 ): Promise<void> {
 	try {
 		const result = await getAlertSymbols({
@@ -11,8 +15,6 @@ export async function getAlertSymbolsController(
 		});
 		response.status(200).send(result);
 	} catch (error) {
-		response.status(500).send({
-			error,
-		});
+		response.status(500).send(controllerErrorHandler(error));
 	}
 }
