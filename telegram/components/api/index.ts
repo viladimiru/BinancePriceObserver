@@ -152,6 +152,7 @@ class ApiClient extends Axios {
 export const apiClient = new ApiClient({
 	transformRequest: axios.defaults.transformRequest,
 	transformResponse: axios.defaults.transformResponse,
+	// TODO: add port declaration in environment
 	baseURL: 'http://localhost:3000/',
 });
 // TODO: move requests and responses in logger
