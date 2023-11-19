@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"run_server": "ts-node-esm ./server/index.ts",
-		"run_tg": "export NODE_ENV=development && ts-node-esm ./telegram/index.ts",
+		"start_server": "ts-node-esm ./server/index.ts",
+		"start_telegram": "ts-node-esm ./telegram/index.ts",
 		"dev_server": "nodemon --watch ./server ./server/index.ts",
 		"dev_tg": "export NODE_ENV=development && nodemon --watch ./telegram ./telegram/index.ts",
 		"tg_test_run": "export NODE_ENV=prod-test && nodemon --watch ./telegram ./telegram/index.ts",
