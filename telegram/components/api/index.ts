@@ -1,8 +1,5 @@
 import axios, { Axios } from 'axios';
-import {
-	type UpdateSession,
-	type GetSession,
-} from '../../../shared/models/session';
+import { type UpdateSession, type GetSession } from '../../../shared/models/session';
 import {
 	type CreatePriceWithSymbol,
 	type IsPriceExist,
@@ -22,10 +19,7 @@ import {
 	type IsChatTradeExist,
 	type RemoveTrade,
 } from '../../../shared/models/trade';
-import {
-	type IsFutureExist,
-	type GetChatPairPrices,
-} from '../../../shared/models/future';
+import { type IsFutureExist, type GetChatPairPrices } from '../../../shared/models/future';
 import { type AddFeedback } from '../../../shared/models/feedback';
 import { type CreateUser } from '../../../shared/models/user';
 import {
@@ -98,10 +92,7 @@ class ApiClient extends Axios {
 		await this.post('/createPair', request);
 	};
 
-	isAlertSymbolExist: IsAlertSymbolExist = async (request: {
-		symbol: string;
-		chatId: number;
-	}) => {
+	isAlertSymbolExist: IsAlertSymbolExist = async (request: { symbol: string; chatId: number }) => {
 		return await this.get('/isAlertSymbolExist', {
 			params: request,
 		});
@@ -123,10 +114,7 @@ class ApiClient extends Axios {
 		});
 	};
 
-	getChatPairs: GetChatPairs = async (request: {
-		chatId: number;
-		symbol: string;
-	}) => {
+	getChatPairs: GetChatPairs = async (request: { chatId: number; symbol: string }) => {
 		return await this.get('/getChatPairs', {
 			params: request,
 		});

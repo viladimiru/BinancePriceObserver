@@ -19,8 +19,7 @@ const typeDictionary: Record<string, 'LONG' | 'SHORT'> = {
 export default {
 	[DICT.removal.TRADE_LIST]: {
 		id: DICT.removal.TRADE_LIST,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).choosePair,
+		text: (message: BotMessage) => dictionary(message.from.language_code).choosePair,
 		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
 		getNext: () => DICT.removal.TRADE_LIST,
 		validate: async (message: BotMessage) => {
@@ -63,11 +62,7 @@ export default {
 					const lastListItem = list[list.length - 1];
 					if (lastListItem && Array.isArray(lastListItem)) {
 						lastListItem.push({
-							text: [
-								pair.symbol,
-								stickerDictionary[trade.type],
-								trade.markPrice,
-							].join(' '),
+							text: [pair.symbol, stickerDictionary[trade.type], trade.markPrice].join(' '),
 						});
 						count++;
 					}

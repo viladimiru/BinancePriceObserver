@@ -1,7 +1,4 @@
-import {
-	type ReplyMarkupReturnType,
-	keyboardWrapper,
-} from '../../utils/keyboard.js';
+import { type ReplyMarkupReturnType, keyboardWrapper } from '../../utils/keyboard.js';
 import Feedback, { DICTIONARY as FB_DICT } from './feedback.js';
 import AlertSteps, { ALERT_DICT } from './alerts/index.js';
 import TradeSteps, { TRADE_DICT } from './trades/index.js';
@@ -17,9 +14,7 @@ export interface Scenary {
 	validate?: (message: BotMessage) => Promise<boolean> | boolean;
 	getNext: (message: BotMessage) => string;
 	getPrev?: (message: BotMessage) => string;
-	keyboard: (
-		message: BotMessage
-	) => Promise<ReplyMarkupReturnType> | ReplyMarkupReturnType;
+	keyboard: (message: BotMessage) => Promise<ReplyMarkupReturnType> | ReplyMarkupReturnType;
 	errorText?: (message: BotMessage) => string;
 	cbOnSend?: (message: BotMessage | Message) => void;
 	onAnswer?: (message: BotMessage) => Promise<void> | void;
@@ -29,8 +24,7 @@ export type ScenariesMap = Record<string, Scenary>;
 
 const START: Scenary = {
 	id: 'START',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).selectDesiredFunction,
+	text: (message: BotMessage) => dictionary(message.from.language_code).selectDesiredFunction,
 	expects: (message: BotMessage) => [
 		dictionary(message.from.language_code).alerts,
 		dictionary(message.from.language_code).trades,

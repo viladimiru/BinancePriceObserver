@@ -6,9 +6,7 @@ interface StoreReturnType<T, K extends keyof T> {
 	get: (key: K) => any;
 }
 
-export function createStore<T, K extends keyof T>(
-	initialValue: T
-): StoreReturnType<T, K> {
+export function createStore<T, K extends keyof T>(initialValue: T): StoreReturnType<T, K> {
 	const store = initialValue;
 
 	const deleteKey = (key: K): void => {

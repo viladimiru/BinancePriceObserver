@@ -1,10 +1,7 @@
 import { type Request } from 'express';
 import { getChatPairs } from '../models/pair';
 import { type PairWithEntities } from '../../shared/models/pair';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 import { z } from 'zod';
 
 export async function getChatPairsController(

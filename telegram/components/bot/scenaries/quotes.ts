@@ -59,10 +59,7 @@ export const quotesView = createView({
 					parse_mode: 'HTML',
 				});
 			} else {
-				await Bot.sendMessage(
-					message.chat.id,
-					dictionary(message.from?.language_code).listIsEmpty
-				);
+				await Bot.sendMessage(message.chat.id, dictionary(message.from?.language_code).listIsEmpty);
 			}
 		} catch (error) {
 			await Bot.sendMessage(
@@ -73,11 +70,7 @@ export const quotesView = createView({
 	},
 });
 
-function wrapTradeText(
-	markPrice: number,
-	trade: ExpandedTradeEntity,
-	language: string
-): string {
+function wrapTradeText(markPrice: number, trade: ExpandedTradeEntity, language: string): string {
 	let text = '\n';
 	text += [trade.type, ' | '].join('');
 	if (trade.isWin) {
@@ -101,14 +94,9 @@ function transformTrades(
 	const result = trades
 		.filter((trade) => trade.Pair.symbol === pair.symbol)
 		.map((trade) => {
-			const diff =
-				diffInPercents(trade.markPrice, pair.markPrice) * trade.shoulder;
-			const isWin =
-				(trade.type === 'LONG' && diff > 0) ||
-				(trade.type === 'SHORT' && diff < 0);
-			const isLoss =
-				(trade.type === 'LONG' && diff < 0) ||
-				(trade.type === 'SHORT' && diff > 0);
+			const diff = diffInPercents(trade.markPrice, pair.markPrice) * trade.shoulder;
+			const isWin = (trade.type === 'LONG' && diff > 0) || (trade.type === 'SHORT' && diff < 0);
+			const isLoss = (trade.type === 'LONG' && diff < 0) || (trade.type === 'SHORT' && diff > 0);
 			return {
 				...trade,
 				isWin,
@@ -117,10 +105,8 @@ function transformTrades(
 		})
 		.sort((a) => {
 			const diff = diffInPercents(a.markPrice, pair.markPrice) * a.shoulder;
-			const isWin =
-				(a.type === 'LONG' && diff > 0) || (a.type === 'SHORT' && diff < 0);
-			const isLoss =
-				(a.type === 'LONG' && diff < 0) || (a.type === 'SHORT' && diff > 0);
+			const isWin = (a.type === 'LONG' && diff > 0) || (a.type === 'SHORT' && diff < 0);
+			const isLoss = (a.type === 'LONG' && diff < 0) || (a.type === 'SHORT' && diff > 0);
 			a.isWin = isWin;
 			a.isLoss = isLoss;
 			if (isWin) return -1;

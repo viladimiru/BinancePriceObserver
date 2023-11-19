@@ -42,8 +42,7 @@ export const tradeListView = createView({
 			dictionary(message.from.language_code).tradeSuccessfullyRemoved
 		);
 	},
-	errorText: (message) =>
-		dictionary(message.from.language_code).youNotCreatedThisPair,
+	errorText: (message) => dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message) => {
 		const pairs = await apiClient.getChatTrades({
 			chatId: message.chat.id,
@@ -58,11 +57,7 @@ export const tradeListView = createView({
 				const lastListItem = list[list.length - 1];
 				if (lastListItem && Array.isArray(lastListItem)) {
 					lastListItem.push({
-						text: [
-							pair.symbol,
-							stickerDictionary[trade.type],
-							trade.markPrice,
-						].join(' '),
+						text: [pair.symbol, stickerDictionary[trade.type], trade.markPrice].join(' '),
 					});
 					count++;
 				}

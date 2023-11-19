@@ -20,8 +20,7 @@ const typeDictionary = {
 
 export const alertsListView = createView({
 	id: 'ALERTS_LIST',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).chooseRemovalAlert,
+	text: (message: BotMessage) => dictionary(message.from.language_code).chooseRemovalAlert,
 	validate: async (message: BotMessage) => {
 		const [symbol, type, price] = message.text.split(' ');
 		if (!typeDictionary[type]) {
@@ -56,16 +55,13 @@ export const alertsListView = createView({
 			});
 		}
 		const pairs = await apiClient.getPairs();
-		setPairStats(
-			pairs.filter((item) => item.prices.length > 0 || item.spikes.length)
-		);
+		setPairStats(pairs.filter((item) => item.prices.length > 0 || item.spikes.length));
 		await Bot.sendMessage(
 			message.chat.id,
 			dictionary(message.from.language_code).pairSuccessfullyRemoved
 		);
 	},
-	errorText: (message: BotMessage) =>
-		dictionary(message.from.language_code).youNotCreatedThisPair,
+	errorText: (message: BotMessage) => dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message: BotMessage) => {
 		// TODO: fix get chat pairs history
 		const symbol = alertRemovalStore.get(String(message.chat.id))?.symbol;
@@ -86,9 +82,7 @@ export const alertsListView = createView({
 				}
 				const lastIndex = list.length - 1;
 				list[lastIndex].push({
-					text: [pair.symbol, stickerDictionary[price.type], price.price].join(
-						' '
-					),
+					text: [pair.symbol, stickerDictionary[price.type], price.price].join(' '),
 				});
 				count++;
 			});

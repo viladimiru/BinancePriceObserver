@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { isAlertSymbolExist } from '../models/pair';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 import { z } from 'zod';
 
 export async function isAlertSymbolExistController(
@@ -18,9 +15,7 @@ export async function isAlertSymbolExistController(
 	}
 }
 
-function getValidatedQuery(
-	query: unknown
-): Parameters<typeof isAlertSymbolExist>[0] {
+function getValidatedQuery(query: unknown): Parameters<typeof isAlertSymbolExist>[0] {
 	return z
 		.object({
 			chatId: z.number(),

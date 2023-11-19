@@ -28,13 +28,7 @@ export type GetChatPairs = (arg1: {
 	chatId: number;
 	symbol: string;
 }) => Promise<PairWithEntities[]>;
-export type UpdatePairPrice = (arg1: {
-	symbol: string;
-	markPrice: number;
-}) => Promise<void>;
+export type UpdatePairPrice = (arg1: { symbol: string; markPrice: number }) => Promise<void>;
 export type GetChatPairsRaw = (arg1: { chatId: number }) => Promise<string[]>;
 export type GetAlertSymbols = (arg1: { chatId: number }) => Promise<string[]>;
-export type IsAlertSymbolExist = (arg1: {
-	symbol: string;
-	chatId: number;
-}) => Promise<boolean>;
+export type IsAlertSymbolExist = (arg1: { symbol: string; chatId: number }) => Promise<boolean>;

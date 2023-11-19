@@ -1,9 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import {
-	type KeyboardWrapperOptions,
-	keyboardWrapper,
-	asyncKeyboardWrapper,
-} from './keyboard';
+import { type KeyboardWrapperOptions, keyboardWrapper, asyncKeyboardWrapper } from './keyboard';
 import { type KeyboardButton } from 'node-telegram-bot-api';
 import { dictionary } from '../dictionary/index';
 
@@ -19,9 +15,7 @@ describe('keyboard module test', () => {
 	const buttons = [{ text: 'text' }];
 	const options = { language_code: 'ru' };
 
-	const expectedResultWrapper = (
-		keyboard: KeyboardButton[][]
-	): KeyboardWrapperReturnType => ({
+	const expectedResultWrapper = (keyboard: KeyboardButton[][]): KeyboardWrapperReturnType => ({
 		reply_markup: {
 			resize_keyboard: true,
 			one_time_keyboard: true,

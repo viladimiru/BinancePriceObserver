@@ -17,10 +17,7 @@ const state: {
 	[LOGS]: undefined,
 };
 
-export function register<T extends keyof typeof state>(
-	key: T,
-	data: (typeof state)[T]
-): void {
+export function register<T extends keyof typeof state>(key: T, data: (typeof state)[T]): void {
 	state[key] = data;
 }
 

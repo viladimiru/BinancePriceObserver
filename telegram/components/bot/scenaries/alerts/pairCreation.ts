@@ -10,8 +10,7 @@ const history: Record<number, any> = {};
 export default {
 	[DICT.creation.ADD_OBSERVER]: {
 		id: 'ADD_OBSERVER',
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).symbol,
+		text: (message: BotMessage) => dictionary(message.from.language_code).symbol,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper([], {
 				language_code: message.from.language_code,
@@ -32,15 +31,13 @@ export default {
 				symbol: message.text.toUpperCase(),
 			};
 		},
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).pairNotExists,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).pairNotExists,
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
 		getNext: () => DICT.creation.CHOOSE_TRADE_TYPE,
 	},
 	[DICT.creation.CHOOSE_TRADE_TYPE]: {
 		id: 'CHOOSE_TRADE_TYPE',
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).sendMessageWhen,
+		text: (message: BotMessage) => dictionary(message.from.language_code).sendMessageWhen,
 		expects: (message: BotMessage) => [
 			dictionary(message.from.language_code).above,
 			dictionary(message.from.language_code).below,
@@ -96,13 +93,11 @@ export default {
 	},
 	[DICT.creation.SET_PRICE]: {
 		id: 'SET_PRICE',
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).enterAlertPrice,
+		text: (message: BotMessage) => dictionary(message.from.language_code).enterAlertPrice,
 		validate: ({ text }: BotMessage) => {
 			return !isNaN(Number(text));
 		},
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).alertPriceError,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).alertPriceError,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper([], {
 				language_code: message.from.language_code,
@@ -115,16 +110,13 @@ export default {
 	},
 	[DICT.creation.SET_MESSAGE]: {
 		id: 'SET_MESSAGE',
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).messageTemplate,
+		text: (message: BotMessage) => dictionary(message.from.language_code).messageTemplate,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
-					dictionary(message.from.language_code).messageTemplates.map(
-						(item) => ({
-							text: item,
-						})
-					),
+					dictionary(message.from.language_code).messageTemplates.map((item) => ({
+						text: item,
+					})),
 				],
 				{
 					language_code: message.from.language_code,

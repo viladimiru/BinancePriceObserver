@@ -4,9 +4,7 @@ import {
 	type SpikeEntity,
 } from '../../../../shared/models/orm/entities/spike';
 
-export function createSpikeModel(
-	orm: Sequelize
-): ModelDefined<SpikeEntity, SpikeCreationEntity> {
+export function createSpikeModel(orm: Sequelize): ModelDefined<SpikeEntity, SpikeCreationEntity> {
 	return orm.define('Spike', {
 		chatId: DataTypes.INTEGER,
 	});

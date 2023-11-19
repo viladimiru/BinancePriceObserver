@@ -10,9 +10,7 @@ const LANG_MAP: {
 	en,
 };
 
-export function dictionary(
-	language: string | undefined
-): typeof ru | typeof en {
+export function dictionary(language: string | undefined): typeof ru | typeof en {
 	const validatedLanguage = getValidatedLanguage(language);
 	return LANG_MAP[validatedLanguage];
 }

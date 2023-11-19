@@ -8,8 +8,7 @@ import { alertRemovalStore } from './store';
 
 export const pairsListView = createView({
 	id: 'PAIRS_LIST',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).choosePair,
+	text: (message: BotMessage) => dictionary(message.from.language_code).choosePair,
 	validate: async (message: BotMessage) => {
 		return await apiClient.isAlertSymbolExist({
 			symbol: message.text,
@@ -20,8 +19,7 @@ export const pairsListView = createView({
 		const symbol = message.text.toUpperCase();
 		alertRemovalStore.set(String(message.chat.id), { symbol });
 	},
-	errorText: (message: BotMessage) =>
-		dictionary(message.from.language_code).youNotCreatedThisPair,
+	errorText: (message: BotMessage) => dictionary(message.from.language_code).youNotCreatedThisPair,
 	keyboard: async (message: BotMessage) => {
 		const pairs = await apiClient.getAlertSymbols({
 			chatId: message.chat.id,

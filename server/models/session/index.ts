@@ -1,7 +1,4 @@
-import {
-	type GetSession,
-	type UpdateSession,
-} from '../../../shared/models/session';
+import { type GetSession, type UpdateSession } from '../../../shared/models/session';
 import { SESSION } from '../orm';
 
 export const getSession: GetSession = async (params) => {

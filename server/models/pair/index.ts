@@ -27,11 +27,7 @@ export const findPair: FindPair = async (params, include = undefined) => {
 	return res?.dataValues;
 };
 
-export const findPairOrCreate = async ({
-	symbol,
-}: {
-	symbol: string;
-}): ReturnType<FindPair> => {
+export const findPairOrCreate = async ({ symbol }: { symbol: string }): ReturnType<FindPair> => {
 	try {
 		return await PAIR.create({
 			symbol,
@@ -118,10 +114,7 @@ export const getChatPairs: GetChatPairs = async (params) => {
 	return result.map((item) => item.get({ plain: true })) as PairWithEntities[];
 };
 
-export const updatePairPrice: UpdatePairPrice = async ({
-	symbol,
-	markPrice,
-}) => {
+export const updatePairPrice: UpdatePairPrice = async ({ symbol, markPrice }) => {
 	await PAIR.update(
 		{
 			markPrice,
@@ -189,10 +182,7 @@ export const getAlertSymbols: GetAlertSymbols = async ({ chatId }) => {
 	return getSymbolsFromUnknownArray(result);
 };
 
-export const isAlertSymbolExist: IsAlertSymbolExist = async ({
-	symbol,
-	chatId,
-}) => {
+export const isAlertSymbolExist: IsAlertSymbolExist = async ({ symbol, chatId }) => {
 	const [result] = await orm.query(`
 		SELECT COUNT(DISTINCT pa.symbol) as cnt FROM Prices p
 				LEFT JOIN Spikes s ON 
@@ -218,9 +208,7 @@ export const getChatPairPrices: GetChatPairPrices = async ({ chatId }) => {
 	if (pairs.length === 0) {
 		return null;
 	}
-	const promises = pairs.map(
-		async (pair) => await binance.futuresMarkPrice(pair)
-	);
+	const promises = pairs.map(async (pair) => await binance.futuresMarkPrice(pair));
 	const result = await Promise.all(promises);
 	return result;
 };
@@ -228,12 +216,7 @@ export const getChatPairPrices: GetChatPairPrices = async ({ chatId }) => {
 function getSymbolsFromUnknownArray(array: unknown[]): string[] {
 	const symbols: string[] = [];
 	array.forEach((item) => {
-		if (
-			typeof item === 'object' &&
-			item &&
-			'symbol' in item &&
-			typeof item.symbol === 'string'
-		) {
+		if (typeof item === 'object' && item && 'symbol' in item && typeof item.symbol === 'string') {
 			symbols.push(item.symbol);
 		} else {
 			console.log('Wrong result item', item);

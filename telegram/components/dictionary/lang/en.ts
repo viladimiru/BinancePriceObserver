@@ -43,15 +43,13 @@ export default {
 	addTrade: 'Add trade ' + emoji.dollar,
 	removeTrade: 'Delete trade ' + emoji.trash,
 	shoulder: 'Shoulder size',
-	feedback:
-		'You can rate this bot, leave request for expansions or report about some bugs',
+	feedback: 'You can rate this bot, leave request for expansions or report about some bugs',
 	thanksForFeedback: 'Thanks! Message was sent to administartor',
 	leaveFeedback: 'Feedback ' + emoji.pen,
 	selectDesiredFunction: '<b>Select desired function</b>',
 	quotesFetchError: 'Quotes fetch error\nRetry',
 	miss: 'Miss ⤵️',
-	stopLossIfExist:
-		'Stop loss value (if exists). We will send you alert if value will triggered',
+	stopLossIfExist: 'Stop loss value (if exists). We will send you alert if value will triggered',
 	takeProfitIfExist:
 		'Take profit value (if exists). We will send you alert if value will triggered',
 	yes: 'Yes',

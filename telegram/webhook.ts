@@ -8,8 +8,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 if (!isPooling) {
-	const url =
-		(isProdTest ? '/tghook-prod-test/bot' : '/tghook/bot') + getBotToken();
+	const url = (isProdTest ? '/tghook-prod-test/bot' : '/tghook/bot') + getBotToken();
 	server.post(`${url}`, (req, res) => {
 		bot.processUpdate(req.body);
 		res.sendStatus(200);

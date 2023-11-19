@@ -6,13 +6,11 @@ import { alertCreationStore } from '../store';
 
 export const setAlertPriceView = createView({
 	id: 'SET_ALERT_PRICE',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).enterAlertPrice,
+	text: (message: BotMessage) => dictionary(message.from.language_code).enterAlertPrice,
 	validate: ({ text }: BotMessage) => {
 		return !isNaN(Number(text));
 	},
-	errorText: (message: BotMessage) =>
-		dictionary(message.from.language_code).alertPriceError,
+	errorText: (message: BotMessage) => dictionary(message.from.language_code).alertPriceError,
 	keyboard: (message: BotMessage) =>
 		keyboardWrapper([], {
 			language_code: message.from.language_code,

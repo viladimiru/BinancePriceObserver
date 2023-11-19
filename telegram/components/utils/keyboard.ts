@@ -3,10 +3,7 @@ import { dictionary } from '../dictionary/index';
 import { type ReplyKeyboardMarkup } from 'node-telegram-bot-api';
 import lodash from 'lodash';
 
-export type ReplyMarkupReturnType = Pick<
-	TelegramBot.SendMessageOptions,
-	'reply_markup'
->;
+export type ReplyMarkupReturnType = Pick<TelegramBot.SendMessageOptions, 'reply_markup'>;
 export interface KeyboardWrapperOptions extends TelegramBot.SendMessageOptions {
 	language_code: string;
 }

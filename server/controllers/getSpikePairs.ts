@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { getSpikePairs } from '../models/spike';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function getSpikePairsController(
 	request: Request,

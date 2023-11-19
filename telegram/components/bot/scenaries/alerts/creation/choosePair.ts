@@ -5,8 +5,7 @@ import { createView } from '../../../scenary';
 
 export const choosePairView = createView({
 	id: 'CHOOSE_PAIR',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).whatDoYouWant,
+	text: (message: BotMessage) => dictionary(message.from.language_code).whatDoYouWant,
 	keyboard: (message: BotMessage) =>
 		keyboardWrapper(
 			[
@@ -27,6 +26,5 @@ export const choosePairView = createView({
 		dictionary(message.from.language_code).addObserver,
 		dictionary(message.from.language_code).removeObserver,
 	],
-	errorText: (message: BotMessage) =>
-		dictionary(message.from.language_code).pairNotExists,
+	errorText: (message: BotMessage) => dictionary(message.from.language_code).pairNotExists,
 });

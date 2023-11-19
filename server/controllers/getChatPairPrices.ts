@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { getChatPairPrices } from '../models/pair';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function getChatPairPricesController(
 	request: Request,

@@ -45,9 +45,7 @@ export interface BotMessage {
 interface BotParams {
 	setCommands: TelegramApi['setMyCommands'];
 	onMessageCallback: (callback: (message: BotMessage) => Promise<void>) => void;
-	onStartCommandCallback: (
-		callback: (message: BotMessage) => Promise<void>
-	) => void;
+	onStartCommandCallback: (callback: (message: BotMessage) => Promise<void>) => void;
 	sendMessage: TelegramApi['sendMessage'];
 	sendErrorMessage: (arg1: BotMessage, error: unknown) => void;
 	onPollingErrorCallback: (...args: any[]) => void;
@@ -94,9 +92,7 @@ const startViewWithGuidance = startView.setGuidance({
 const feedbackViewWithGuidance = feedbackView.setGuidance();
 const quotesViewWithGuidance = quotesView.setGuidance({
 	getNextId(message) {
-		return message.text === dictionary(message.from.language_code).update
-			? quotesView.id
-			: 'START';
+		return message.text === dictionary(message.from.language_code).update ? quotesView.id : 'START';
 	},
 });
 
@@ -105,9 +101,7 @@ const chooseAlertActionViewWithGuidance = chooseAlertActionView.setGuidance({
 		if (message.text === dictionary(message.from.language_code).addObserver) {
 			return addObserverView.id;
 		}
-		if (
-			message.text === dictionary(message.from.language_code).removeObserver
-		) {
+		if (message.text === dictionary(message.from.language_code).removeObserver) {
 			return pairsListView.id;
 		}
 		return;

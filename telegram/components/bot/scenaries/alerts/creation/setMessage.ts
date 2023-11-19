@@ -8,8 +8,7 @@ import { alertCreationStore } from '../store';
 
 export const setAlertMessageView = createView({
 	id: 'SET_MESSAGE',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).messageTemplate,
+	text: (message: BotMessage) => dictionary(message.from.language_code).messageTemplate,
 	keyboard: (message: BotMessage) =>
 		keyboardWrapper(
 			[

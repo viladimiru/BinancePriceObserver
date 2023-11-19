@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { removeTrade } from '../models/trade';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function deleteTradeController(
 	request: Request,

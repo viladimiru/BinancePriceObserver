@@ -10,8 +10,7 @@ const history: Record<number, any> = {};
 export default {
 	[DICT.creation.SYMBOL]: {
 		id: DICT.creation.SYMBOL,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).symbol,
+		text: (message: BotMessage) => dictionary(message.from.language_code).symbol,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper([], {
 				language_code: message.from.language_code,
@@ -31,15 +30,13 @@ export default {
 				symbol: message.text.toUpperCase(),
 			};
 		},
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).pairNotExists,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).pairNotExists,
 		getPrev: () => DICT.default.CHOOSE_TRADE_FUNC,
 		getNext: () => DICT.creation.TYPE,
 	},
 	[DICT.creation.TYPE]: {
 		id: DICT.creation.TYPE,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).tradeType,
+		text: (message: BotMessage) => dictionary(message.from.language_code).tradeType,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
@@ -68,14 +65,12 @@ export default {
 	},
 	[DICT.creation.PRICE]: {
 		id: DICT.creation.PRICE,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).tradePrice,
+		text: (message: BotMessage) => dictionary(message.from.language_code).tradePrice,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper([], {
 				language_code: message.from.language_code,
 			}),
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).alertPriceError,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).alertPriceError,
 		validate: ({ text }: BotMessage) => {
 			return !isNaN(Number(text));
 		},
@@ -87,10 +82,8 @@ export default {
 	},
 	[DICT.creation.SHOULDER]: {
 		id: DICT.creation.SHOULDER,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).shoulder,
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).enterOnlyNumbers,
+		text: (message: BotMessage) => dictionary(message.from.language_code).shoulder,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).enterOnlyNumbers,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper([], {
 				language_code: message.from.language_code,
@@ -106,10 +99,8 @@ export default {
 	},
 	[DICT.creation.TAKE_PROFIT]: {
 		id: DICT.creation.TAKE_PROFIT,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).takeProfitIfExist,
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).alertPriceError,
+		text: (message: BotMessage) => dictionary(message.from.language_code).takeProfitIfExist,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).alertPriceError,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
@@ -125,8 +116,7 @@ export default {
 			),
 		validate: (message: BotMessage) => {
 			return (
-				message.text === dictionary(message.from.language_code).miss ||
-				!isNaN(Number(message.text))
+				message.text === dictionary(message.from.language_code).miss || !isNaN(Number(message.text))
 			);
 		},
 		onAnswer: async (message: BotMessage) => {
@@ -139,10 +129,8 @@ export default {
 	},
 	[DICT.creation.STOP_LOSS]: {
 		id: DICT.creation.STOP_LOSS,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).stopLossIfExist,
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).alertPriceError,
+		text: (message: BotMessage) => dictionary(message.from.language_code).stopLossIfExist,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).alertPriceError,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
@@ -169,8 +157,7 @@ export default {
 	},
 	[DICT.creation.SPIKING]: {
 		id: DICT.creation.SPIKING,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).spikingIfNeeded,
+		text: (message: BotMessage) => dictionary(message.from.language_code).spikingIfNeeded,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
@@ -204,8 +191,7 @@ export default {
 					chatId: message.chat.id,
 					message: dictionary(message.from.language_code).messageTemplates[0],
 					type:
-						payload.type ===
-						dictionary(message.from.language_code).long.toUpperCase()
+						payload.type === dictionary(message.from.language_code).long.toUpperCase()
 							? 'BELOW'
 							: 'ABOVE',
 					price: payload.stopLoss,
@@ -218,8 +204,7 @@ export default {
 					chatId: message.chat.id,
 					message: dictionary(message.from.language_code).messageTemplates[1],
 					type:
-						payload.type ===
-						dictionary(message.from.language_code).short.toUpperCase()
+						payload.type === dictionary(message.from.language_code).short.toUpperCase()
 							? 'BELOW'
 							: 'ABOVE',
 					price: payload.takeProfit,
@@ -239,13 +224,9 @@ export default {
 				Subscription(payload.symbol);
 			}
 
-			await Bot.sendMessage(
-				message.chat.id,
-				dictionary(message.from.language_code).tradeCreated,
-				{
-					parse_mode: 'HTML',
-				}
-			);
+			await Bot.sendMessage(message.chat.id, dictionary(message.from.language_code).tradeCreated, {
+				parse_mode: 'HTML',
+			});
 			delete history[message.chat.id];
 		},
 		getPrev: () => DICT.creation.STOP_LOSS,

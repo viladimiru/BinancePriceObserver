@@ -8,16 +8,14 @@ export default {
 	back: emoji.leftArrow + ' Назад',
 	symbol: 'Название пары (к примеру BTCUSDT)',
 	whatDoYouWant: 'Что вы хотите сделать',
-	completed:
-		'<b>Готово!</b>\n\nКак только отследим введённую сумму мы пришлем вам уведомление!',
+	completed: '<b>Готово!</b>\n\nКак только отследим введённую сумму мы пришлем вам уведомление!',
 	toTheMain: 'На главную',
 	error: 'Я вас не понимаю',
 	above: 'Выше ' + emoji.above,
 	below: 'Ниже ' + emoji.below,
 	sendMessageWhen: 'Прислать сообщение когда цена будет выше/ниже',
 	pairNotExists: 'Такой пары не существует',
-	enterAlertPrice:
-		'Введите сумму, после которой хотите получить уведомление ' + emoji.bell,
+	enterAlertPrice: 'Введите сумму, после которой хотите получить уведомление ' + emoji.bell,
 	enterOnlyNumbers: 'Вводите только цифры',
 	alertPriceError: 'Вводите только цифры (15000.00)',
 	messageTemplate: 'Напишите сообщение, которое хотите получить',

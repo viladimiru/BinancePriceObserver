@@ -1,10 +1,7 @@
 import { type Request } from 'express';
 import { getSession } from '../models/session';
 import { type SessionEntity } from '../../shared/models/orm/entities/session';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 import { z } from 'zod';
 
 export async function getSessionController(

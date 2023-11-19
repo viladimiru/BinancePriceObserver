@@ -10,8 +10,7 @@ export const setPriceView = createView({
 		keyboardWrapper([], {
 			language_code: message.from.language_code,
 		}),
-	errorText: (message) =>
-		dictionary(message.from.language_code).alertPriceError,
+	errorText: (message) => dictionary(message.from.language_code).alertPriceError,
 	validate: ({ text }) => {
 		return !isNaN(Number(text));
 	},

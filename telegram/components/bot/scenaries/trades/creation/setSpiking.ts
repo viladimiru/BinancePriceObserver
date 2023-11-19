@@ -44,8 +44,7 @@ export const setSpikingView = createView({
 				chatId: message.chat.id,
 				message: dictionary(message.from.language_code).messageTemplates[0],
 				type:
-					payload.type ===
-					dictionary(message.from.language_code).long.toUpperCase()
+					payload.type === dictionary(message.from.language_code).long.toUpperCase()
 						? 'BELOW'
 						: 'ABOVE',
 				price: payload.stopLoss,
@@ -58,8 +57,7 @@ export const setSpikingView = createView({
 				chatId: message.chat.id,
 				message: dictionary(message.from.language_code).messageTemplates[1],
 				type:
-					payload.type ===
-					dictionary(message.from.language_code).short.toUpperCase()
+					payload.type === dictionary(message.from.language_code).short.toUpperCase()
 						? 'BELOW'
 						: 'ABOVE',
 				price: payload.takeProfit,
@@ -79,13 +77,9 @@ export const setSpikingView = createView({
 			Subscription(payload.symbol);
 		}
 
-		await Bot.sendMessage(
-			message.chat.id,
-			dictionary(message.from.language_code).tradeCreated,
-			{
-				parse_mode: 'HTML',
-			}
-		);
+		await Bot.sendMessage(message.chat.id, dictionary(message.from.language_code).tradeCreated, {
+			parse_mode: 'HTML',
+		});
 
 		alertTradeStore.deleteKey(message.chat.id);
 	},

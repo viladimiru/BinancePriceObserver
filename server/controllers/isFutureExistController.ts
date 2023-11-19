@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { isFutureExist } from '../models/future';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function isFutureExistController(
 	request: Request,

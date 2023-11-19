@@ -9,12 +9,8 @@ type GetSpikePairsReturnType = Array<
 		User: UserEntity;
 	}
 >;
-export type GetSpikePairs = (
-	arg1: Pick<PairEntity, 'symbol'>
-) => Promise<GetSpikePairsReturnType>;
-export type CreateSpike = (
-	arg1: Pick<SpikeEntity, 'PairId' | 'chatId'>
-) => Promise<void>;
+export type GetSpikePairs = (arg1: Pick<PairEntity, 'symbol'>) => Promise<GetSpikePairsReturnType>;
+export type CreateSpike = (arg1: Pick<SpikeEntity, 'PairId' | 'chatId'>) => Promise<void>;
 export type CreateSpikeWithSymbol = (
 	arg1: Pick<SpikeEntity, 'chatId'> & Pick<PairEntity, 'symbol'>
 ) => Promise<void>;

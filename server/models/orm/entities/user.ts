@@ -4,9 +4,7 @@ import {
 	type UserEntity,
 } from '../../../../shared/models/orm/entities/user';
 
-export function createUserModel(
-	orm: Sequelize
-): ModelDefined<UserEntity, UserCreationEntity> {
+export function createUserModel(orm: Sequelize): ModelDefined<UserEntity, UserCreationEntity> {
 	return orm.define('User', {
 		userId: {
 			type: DataTypes.INTEGER,

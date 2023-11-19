@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { isSpikeExist } from '../models/spike';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 import { z } from 'zod';
 
 export async function isSpikeExistController(

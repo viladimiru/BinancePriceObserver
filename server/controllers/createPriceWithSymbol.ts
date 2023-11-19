@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { createPriceWithSymbol } from '../models/price';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function createPriceWithSymbolController(
 	request: Request,

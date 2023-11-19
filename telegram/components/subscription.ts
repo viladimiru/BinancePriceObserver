@@ -1,10 +1,5 @@
 import { getPairStats, setPairStats } from './storage/index.js';
-import {
-	biggestInArr,
-	diffInPercents,
-	smallestInArr,
-	toFixed,
-} from './utils/number.js';
+import { biggestInArr, diffInPercents, smallestInArr, toFixed } from './utils/number.js';
 import emoji from './dictionary/emoji.js';
 import { dictionary } from './dictionary/index.js';
 import { apiClient } from './api/index.js';
@@ -71,9 +66,9 @@ export function Subscription(symbol: string): void {
 			for await (const item of finishedTriggers) {
 				const msg = [
 					item.message,
-					`<b>${item.symbol}:</b> ${
-						item.type === 'ABOVE' ? emoji.above : emoji.below
-					} ${item.currentPrice}`,
+					`<b>${item.symbol}:</b> ${item.type === 'ABOVE' ? emoji.above : emoji.below} ${
+						item.currentPrice
+					}`,
 					`\nTrigger value: ${item.price}`,
 				].join('\n');
 
@@ -119,9 +114,7 @@ export function Subscription(symbol: string): void {
 
 export async function InitObserver(): Promise<void> {
 	const pairs = await apiClient.getPairs();
-	setPairStats(
-		pairs.filter((item) => item.prices.length > 0 || item.spikes.length)
-	);
+	setPairStats(pairs.filter((item) => item.prices.length > 0 || item.spikes.length));
 	getPairStats().forEach((item) => {
 		Subscription(item.symbol);
 	});
@@ -141,9 +134,7 @@ function getStorageItemBySymbol(symbol: string): PairWithEntities | undefined {
 	return getPairStats().find((item) => item.symbol === symbol);
 }
 
-function getStorageItemTriggersBySymbol(
-	symbol: string
-): PairWithEntities | undefined {
+function getStorageItemTriggersBySymbol(symbol: string): PairWithEntities | undefined {
 	try {
 		return getPairStats().find((item) => item.symbol === symbol);
 	} catch {
@@ -188,10 +179,7 @@ function spikeMonitor(symbol: string, markPrice: number): void {
 	if (current.minute.length > 1) {
 		const biggestInMinute = biggestInArr(current.minute);
 		const smallestInMinute = smallestInArr(current.minute);
-		const diffInMinute = diffInPercents(
-			biggestInMinute[0],
-			smallestInMinute[0]
-		);
+		const diffInMinute = diffInPercents(biggestInMinute[0], smallestInMinute[0]);
 		if (Math.abs(diffInMinute) > minDiffMinute) {
 			sendSpikeAlert(
 				symbol,

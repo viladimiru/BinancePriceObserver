@@ -7,12 +7,7 @@ import {
 import { PRICE } from '../orm';
 import { findPair, getPairs } from '../pair';
 
-export const isPriceExist: IsPriceExist = async ({
-	chatId,
-	symbol,
-	type,
-	price,
-}) => {
+export const isPriceExist: IsPriceExist = async ({ chatId, symbol, type, price }) => {
 	const result = await findPair({ symbol }).then(async (pair) => {
 		if (!pair) {
 			throw new Error('pair not found');
@@ -49,13 +44,7 @@ export const removePrice: RemovePrice = async (params) => {
 	return await getPairs();
 };
 
-export const createPrice: CreatePrice = async ({
-	chatId,
-	message,
-	type,
-	price,
-	PairId,
-}) => {
+export const createPrice: CreatePrice = async ({ chatId, message, type, price, PairId }) => {
 	await PRICE.findOrCreate({
 		where: {
 			type,

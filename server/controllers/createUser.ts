@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { createUser } from '../models/user';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function createUserController(
 	request: Request,

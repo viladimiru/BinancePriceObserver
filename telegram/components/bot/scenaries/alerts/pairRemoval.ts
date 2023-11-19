@@ -21,8 +21,7 @@ const history: Record<number, any> = {};
 export default {
 	[DICT.removal.PAIRS_LIST]: {
 		id: DICT.removal.PAIRS_LIST,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).choosePair,
+		text: (message: BotMessage) => dictionary(message.from.language_code).choosePair,
 		getPrev: () => DICT.default.CHOOSE_PAIR_FUNC,
 		getNext: () => DICT.removal.ALERTS_LIST,
 		validate: async (message: BotMessage) => {
@@ -59,8 +58,7 @@ export default {
 	},
 	[DICT.removal.ALERTS_LIST]: {
 		id: DICT.removal.ALERTS_LIST,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).chooseRemovalAlert,
+		text: (message: BotMessage) => dictionary(message.from.language_code).chooseRemovalAlert,
 		getPrev: () => DICT.removal.PAIRS_LIST,
 		getNext: (message: BotMessage) => {
 			return DICT.removal.ALERTS_LIST;
@@ -97,9 +95,7 @@ export default {
 				});
 			}
 			const pairs = await apiClient.getPairs();
-			setPairStats(
-				pairs.filter((item) => item.prices.length > 0 || item.spikes.length)
-			);
+			setPairStats(pairs.filter((item) => item.prices.length > 0 || item.spikes.length));
 			await Bot.sendMessage(
 				message.chat.id,
 				dictionary(message.from.language_code).pairSuccessfullyRemoved
@@ -121,11 +117,7 @@ export default {
 					}
 					const lastIndex = list.length - 1;
 					list[lastIndex].push({
-						text: [
-							pair.symbol,
-							stickerDictionary[price.type],
-							price.price,
-						].join(' '),
+						text: [pair.symbol, stickerDictionary[price.type], price.price].join(' '),
 					});
 					count++;
 				});

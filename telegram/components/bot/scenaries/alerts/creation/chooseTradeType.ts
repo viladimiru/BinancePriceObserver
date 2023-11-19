@@ -8,8 +8,7 @@ import { alertCreationStore } from '../store';
 
 export const chooseTradeTypeView = createView({
 	id: 'CHOOSE_TRADE_TYPE',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).sendMessageWhen,
+	text: (message: BotMessage) => dictionary(message.from.language_code).sendMessageWhen,
 	expects: (message: BotMessage) => [
 		dictionary(message.from.language_code).above,
 		dictionary(message.from.language_code).below,

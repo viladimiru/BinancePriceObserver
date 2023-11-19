@@ -3,10 +3,7 @@ import cors from 'cors';
 import type e from 'cors';
 
 export const app = express();
-const whitelist = [
-	'http://localhost:3000',
-	'https://www.lk.flamingo-house.top',
-];
+const whitelist = ['http://localhost:3000', 'https://www.lk.flamingo-house.top'];
 
 const corsOptions: e.CorsOptions = {
 	origin: whitelist,

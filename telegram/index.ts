@@ -1,12 +1,7 @@
 import './webhook.js';
 
 import { InitObserver } from './components/subscription.js';
-import {
-	register,
-	BOT_MESSANGER,
-	PAIR_STATS,
-	LOGS,
-} from './components/storage/index.js';
+import { register, BOT_MESSANGER, PAIR_STATS, LOGS } from './components/storage/index.js';
 import { dictionary } from './components/dictionary/index.js';
 import { apiClient } from './components/api/index';
 import { Bot, scenary, type BotMessage } from './components/bot';
@@ -49,9 +44,9 @@ Bot.onStartCommandCallback(async function (msg) {
 			adminChatId,
 			[
 				'<b>Новый пользователь</b>',
-				`<i>${msg.from.first_name + (msg.from.last_name || '')} | @${
-					msg.from.username
-				} | ${msg.from.language_code}</i>`,
+				`<i>${msg.from.first_name + (msg.from.last_name || '')} | @${msg.from.username} | ${
+					msg.from.language_code
+				}</i>`,
 			].join('\n'),
 			{
 				parse_mode: 'HTML',
@@ -98,14 +93,8 @@ async function onMessage(msg: BotMessage): Promise<void> {
 				return;
 			}
 			default: {
-				if (
-					currentView.expects &&
-					!currentView.expects(msg).includes(msg.text)
-				) {
-					Bot.sendMessage(
-						msg.chat.id,
-						dictionary(msg.from.language_code).iDontUnderstand
-					);
+				if (currentView.expects && !currentView.expects(msg).includes(msg.text)) {
+					Bot.sendMessage(msg.chat.id, dictionary(msg.from.language_code).iDontUnderstand);
 				} else if (currentView.validate && !(await currentView.validate(msg))) {
 					if (!currentView.errorText) {
 						return;
@@ -122,14 +111,10 @@ async function onMessage(msg: BotMessage): Promise<void> {
 						userId,
 						step: nextView.id,
 					});
-					const sentMsg = await Bot.sendMessage(
-						msg.chat.id,
-						nextView.text(msg),
-						{
-							...nextStepKeyboard,
-							parse_mode: 'HTML',
-						}
-					);
+					const sentMsg = await Bot.sendMessage(msg.chat.id, nextView.text(msg), {
+						...nextStepKeyboard,
+						parse_mode: 'HTML',
+					});
 					nextView.cbOnSend?.(sentMsg);
 				}
 			}

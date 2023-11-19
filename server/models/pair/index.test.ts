@@ -77,12 +77,8 @@ describe('pair model', () => {
 
 		expect(createdPair).toBeTruthy();
 
-		const isPriceCreated = createdPair?.prices.some(
-			(price) => price.PairId === createdPair.id
-		);
-		const isSpikeCreated = createdPair?.spikes.some(
-			(price) => price.PairId === createdPair.id
-		);
+		const isPriceCreated = createdPair?.prices.some((price) => price.PairId === createdPair.id);
+		const isSpikeCreated = createdPair?.spikes.some((price) => price.PairId === createdPair.id);
 
 		expect(isPriceCreated).toBeTruthy();
 		expect(isSpikeCreated).toBeTruthy();

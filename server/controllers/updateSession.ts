@@ -1,9 +1,6 @@
 import { type Request } from 'express';
 import { updateSession } from '../models/session';
-import {
-	type ResponseWithError,
-	controllerErrorHandler,
-} from '../models/controller-error-handler';
+import { type ResponseWithError, controllerErrorHandler } from '../models/controller-error-handler';
 
 export async function updateSessionController(
 	request: Request,

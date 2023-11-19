@@ -6,8 +6,7 @@ import { createView } from '../scenary';
 
 export const feedbackView = createView({
 	id: 'FEEDBACK',
-	text: (message: BotMessage) =>
-		dictionary(message.from.language_code).feedback,
+	text: (message: BotMessage) => dictionary(message.from.language_code).feedback,
 	keyboard: (message: BotMessage) =>
 		keyboardWrapper([], {
 			language_code: message.from.language_code,

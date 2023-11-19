@@ -7,9 +7,7 @@ interface Scenary {
 	text: (message: BotMessage) => string;
 	expects?: (message: BotMessage) => string[];
 	validate?: (message: BotMessage) => Promise<boolean> | boolean;
-	keyboard: (
-		message: BotMessage
-	) => Promise<ReplyMarkupReturnType> | ReplyMarkupReturnType;
+	keyboard: (message: BotMessage) => Promise<ReplyMarkupReturnType> | ReplyMarkupReturnType;
 	errorText?: (message: BotMessage) => string;
 	cbOnSend?: (message: BotMessage | Message) => Promise<void> | void;
 	onAnswer?: (message: BotMessage) => Promise<void> | void;
@@ -33,10 +31,7 @@ type ScenaryGetType = (key?: string) => InitializedScenary & {
 	getNext: (message: BotMessage) => InitializedScenary;
 };
 
-type CreateScenary = (arg1: {
-	views: InitializedScenary[];
-	mainView: Pick<Scenary, 'id'>;
-}) => {
+type CreateScenary = (arg1: { views: InitializedScenary[]; mainView: Pick<Scenary, 'id'> }) => {
 	getMain: () => InitializedScenary;
 	get: ScenaryGetType;
 };
@@ -83,14 +78,10 @@ export const createScenary: CreateScenary = ({ views, mainView }) => {
 	};
 };
 
-function getMappedViews(
-	views: InitializedScenary[]
-): Record<string, InitializedScenary> {
+function getMappedViews(views: InitializedScenary[]): Record<string, InitializedScenary> {
 	return views.reduce((views, view) => {
 		if (views[view.id]) {
-			throw new Error(
-				['duplicate view id found', JSON.stringify(view)].join(' ')
-			);
+			throw new Error(['duplicate view id found', JSON.stringify(view)].join(' '));
 		}
 		views[view.id] = view;
 		return views;

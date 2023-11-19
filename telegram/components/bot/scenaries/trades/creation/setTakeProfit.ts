@@ -6,8 +6,7 @@ import { alertTradeStore } from '../store';
 export const setTakeProfitView = createView({
 	id: 'SET_TAKE_PROFIT',
 	text: (message) => dictionary(message.from.language_code).takeProfitIfExist,
-	errorText: (message) =>
-		dictionary(message.from.language_code).alertPriceError,
+	errorText: (message) => dictionary(message.from.language_code).alertPriceError,
 	keyboard: (message) =>
 		keyboardWrapper(
 			[
@@ -23,8 +22,7 @@ export const setTakeProfitView = createView({
 		),
 	validate: (message) => {
 		return (
-			message.text === dictionary(message.from.language_code).miss ||
-			!isNaN(Number(message.text))
+			message.text === dictionary(message.from.language_code).miss || !isNaN(Number(message.text))
 		);
 	},
 	onAnswer: async (message) => {

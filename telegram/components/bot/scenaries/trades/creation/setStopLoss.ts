@@ -6,8 +6,7 @@ import { alertTradeStore } from '../store';
 export const setStopLossView = createView({
 	id: 'SET_STOP_LOSS',
 	text: (message) => dictionary(message.from.language_code).stopLossIfExist,
-	errorText: (message) =>
-		dictionary(message.from.language_code).alertPriceError,
+	errorText: (message) => dictionary(message.from.language_code).alertPriceError,
 	keyboard: (message) =>
 		keyboardWrapper(
 			[

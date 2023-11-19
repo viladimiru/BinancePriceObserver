@@ -9,13 +9,7 @@ import {
 import { TRADE, PAIR, orm } from '../orm';
 import { findPair, findPairOrCreate } from '../pair';
 
-export const createTrade: CreateTrade = async ({
-	symbol,
-	type,
-	markPrice,
-	chatId,
-	shoulder,
-}) => {
+export const createTrade: CreateTrade = async ({ symbol, type, markPrice, chatId, shoulder }) => {
 	const transaction = await orm.transaction();
 	try {
 		const pair = await findPairOrCreate({ symbol });
@@ -54,17 +48,10 @@ export const getChatTrades: GetChatTrades = async ({ chatId }) => {
 		},
 	});
 
-	return result.map((item) => item.dataValues) as Awaited<
-		ReturnType<GetChatTrades>
-	>;
+	return result.map((item) => item.dataValues) as Awaited<ReturnType<GetChatTrades>>;
 };
 
-export const removeTrade: RemoveTrade = async ({
-	symbol,
-	chatId,
-	type,
-	markPrice,
-}) => {
+export const removeTrade: RemoveTrade = async ({ symbol, chatId, type, markPrice }) => {
 	await findPair({ symbol }).then(async (pair) => {
 		if (!pair) {
 			throw new Error('pair not found');
@@ -81,12 +68,7 @@ export const removeTrade: RemoveTrade = async ({
 	});
 };
 
-export const isChatTradeExist: IsChatTradeExist = async ({
-	chatId,
-	symbol,
-	type,
-	markPrice,
-}) => {
+export const isChatTradeExist: IsChatTradeExist = async ({ chatId, symbol, type, markPrice }) => {
 	return await findPair(
 		{ symbol },
 		{
@@ -114,7 +96,5 @@ export const getChatTradesByPairs: GetChatTradesByPairs = async ({ pairs }) => {
 		},
 	});
 
-	return result.map((item) => item.dataValues) as Awaited<
-		ReturnType<GetChatTradesByPairs>
-	>;
+	return result.map((item) => item.dataValues) as Awaited<ReturnType<GetChatTradesByPairs>>;
 };

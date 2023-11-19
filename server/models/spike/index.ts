@@ -25,9 +25,7 @@ export const getSpikePairs: GetSpikePairs = async ({ symbol }) => {
 	});
 
 	// we merged other models with include parameter
-	return result.map((item) => item.dataValues) as Awaited<
-		ReturnType<GetSpikePairs>
-	>;
+	return result.map((item) => item.dataValues) as Awaited<ReturnType<GetSpikePairs>>;
 };
 
 export const createSpike: CreateSpike = async ({ chatId, PairId }) => {
@@ -41,10 +39,7 @@ export const createSpike: CreateSpike = async ({ chatId, PairId }) => {
 	});
 };
 
-export const createSpikeWithSymbol: CreateSpikeWithSymbol = async ({
-	chatId,
-	symbol,
-}) => {
+export const createSpikeWithSymbol: CreateSpikeWithSymbol = async ({ chatId, symbol }) => {
 	const pair = await findPair({ symbol });
 
 	if (!pair) {

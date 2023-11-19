@@ -27,6 +27,5 @@ export const addObserverView = createView({
 			symbol: message.text.toUpperCase(),
 		});
 	},
-	errorText: (message: BotMessage) =>
-		dictionary(message.from.language_code).pairNotExists,
+	errorText: (message: BotMessage) => dictionary(message.from.language_code).pairNotExists,
 });

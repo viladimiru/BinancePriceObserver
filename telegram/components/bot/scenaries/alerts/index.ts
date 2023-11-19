@@ -13,8 +13,7 @@ export const ALERT_DICT = STEP_DICT;
 const scenary: ScenariesMap = {
 	[STEP_DICT.default.CHOOSE_PAIR_FUNC]: {
 		id: STEP_DICT.default.CHOOSE_PAIR_FUNC,
-		text: (message: BotMessage) =>
-			dictionary(message.from.language_code).whatDoYouWant,
+		text: (message: BotMessage) => dictionary(message.from.language_code).whatDoYouWant,
 		keyboard: (message: BotMessage) =>
 			keyboardWrapper(
 				[
@@ -35,15 +34,12 @@ const scenary: ScenariesMap = {
 			dictionary(message.from.language_code).addObserver,
 			dictionary(message.from.language_code).removeObserver,
 		],
-		errorText: (message: BotMessage) =>
-			dictionary(message.from.language_code).pairNotExists,
+		errorText: (message: BotMessage) => dictionary(message.from.language_code).pairNotExists,
 		getNext: (message: BotMessage) => {
 			if (message.text === dictionary(message.from.language_code).addObserver) {
 				return ALERT_DICT.creation.ADD_OBSERVER;
 			}
-			if (
-				message.text === dictionary(message.from.language_code).removeObserver
-			) {
+			if (message.text === dictionary(message.from.language_code).removeObserver) {
 				return ALERT_DICT.removal.PAIRS_LIST;
 			}
 			return 'START';

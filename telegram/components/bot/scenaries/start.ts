@@ -4,8 +4,7 @@ import { createView } from '../scenary';
 
 export const startView = createView({
 	id: 'START',
-	text: (message) =>
-		dictionary(message.from.language_code).selectDesiredFunction,
+	text: (message) => dictionary(message.from.language_code).selectDesiredFunction,
 	expects: (message) => [
 		dictionary(message.from.language_code).alerts,
 		dictionary(message.from.language_code).trades,
