@@ -39,10 +39,9 @@ Bot.onStartCommandCallback(async function (msg) {
 		step: mainView.id,
 	});
 
-	const adminChatId = process.env.ADMIN_CHAT_ID;
-	if (adminChatId) {
+	if (msg.from.username === process.env.ADMIN_USERNAME) {
 		Bot.sendMessage(
-			adminChatId,
+			msg.chat.id,
 			[
 				'<b>Новый пользователь</b>',
 				`<i>${msg.from.first_name + (msg.from.last_name || '')} | @${msg.from.username} | ${
@@ -53,6 +52,7 @@ Bot.onStartCommandCallback(async function (msg) {
 				parse_mode: 'HTML',
 			}
 		);
+		logger.log('info', 'New user', msg);
 	}
 	Bot.sendMessage(msg.chat.id, mainView.text(msg), {
 		parse_mode: 'HTML',
