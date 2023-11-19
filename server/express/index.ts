@@ -14,7 +14,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3000;
+const port = process.env.SERVER_PORT;
 app.listen(port, () => {
 	console.log(`Express server is listening on ${port}`);
 });

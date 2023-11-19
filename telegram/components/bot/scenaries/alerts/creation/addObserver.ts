@@ -14,7 +14,7 @@ export const addObserverView = createView({
 		}),
 	validate: async ({ text }: BotMessage) => {
 		try {
-			return await apiClient.getPairIndex({
+			return await apiClient.isFutureExist({
 				symbol: text.toUpperCase(),
 			});
 		} catch {

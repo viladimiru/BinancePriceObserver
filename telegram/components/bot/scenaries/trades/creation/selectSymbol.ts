@@ -13,7 +13,7 @@ export const selectSymbolView = createView({
 		}),
 	validate: async ({ text }) => {
 		try {
-			return await apiClient.getPairIndex({
+			return await apiClient.isFutureExist({
 				symbol: text.toUpperCase(),
 			});
 		} catch {

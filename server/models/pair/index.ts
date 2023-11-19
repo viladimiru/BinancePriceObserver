@@ -64,8 +64,9 @@ export const createPair: CreatePair = async (params) => {
 
 		await transaction.commit();
 	} catch (error) {
-		// TODO: need to propagate error after rollback
 		await transaction.rollback();
+
+		throw error;
 	}
 };
 

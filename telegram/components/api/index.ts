@@ -83,8 +83,7 @@ class ApiClient extends Axios {
 		});
 	};
 
-	// TODO: rename method
-	getPairIndex: IsFutureExist = async ({ symbol }) => {
+	isFutureExist: IsFutureExist = async ({ symbol }) => {
 		return await this.get(`/isFutureExist/${symbol}`);
 	};
 
@@ -152,8 +151,7 @@ class ApiClient extends Axios {
 export const apiClient = new ApiClient({
 	transformRequest: axios.defaults.transformRequest,
 	transformResponse: axios.defaults.transformResponse,
-	// TODO: add port declaration in environment
-	baseURL: 'http://localhost:3000/',
+	baseURL: `http://localhost:${process.env.SERVER_PORT}/`,
 });
 // TODO: move requests and responses in logger
 // apiClient.interceptors.request.use((request) => {
