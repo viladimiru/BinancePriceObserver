@@ -63,20 +63,10 @@ export default {
 			dictionary(message.from.language_code).chooseRemovalAlert,
 		getPrev: () => DICT.removal.PAIRS_LIST,
 		getNext: (message: BotMessage) => {
-			if (
-				message.text === dictionary(message.from.language_code).deleteAllAlerts
-			) {
-				return DICT.removal.PAIRS_LIST;
-			}
 			return DICT.removal.ALERTS_LIST;
 		},
 		validate: async (message: BotMessage) => {
 			// TODO: move all async validation in onAnswer
-			if (
-				message.text === dictionary(message.from.language_code).deleteAllAlerts
-			) {
-				return true;
-			}
 			const [symbol, type, price] = message.text.split(' ');
 			if (!typeDictionary[type]) {
 				return await apiClient.isSpikeExist({
@@ -92,15 +82,6 @@ export default {
 			});
 		},
 		onAnswer: async (message: BotMessage) => {
-			if (
-				message.text === dictionary(message.from.language_code).deleteAllAlerts
-			) {
-				await apiClient.deleteAlerts({
-					chatId: message.chat.id,
-					symbol: history[message.chat.id],
-				});
-				return;
-			}
 			const [symbol, type, price] = message.text.split(' ');
 			if (typeDictionary[type]) {
 				await apiClient.removePrice({
@@ -159,22 +140,14 @@ export default {
 					count++;
 				});
 			});
-			list.push(
-				// TODO: This functional delete all client alerts
-				// [
-				// 	{
-				// 		text: dictionary(message.from.language_code).deleteAllAlerts,
-				// 	},
-				// ],
-				[
-					{
-						text: dictionary(message.from.language_code).back,
-					},
-					{
-						text: dictionary(message.from.language_code).toTheMain,
-					},
-				]
-			);
+			list.push([
+				{
+					text: dictionary(message.from.language_code).back,
+				},
+				{
+					text: dictionary(message.from.language_code).toTheMain,
+				},
+			]);
 			return keyboardWrapper(
 				list,
 				{

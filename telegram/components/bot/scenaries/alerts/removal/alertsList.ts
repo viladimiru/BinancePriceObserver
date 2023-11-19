@@ -23,11 +23,6 @@ export const alertsListView = createView({
 	text: (message: BotMessage) =>
 		dictionary(message.from.language_code).chooseRemovalAlert,
 	validate: async (message: BotMessage) => {
-		if (
-			message.text === dictionary(message.from.language_code).deleteAllAlerts
-		) {
-			return true;
-		}
 		const [symbol, type, price] = message.text.split(' ');
 		if (!typeDictionary[type]) {
 			return await apiClient.isSpikeExist({
@@ -45,16 +40,6 @@ export const alertsListView = createView({
 	onAnswer: async (message: BotMessage) => {
 		const [symbol, type, price] = message.text.split(' ');
 		alertRemovalStore.set(String(message.chat.id), { symbol });
-
-		if (
-			message.text === dictionary(message.from.language_code).deleteAllAlerts
-		) {
-			await apiClient.deleteAlerts({
-				chatId: message.chat.id,
-				symbol,
-			});
-			return;
-		}
 
 		// TODO: IT SHOULD BE ONE FUNCTION
 		if (typeDictionary[type]) {
@@ -118,22 +103,14 @@ export const alertsListView = createView({
 				count++;
 			});
 		});
-		list.push(
-			// TODO: This functional delete all client alerts
-			// [
-			// 	{
-			// 		text: dictionary(message.from.language_code).deleteAllAlerts,
-			// 	},
-			// ],
-			[
-				{
-					text: dictionary(message.from.language_code).back,
-				},
-				{
-					text: dictionary(message.from.language_code).toTheMain,
-				},
-			]
-		);
+		list.push([
+			{
+				text: dictionary(message.from.language_code).back,
+			},
+			{
+				text: dictionary(message.from.language_code).toTheMain,
+			},
+		]);
 		return keyboardWrapper(
 			list,
 			{
